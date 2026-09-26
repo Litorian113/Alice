@@ -1,5 +1,7 @@
 # Alice — vollständige Übergabe an die nächste Agent-Session
 
+> **Hinweis (Monorepo):** Seit dem Umbau liegt die App unter `ios/`. Alle Pfade und Befehle in dieser Datei sind relativ zu `ios/`. Im Repository-Root liegen das Backend (MCP-Server, Relay) unter `backend/` und der Protokollvertrag unter `docs/PROTOCOL.md`.
+
 Stand: 26. September 2026. Diese Datei wurde auf ausdrücklichen Wunsch von Franz erstellt, weil der Projektordner umbenannt wurde und er ein neues Codex-Fenster öffnen muss. Sie ist der Arbeitskontext für den nächsten Agenten. Die öffentliche Produktbeschreibung steht in [README.md](README.md).
 
 ## Nachtrag: vorbereitete Spracheingabe (26. September 2026)

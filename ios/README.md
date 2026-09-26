@@ -44,7 +44,7 @@ Voice input is prepared with native microphone capture, AssemblyAI streaming tra
 
 See [Voice & backend integration](docs/VOICE_INTEGRATION.md) for the Swift interfaces, proposed token/input endpoints, JSON examples, authentication, delivery acknowledgements and the wiring steps for Christopher.
 
-Local backend secrets go in the ignored root `.env` (`ASSEMBLYAI_API_KEY`); copy [.env.example](.env.example) on a fresh checkout. No service loads this file yet. Adding a key does not activate voice until the backend token service is connected.
+Local backend secrets go in the ignored root `.env` (`ASSEMBLYAI_API_KEY`); copy [.env.example](../.env.example) on a fresh checkout. No service loads this file yet. Adding a key does not activate voice until the backend token service is connected.
 
 Returning to Alice or choosing **Next request** loads a fresh local approval. Disconnecting keeps the session disconnected until it is explicitly reconnected.
 
@@ -52,10 +52,10 @@ Returning to Alice or choosing **Next request** loads a fresh local approval. Di
 
 Requirements: macOS, Xcode 15 or newer, and an iPhone or simulator running iOS 17 or newer. There are no package dependencies.
 
-Open the project from the repository root:
+The app lives in `ios/` of the monorepo. Open the project from the repository root:
 
 ```bash
-open Alice.xcodeproj
+open ios/Alice.xcodeproj
 ```
 
 Select the **Alice** scheme, choose an iPhone or simulator, and press **Run**. For a physical iPhone, select your own development team in Signing & Capabilities. If needed, trust the developer certificate on the phone.
@@ -67,12 +67,14 @@ Project and product names are **Alice**. The bundle identifier remains `com.bobc
 The Xcode project is tracked alongside its [XcodeGen](https://github.com/yonaskolb/XcodeGen) specification:
 
 ```bash
-xcodegen generate
+cd ios && xcodegen generate
 ```
 
 Set `DEVELOPMENT_TEAM` in `project.yml` to your own team before regenerating if you use a different account. The spec preserves the current signing team.
 
 ## Project structure
+
+Paths are relative to `ios/`.
 
 ```text
 Alice/
@@ -107,7 +109,7 @@ Alice's state uses `AliceSessionStore`, `AliceTab` and `AlicePhase`. The mascot 
 
 ### App icon
 
-The icon uses the same Alice face as the app. To regenerate it on macOS, run from the repository root:
+The icon uses the same Alice face as the app. To regenerate it on macOS, run from `ios/`:
 
 ```bash
 xcrun swiftc -parse-as-library \
@@ -137,7 +139,7 @@ Companion MCP server
              Alice on iPhone
 ```
 
-Christopher owns the MCP server and relay, which are separate from this iOS repository. The planned tools are `pair_phone`, `notify`, `ask_decision` and `get_instruction`.
+Christopher owns the MCP server and relay, which live in [`backend/`](../backend) of this monorepo. The wire format and decision card rules are in [docs/PROTOCOL.md](../docs/PROTOCOL.md). The planned tools are `pair_phone`, `notify`, `ask_decision` and `get_instruction`.
 
 Alice will receive compact requests rather than a full IDE conversation. The relay and Bob integration must enforce command scope, task scope and expiry; the phone's selection alone does not grant a real permission.
 
