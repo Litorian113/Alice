@@ -1,6 +1,6 @@
 # Alice — Agent-Einstieg
 
-Lies zu Beginn einer neuen Session [HANDOFF.md](HANDOFF.md) und danach [README.md](README.md). Die Übergabe beschreibt den Stand vom 26. September 2026; prüfe für spätere Änderungen den tatsächlichen Code und `git status`.
+Lies zu Beginn einer neuen Session [HANDOFF.md](HANDOFF.md) und danach [README.md](README.md). Für die Anbindung an Bob (Relay, Kartenformat, offene App-Aufgaben) steht alles in [HANDOFF_BACKEND.md](HANDOFF_BACKEND.md). Die Übergabe beschreibt den Stand vom 26. September 2026; prüfe für spätere Änderungen den tatsächlichen Code und `git status`.
 
 ## Arbeitsweise mit Franz
 

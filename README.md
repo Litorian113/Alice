@@ -17,7 +17,7 @@ IBM Bob (IDE / Shell) ──stdio──▶ companion MCP server ──wss──�
 
 | Path | What | Start here |
 | --- | --- | --- |
-| [`ios/`](ios) | Alice, the native SwiftUI app | [ios/README.md](ios/README.md) |
+| [`ios/`](ios) | Alice, the native SwiftUI app | [ios/README.md](ios/README.md), backend hookup: [ios/HANDOFF_BACKEND.md](ios/HANDOFF_BACKEND.md) |
 | [`backend/`](backend) | Companion MCP server (Bob spawns it) and the WebSocket relay | [backend/README.md](backend/README.md) |
 | [`docs/`](docs) | Shared contract and ops: [PROTOCOL.md](docs/PROTOCOL.md) (app ↔ relay messages, decision card rules), [DEPLOY.md](docs/DEPLOY.md) (relay on Coolify) | |
 | [`.bob/`](.bob) | Bob config for this repo: registers the MCP server, adds the **📱 Companion** mode | |
