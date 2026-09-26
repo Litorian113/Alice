@@ -64,7 +64,7 @@ should load and show "Pair".
 
 `COMPANION_QR=web` makes the QR code open `https://bob-relay.zeigma.com/#s=…&k=…`, the
 dev phone page. Any phone camera can scan it before Alice (the iOS app) handles pairing. Switch to
-`app` once the Expo app registers the `bobcompanion://` scheme.
+`app` once Alice registers the `bobcompanion://` URL scheme.
 
 For local development against a local relay, set `RELAY_URL` to `ws://localhost:8787`
 (tests and `fake-bob` default to local, or use their `RELAY_URL` env).
