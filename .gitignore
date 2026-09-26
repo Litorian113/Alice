@@ -26,3 +26,8 @@ build/
 
 # CocoaPods
 Pods/
+
+# Local secrets (keep only the empty setup template in Git)
+.env
+.env.*
+!.env.example

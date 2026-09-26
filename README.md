@@ -44,6 +44,8 @@ Voice input is prepared with native microphone capture, AssemblyAI streaming tra
 
 See [Voice & backend integration](docs/VOICE_INTEGRATION.md) for the Swift interfaces, proposed token/input endpoints, JSON examples, authentication, delivery acknowledgements and the wiring steps for Christopher.
 
+Local backend secrets go in the ignored root `.env` (`ASSEMBLYAI_API_KEY`); copy [.env.example](.env.example) on a fresh checkout. No service loads this file yet. Adding a key does not activate voice until the backend token service is connected.
+
 Returning to Alice or choosing **Next request** loads a fresh local approval. Disconnecting keeps the session disconnected until it is explicitly reconnected.
 
 ## Run the app

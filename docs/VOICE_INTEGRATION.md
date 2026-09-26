@@ -4,6 +4,12 @@ Status: iOS implementation prepared; no backend is configured or deployed. No AP
 
 This is speech-to-text for feedback/instructions to Bob, not a separate conversational agent. Voice input does not approve a command. The existing explicit approval actions remain separate.
 
+## Local API key
+
+The repository root contains an ignored `.env` for local secrets. On a fresh checkout, copy `.env.example` to `.env`, then set `ASSEMBLYAI_API_KEY` there. Only the empty `.env.example` belongs in Git; `.env` and environment-specific variants are ignored.
+
+This file is reserved for the future backend token service. No process in this repository loads it yet, and adding the key alone does not activate voice input. The backend integration must explicitly load the environment variable. Never bundle `.env` in the iOS target or copy the permanent key into Swift, Info.plist or Xcode build settings.
+
 ## Flow
 
 ```text
