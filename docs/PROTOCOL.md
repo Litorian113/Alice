@@ -1,7 +1,7 @@
 # Alice ↔ Bob: relay protocol and decision card contract
 
 This is the interface between the backend ([`backend/`](../backend): MCP server + relay) and the mobile app ([`ios/`](../ios): Alice).
-The app only talks to the relay, over one WebSocket. It never talks to Bob.
+App control messages use one authenticated relay WebSocket. Audio goes directly to AssemblyAI using a temporary token issued by that relay. The app never connects directly to Bob.
 
 To build against a live backend without Bob, run a relay and `backend/tools/fake-bob.js`
 (see [Testing without Bob](#testing-without-bob)).
@@ -33,6 +33,8 @@ Open a WebSocket to `relayUrl`. The **first** message must be `hello`, sent with
 - an **ntfy topic** (`[A-Za-z0-9_-]{8,64}`; use a long random one because ntfy.sh topics are public), or
 - an **Expo push token** (`ExponentPushToken[…]`).
 
+Alice additionally sends `pushClick: "bobcompanion://open"` when ntfy notifications are enabled. This exact allowlisted value opens Alice and suppresses notification answer buttons, so all choices are made in the app. Other clients keep the original web/action-button behavior. `push_unregister` with `topic` removes a topic from the authenticated room. Normal socket disconnect keeps it registered.
+
 The relay stores it for the room and keeps it after the app disconnects. This is what
 wakes the phone when the app is closed.
 
@@ -53,6 +55,8 @@ On failure the relay sends `{ "type": "error", "error": "<reason>" }` and closes
 
 The relay pings every 30 s. Standard WebSocket clients answer automatically.
 
+`paired` now also includes `voiceAvailable: true|false`, depending on server key configuration. On iOS, use the `error` payload to distinguish wrong secrets from unknown sessions; custom close codes are not consistently surfaced by URLSession.
+
 ## 3. Messages
 
 All messages are JSON objects with a `type`. After `hello`, the relay forwards messages
@@ -64,6 +68,7 @@ unchanged within the room: Bob → every connected phone, phone → Bob.
 | --- | --- | --- |
 | `notify` | `id`, `message` (≤ 200 chars), `level`: `info` \| `success` \| `error` | Show in the activity feed / as a toast |
 | `decision_request` | the card, `kind` `choice` or `approval`, see §4 | Show the card, buzz |
+| `sync` | `decisions`: array of all currently open cards | Authoritative snapshot after phone/Bob reconnect; remove stale cards and deduplicate subsequent individual replays |
 | `ack` | `id` | Your `decision_response` or `instruction` with this `id` was accepted. **Dismiss that card** (also on other phones in the same room) |
 | `decision_expired` | `id`, `reason`: `timeout` \| `cancelled` \| `unknown` | Remove the card. `timeout`: Bob continued conservatively. `cancelled`: Bob aborted the call |
 | `error` | `id`, `error` | Your answer was rejected (e.g. `unknown optionId`). The card stays open |
@@ -88,7 +93,9 @@ unchanged within the room: Bob → every connected phone, phone → Bob.
 - **Open cards are re-sent** whenever a phone (re)connects. Deduplicate by `id`.
 - A card is closed by exactly one of `ack` or `decision_expired`. Don't remove a card
   before one of them arrives, because the answer might not have reached Bob.
-- `id`s are unique per MCP server process (`d_1`, `n_2`, …). If Bob restarts, ids start over.
+- New IDs include a random process prefix (`d_<run>_<sequence>`); counters restarting no longer collide with old cards after a Bob restart. Treat IDs as opaque strings.
+- Repeated instructions with the same ID/text are acknowledged without queuing twice, including after consumption. Reusing an ID with different text is rejected. Receipts live for the current MCP process (up to 2,000 inputs); the queue accepts up to 100 waiting instructions. No persistence across process restarts is promised.
+- Duplicate option answers receive the original acknowledgement while cached; changing an already accepted option is rejected. Expiration is also checked when the response arrives, not just by a timer.
 - Unknown message types should be ignored (forward compatibility).
 
 ## 4. Decision card contract
@@ -215,6 +222,31 @@ open the app and connect; the card is re-sent on connect.
 With `PUSH_DETAILS=0` on the relay, push texts are generic ("Bob needs a decision") and
 no card content leaves the relay.
 
+Replayed cards are not pushed repeatedly to the same topic. Native Alice topics use `bobcompanion://open` and no action buttons. ntfy must be installed/subscribed separately; this is not native APNs for Alice.
+
+## 6. Voice tokens and instructions
+
+After an authenticated phone hello:
+
+```json
+{ "type": "voice_session_request", "id": "<unique-request-UUID>" }
+```
+
+The relay, when configured with `ASSEMBLYAI_API_KEY`, calls the regional AssemblyAI `/v3/token` endpoint and responds **only to the requesting socket**:
+
+```json
+{
+  "type": "voice_session", "id": "<same-request-UUID>",
+  "token": "<temporary-single-use-token>", "expiresAt": "2026-09-26T20:00:55Z",
+  "websocketURL": "wss://streaming.eu.assemblyai.com/v3/ws",
+  "speechModel": "universal-3-6-pro"
+}
+```
+
+The token redemption window is 60 seconds (55 reported conservatively); provider session cap is 180 seconds. Alice records at most 120 seconds. The relay limits issuance to one concurrent request and one request per five seconds per room, times out upstream after 12 seconds, and sends an `error` with the matching ID on failure. No provider secrets or errors are forwarded/logged. Region/model are environment settings. The relay only permits `decision_response` and `instruction` through from phones; token/revocation requests are handled locally.
+
+Once transcription finishes and the user confirms, Alice sends the existing `instruction` message with its UUID and text. A matching `ack` becomes `VoiceInputReceipt(status: "accepted")`. Instructions over 500 UTF-16 code units are rejected, never silently truncated. No task ID exists in this protocol yet. Tokens and transcript messages are not approval grants.
+
 ## Testing without Bob
 
 Quickest: `cd backend && npm install && npm run dev` (relay + fake Bob, pairing links point at this
@@ -233,3 +265,21 @@ node tools/mock-phone.js '<link>'              # terminal phone, if you need one
 
 `fake-bob` uses the same card normalizer and session code as the real MCP server, so its
 messages match production exactly. One sample card is deliberately too long, to show trimming.
+# ACP desktop adapter extension
+
+The separate PC chat described in [ACP_CHAT.md](ACP_CHAT.md) owns a dedicated relay
+session and forwards actual ACP `session/request_permission` requests. It uses
+the existing approval card envelope with an optional `source: "acp"` field.
+For these cards, `command` is the complete operation input plus supplied text/diff
+content, limited to 24,000 characters / 30 KB of JSON-encoded text. MCP-generated
+command cards retain their existing 500-character limit. The Swift decoder
+already accepts the longer string and ignores the optional source field.
+
+ACP cards offer only `approve_once` and `reject`; the adapter maps them to the
+original ACP `allow_once` / `reject_once` option IDs. Tool-wide `allow_always`
+is not equivalent to command-specific `approve_for_task` and is not offered.
+The adapter sends `ack` only after writing the selected JSON-RPC response to Bob;
+this confirms decision delivery, not successful tool execution. Invalidated
+requests emit `decision_expired` (`cancelled`, `timeout`, or `delivery_failed`).
+ACP push notifications omit complete operation input/diffs and direct the user
+to Alice. Pairing and push subscriptions otherwise use the existing protocol.

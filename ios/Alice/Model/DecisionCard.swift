@@ -12,9 +12,12 @@ struct DecisionCard: Identifiable, Codable, Equatable {
     let expiresAt: Date?
     // Optional extension for command approvals; older relay cards can omit it.
     let command: String?
+    let kind: CardKind
+    let explanations: [CommandExplanation]
 
     init(id: String, title: String, context: String, risk: RiskLevel,
-         options: [DecisionOption], allowFreeText: Bool, expiresAt: Date?, command: String? = nil) {
+         options: [DecisionOption], allowFreeText: Bool, expiresAt: Date?, command: String? = nil,
+         kind: CardKind? = nil, explanations: [CommandExplanation] = []) {
         self.id = id
         self.title = title
         self.context = context
@@ -23,6 +26,26 @@ struct DecisionCard: Identifiable, Codable, Equatable {
         self.allowFreeText = allowFreeText
         self.expiresAt = expiresAt
         self.command = command
+        self.kind = kind ?? (command == nil ? .choice : .approval)
+        self.explanations = explanations
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case id, title, context, risk, options, allowFreeText, expiresAt, command, kind, explanations
+    }
+
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        self.init(id: try c.decode(String.self, forKey: .id),
+                  title: try c.decode(String.self, forKey: .title),
+                  context: try c.decodeIfPresent(String.self, forKey: .context) ?? "",
+                  risk: try c.decode(RiskLevel.self, forKey: .risk),
+                  options: try c.decode([DecisionOption].self, forKey: .options),
+                  allowFreeText: try c.decodeIfPresent(Bool.self, forKey: .allowFreeText) ?? false,
+                  expiresAt: try c.decodeIfPresent(Date.self, forKey: .expiresAt),
+                  command: try c.decodeIfPresent(String.self, forKey: .command),
+                  kind: try c.decodeIfPresent(CardKind.self, forKey: .kind),
+                  explanations: try c.decodeIfPresent([CommandExplanation].self, forKey: .explanations) ?? [])
     }
 
     enum RiskLevel: String, Codable {
@@ -30,6 +53,18 @@ struct DecisionCard: Identifiable, Codable, Equatable {
         case medium
         case high
     }
+}
+
+enum CardKind: String, Codable {
+    case choice, approval, unknown
+    init(from decoder: Decoder) throws {
+        self = Self(rawValue: try decoder.singleValueContainer().decode(String.self)) ?? .unknown
+    }
+}
+
+struct CommandExplanation: Codable, Equatable {
+    let part: String
+    let meaning: String
 }
 
 enum ApprovalChoice: String {
@@ -51,6 +86,14 @@ struct DecisionOption: Identifiable, Codable, Equatable {
         self.label = label
         self.detail = detail
         self.recommended = recommended
+    }
+
+    private enum CodingKeys: String, CodingKey { case id, label, detail, recommended }
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        self.init(id: try c.decode(String.self, forKey: .id), label: try c.decode(String.self, forKey: .label),
+                  detail: try c.decodeIfPresent(String.self, forKey: .detail) ?? "",
+                  recommended: try c.decodeIfPresent(Bool.self, forKey: .recommended) ?? false)
     }
 }
 

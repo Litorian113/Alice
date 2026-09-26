@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Alice + Bob</title><link rel="stylesheet" href="/style.css"><script src="/app.js" defer></script></head>
+<body>
+<header><a class="brand" href="/" aria-label="Alice and Bob"><span class="mark">a<span>:</span></span><span>Alice <b>+ Bob</b></span></a><span class="eyebrow">YOUR DESK. YOUR PHONE. ONE CONVERSATION.</span></header>
+<main>
+<aside>
+  <p class="eyebrow">THE MOBILE PARTNER FOR IBM BOB</p>
+  <h1>Keep building.<br><span>From anywhere.</span></h1>
+  <p class="intro">Talk to Bob here. When he needs your approval, Alice brings it to your phone.</p>
+  <section class="pairing"><div class="section-title"><h2>Connect Alice</h2><span id="phoneState" class="pill">Waiting for phone</span></div><div id="qr" class="qr"></div><p>Scan this code in Alice. This chat has its own phone connection.</p><small id="relayHost"></small></section>
+  <div class="workspace"><span class="eyebrow">WORKSPACE</span><p id="workspace">Loading…</p></div>
+  <p class="quiet">Keep this Mac and the local relay running. For the local test, your iPhone needs the same network.</p>
+</aside>
+<section class="conversation">
+  <div class="chat-heading"><div><h2>Work with Bob</h2><span id="bobState" class="status">Not connected</span></div><div class="controls"><button id="license" hidden>Review Bob license</button><button id="login" hidden>Sign in to IBM</button><button id="connect">Connect Bob</button></div></div>
+  <div id="error" class="error" role="alert" hidden></div>
+  <div id="messages" class="messages" aria-live="polite"><div class="welcome" id="welcome"><div class="orb">//</div><h3>What shall we build?</h3><p>Start a fresh conversation with Bob.<br>Your project files stay right where they are.</p><button id="example" class="example">Try a phone approval ↗</button></div></div>
+  <section id="approvals" class="approvals" aria-live="polite"></section>
+  <form id="composer"><label class="sr-only" for="prompt">Message Bob</label><textarea id="prompt" placeholder="Give Bob a task…" rows="3" maxlength="20000"></textarea><div class="composer-footer"><span>Approvals go to Alice · One-time decisions</span><div><button id="stop" type="button" hidden>Stop</button><button id="send" type="submit" disabled>Send ↗</button></div></div></form>
+</section>
+</main>
+<dialog id="licenseDialog"><h2>IBM Bob Shell license</h2><p>Review IBM's license and notices before continuing.</p><div id="licenseText"></div><label><input id="licenseAccepted" type="checkbox"> I have reviewed and accept the IBM Bob Shell license agreement.</label><div class="dialog-actions"><button id="licenseClose">Cancel</button><button id="licenseContinue" disabled>Accept and connect</button></div></dialog>
+</body></html>

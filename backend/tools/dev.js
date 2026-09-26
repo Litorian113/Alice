@@ -12,9 +12,13 @@
 
 import { spawn } from 'node:child_process';
 import os from 'node:os';
+import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createRelay } from '../relay/server.js';
+import { loadEnvironment } from '../relay/environment.js';
+
+loadEnvironment();
 
 const args = process.argv.slice(2);
 const flag = (name) => {
@@ -26,6 +30,13 @@ const port = Number(process.env.PORT || 8787);
 const host = flag('--host') || lanAddress() || 'localhost';
 const wsUrl = `ws://${host}:${port}`;
 const httpUrl = `http://${host}:${port}`;
+
+if (args.includes('--configure-bob')) {
+  const config = fileURLToPath(new URL('../../.bob/local-relay.json', import.meta.url));
+  fs.mkdirSync(path.dirname(config), { recursive: true });
+  fs.writeFileSync(config, JSON.stringify({ relayUrl: wsUrl }, null, 2) + '\n', { mode: 0o600 });
+  console.log('Local Bob relay configured. Restart the bob-companion MCP server in Bob to apply.');
+}
 
 const relay = createRelay({
   port,

@@ -7,13 +7,18 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		18136FACAAA1443E706CFF30 /* RelayVoiceBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DAAB9DBEC42F7D3000EE732 /* RelayVoiceBridge.swift */; };
 		24A022AE3E7E1EF67BC8F0A0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F24E3CE7C53F96207E36E0E3 /* Assets.xcassets */; };
 		342ADE3909B06D28CDAB79D0 /* DecisionDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A78F53A53A915C52AD21FAE /* DecisionDetailView.swift */; };
 		344C0C222DE099DC9236CAFD /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93AA7721C1C3D18FC7638CF3 /* ProfileView.swift */; };
+		359F266BCE18F9A1844C975C /* RelayClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21C126ADAD013083B1FAEB19 /* RelayClient.swift */; };
 		36C253606CB5E7FD2CA2CDF1 /* AliceHomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E67F13E8F1812D6CF3A499AA /* AliceHomeView.swift */; };
 		406CA7D68584EC60BB2F3420 /* DecisionCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2ECA7D232466AB63156A0EEA /* DecisionCard.swift */; };
+		46186A7CAA1267EAA4FB4AEF /* NotificationSetupSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96FA3CE1CC5BD85622F920FE /* NotificationSetupSheet.swift */; };
 		5E49FE6D62D969636DC53345 /* AliceMascot.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0827955EB677DBE1E55E3D8 /* AliceMascot.swift */; };
 		71F7F269A86649CA5863C877 /* AliceApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0FD3013AE4E8F5EC64F42AE /* AliceApp.swift */; };
+		7473BACAEB877856B9F3A91F /* Pairing.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFF49FCE78124665A56EF0AB /* Pairing.swift */; };
+		7FA1B8D8B462EE1FDD3C24AE /* AliceSplashView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC4666E1D14698FB68221EA2 /* AliceSplashView.swift */; };
 		82F3933A8B3F5D46C840613C /* MicrophoneRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32B8D3CB4EC4707119EC7567 /* MicrophoneRecorder.swift */; };
 		85D1CB6CFC5B77F2422EE86B /* OFL.txt in Resources */ = {isa = PBXBuildFile; fileRef = A4AC26CB2B2884700A90A478 /* OFL.txt */; };
 		8D361E7E543CAFF5986D42EE /* HTTPVoiceBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = C90998D3F8F7295A4E102D53 /* HTTPVoiceBackend.swift */; };
@@ -21,6 +26,7 @@
 		9974D6939F7FC08E44D6BBFE /* AssemblyAITranscriber.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFE4C289351A498A97FCA645 /* AssemblyAITranscriber.swift */; };
 		A3AD16E5AA93E1BE1BEC2AC8 /* AliceSessionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F3A6236039A56421591F698 /* AliceSessionStore.swift */; };
 		AEF41089C76ABE45BC2C9D8C /* AliceTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4763682A47D40DD13619D41D /* AliceTheme.swift */; };
+		B62D107DDD668B23646F242F /* PairingSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FBD9AA961DFFFFD6030ACE4 /* PairingSheet.swift */; };
 		B996BFD76EC29D4DF3AFAA4D /* VoiceInputModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71708CEA3600B3F5257EDA3B /* VoiceInputModel.swift */; };
 		BA7829F14DF49C57F5F020D9 /* VoiceInputSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8540B1274D32441ACAF54B5 /* VoiceInputSheet.swift */; };
 		BE1AA518BD02F8F428DF5220 /* IBMPlexSans-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 9E9E3F09D695B9FD98C32E1C /* IBMPlexSans-Regular.ttf */; };
@@ -36,6 +42,8 @@
 /* Begin PBXFileReference section */
 		0F4D8702308B44065E2EA7EA /* Alice.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Alice.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1B63C1FE33BDE31F8861F513 /* AliceFixtures.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AliceFixtures.swift; sourceTree = "<group>"; };
+		1DAAB9DBEC42F7D3000EE732 /* RelayVoiceBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RelayVoiceBridge.swift; sourceTree = "<group>"; };
+		21C126ADAD013083B1FAEB19 /* RelayClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RelayClient.swift; sourceTree = "<group>"; };
 		2ECA7D232466AB63156A0EEA /* DecisionCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecisionCard.swift; sourceTree = "<group>"; };
 		3267FF792EF2439C2E5226CD /* DecisionCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecisionCardView.swift; sourceTree = "<group>"; };
 		32B8D3CB4EC4707119EC7567 /* MicrophoneRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MicrophoneRecorder.swift; sourceTree = "<group>"; };
@@ -48,18 +56,22 @@
 		647C658900B7A445BFD18914 /* AliceRootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AliceRootView.swift; sourceTree = "<group>"; };
 		71708CEA3600B3F5257EDA3B /* VoiceInputModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceInputModel.swift; sourceTree = "<group>"; };
 		82B6F7C6C9F3828179DDD7E0 /* VoiceContracts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceContracts.swift; sourceTree = "<group>"; };
+		8FBD9AA961DFFFFD6030ACE4 /* PairingSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PairingSheet.swift; sourceTree = "<group>"; };
 		93AA7721C1C3D18FC7638CF3 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
+		96FA3CE1CC5BD85622F920FE /* NotificationSetupSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationSetupSheet.swift; sourceTree = "<group>"; };
 		9B7F0FEC96B33828909B6A20 /* UsageData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsageData.swift; sourceTree = "<group>"; };
 		9E9E3F09D695B9FD98C32E1C /* IBMPlexSans-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "IBMPlexSans-Regular.ttf"; sourceTree = "<group>"; };
 		A0827955EB677DBE1E55E3D8 /* AliceMascot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AliceMascot.swift; sourceTree = "<group>"; };
 		A4AC26CB2B2884700A90A478 /* OFL.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = OFL.txt; sourceTree = "<group>"; };
 		A6F110E5004E03DEF531A3C6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		BC4666E1D14698FB68221EA2 /* AliceSplashView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AliceSplashView.swift; sourceTree = "<group>"; };
 		C90998D3F8F7295A4E102D53 /* HTTPVoiceBackend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPVoiceBackend.swift; sourceTree = "<group>"; };
 		D0FD3013AE4E8F5EC64F42AE /* AliceApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AliceApp.swift; sourceTree = "<group>"; };
 		D8540B1274D32441ACAF54B5 /* VoiceInputSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceInputSheet.swift; sourceTree = "<group>"; };
 		E67F13E8F1812D6CF3A499AA /* AliceHomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AliceHomeView.swift; sourceTree = "<group>"; };
 		F24E3CE7C53F96207E36E0E3 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		FFE4C289351A498A97FCA645 /* AssemblyAITranscriber.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssemblyAITranscriber.swift; sourceTree = "<group>"; };
+		FFF49FCE78124665A56EF0AB /* Pairing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Pairing.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -78,6 +90,7 @@
 				FFE4C289351A498A97FCA645 /* AssemblyAITranscriber.swift */,
 				C90998D3F8F7295A4E102D53 /* HTTPVoiceBackend.swift */,
 				32B8D3CB4EC4707119EC7567 /* MicrophoneRecorder.swift */,
+				1DAAB9DBEC42F7D3000EE732 /* RelayVoiceBridge.swift */,
 				82B6F7C6C9F3828179DDD7E0 /* VoiceContracts.swift */,
 				71708CEA3600B3F5257EDA3B /* VoiceInputModel.swift */,
 			);
@@ -89,8 +102,11 @@
 			children = (
 				E67F13E8F1812D6CF3A499AA /* AliceHomeView.swift */,
 				647C658900B7A445BFD18914 /* AliceRootView.swift */,
+				BC4666E1D14698FB68221EA2 /* AliceSplashView.swift */,
 				3267FF792EF2439C2E5226CD /* DecisionCardView.swift */,
 				3A78F53A53A915C52AD21FAE /* DecisionDetailView.swift */,
+				96FA3CE1CC5BD85622F920FE /* NotificationSetupSheet.swift */,
+				8FBD9AA961DFFFFD6030ACE4 /* PairingSheet.swift */,
 				93AA7721C1C3D18FC7638CF3 /* ProfileView.swift */,
 				37A5590D29F5BAFD723A2981 /* UsageView.swift */,
 				D8540B1274D32441ACAF54B5 /* VoiceInputSheet.swift */,
@@ -112,6 +128,7 @@
 			children = (
 				A6F110E5004E03DEF531A3C6 /* Info.plist */,
 				1302B58E9A74C34BF11C97CE /* App */,
+				B4E640DE58AF799BE09C3801 /* Connection */,
 				9869DF2964134D350756EA5E /* Fixtures */,
 				A6028C95000FA2F440ACB21A /* Model */,
 				9ADDEC074D07608B4AA639EF /* Resources */,
@@ -154,6 +171,15 @@
 				A0827955EB677DBE1E55E3D8 /* AliceMascot.swift */,
 			);
 			path = Components;
+			sourceTree = "<group>";
+		};
+		B4E640DE58AF799BE09C3801 /* Connection */ = {
+			isa = PBXGroup;
+			children = (
+				FFF49FCE78124665A56EF0AB /* Pairing.swift */,
+				21C126ADAD013083B1FAEB19 /* RelayClient.swift */,
+			);
+			path = Connection;
 			sourceTree = "<group>";
 		};
 		CE1422E445193CD329EE9E7D /* Fonts */ = {
@@ -255,6 +281,7 @@
 				5E49FE6D62D969636DC53345 /* AliceMascot.swift in Sources */,
 				982183C3BA7BD94934BE23BB /* AliceRootView.swift in Sources */,
 				A3AD16E5AA93E1BE1BEC2AC8 /* AliceSessionStore.swift in Sources */,
+				7FA1B8D8B462EE1FDD3C24AE /* AliceSplashView.swift in Sources */,
 				AEF41089C76ABE45BC2C9D8C /* AliceTheme.swift in Sources */,
 				9974D6939F7FC08E44D6BBFE /* AssemblyAITranscriber.swift in Sources */,
 				406CA7D68584EC60BB2F3420 /* DecisionCard.swift in Sources */,
@@ -262,7 +289,12 @@
 				342ADE3909B06D28CDAB79D0 /* DecisionDetailView.swift in Sources */,
 				8D361E7E543CAFF5986D42EE /* HTTPVoiceBackend.swift in Sources */,
 				82F3933A8B3F5D46C840613C /* MicrophoneRecorder.swift in Sources */,
+				46186A7CAA1267EAA4FB4AEF /* NotificationSetupSheet.swift in Sources */,
+				7473BACAEB877856B9F3A91F /* Pairing.swift in Sources */,
+				B62D107DDD668B23646F242F /* PairingSheet.swift in Sources */,
 				344C0C222DE099DC9236CAFD /* ProfileView.swift in Sources */,
+				359F266BCE18F9A1844C975C /* RelayClient.swift in Sources */,
+				18136FACAAA1443E706CFF30 /* RelayVoiceBridge.swift in Sources */,
 				FAB22484AD79943F17594A56 /* UsageData.swift in Sources */,
 				C83112D3BD6CAD420DB6ECD9 /* UsageView.swift in Sources */,
 				D8BCD7367FABDF05A56A0F2B /* VoiceContracts.swift in Sources */,

@@ -39,3 +39,8 @@ node_modules/
 # Pairing credentials written by the companion MCP server (COMPANION_SESSION_FILE)
 .bob/companion-session.json
 **/.bob/companion-session.json
+.bob/local-relay.json
+.bob/pairing.html
+.bob/acp-session.json
+.bob/acp-desktop-url
+.bob/acp-runtime/

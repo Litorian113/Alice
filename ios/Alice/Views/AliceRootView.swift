@@ -25,6 +25,12 @@ struct AliceRootView: View {
                 .presentationCornerRadius(32)
         }
         .tint(.aliceAccent)
+        .sheet(isPresented: $store.showsPairing) {
+            PairingSheet().presentationDragIndicator(.visible).presentationCornerRadius(32)
+        }
+        .sheet(isPresented: $store.showsNotifications) {
+            NotificationSetupSheet().presentationDragIndicator(.visible).presentationCornerRadius(32)
+        }
     }
 }
 

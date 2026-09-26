@@ -1,5 +1,7 @@
 # Übergabe: Backend → Alice-App (für Franz)
 
+> **Update nach Integration:** Die unten als offen beschriebenen App-Punkte sind inzwischen implementiert. Siehe [../docs/IPHONE_TEST.md](../docs/IPHONE_TEST.md) für den Testablauf und [../docs/PROTOCOL.md](../docs/PROTOCOL.md) für den aktualisierten Vertrag (zusätzlich `sync`, Voice-Tokens und Instruction-Deduplizierung). Native APNs bleibt offen; der Test nutzt ntfy ohne kostenpflichtigen Apple-Account. Die ursprüngliche Übergabe bleibt unten als Referenz erhalten.
+
 Stand: 26. September 2026, von Christopher. Ergänzt [HANDOFF.md](HANDOFF.md); diese Datei beschreibt nur, **was das Backend jetzt kann und was in der App noch fehlt**, damit Alice mit dem echten Bob spricht.
 
 ## Kurzfassung

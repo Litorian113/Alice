@@ -73,7 +73,7 @@ enum VoiceTranscriptEvent {
 
 enum VoiceError: LocalizedError {
     case unavailable, microphoneDenied, audio, invalidSession, connection, timeout
-    case backpressure, incomplete, emptyTranscript, delivery, interrupted
+    case backpressure, incomplete, emptyTranscript, delivery, interrupted, inputTooLong
 
     var errorDescription: String? {
         switch self {
@@ -88,6 +88,7 @@ enum VoiceError: LocalizedError {
         case .emptyTranscript: return "I didn't catch any words. Please try again."
         case .delivery: return "Delivery couldn't be confirmed. You can retry sending this input."
         case .interrupted: return "Recording stopped. Please record again when you're ready."
+        case .inputTooLong: return "Please record a shorter message (up to 500 characters)."
         }
     }
 }

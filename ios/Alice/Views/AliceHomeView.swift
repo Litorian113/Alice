@@ -10,6 +10,16 @@ struct AliceHomeView: View {
                 if store.isConnected {
                     if let card = store.currentDecision {
                         DecisionCardView(card: card)
+                    } else if store.phase == .waiting {
+                        VStack(spacing: 14) {
+                            Image(systemName: "sparkles").font(.system(size: 25)).foregroundStyle(Color.aliceRecommended)
+                            Text("Bob's on it.").font(.plex(23, weight: .semibold))
+                            Text(store.latestStatus).font(.plex(15)).foregroundStyle(Color.aliceSecondary)
+                                .multilineTextAlignment(.center)
+                            if !store.notificationsEnabled {
+                                Button("Set up notifications") { store.showsNotifications = true }.frame(minHeight: 44)
+                            }
+                        }.padding(26).frame(maxWidth: .infinity).aliceSurface(radius: 30)
                     } else {
                         outcome
                     }
@@ -44,7 +54,7 @@ struct AliceHomeView: View {
                     .frame(width: 94, height: 112)
                     .rotationEffect(.degrees(store.phase == .needsDecision ? -4 : 0))
             }
-            Text(store.phase.title)
+            Text(store.currentDecision?.kind == .approval ? "Can Bob run this?" : store.phase.title)
                 .font(.plex(28, weight: .semibold, relativeTo: .title))
                 .tracking(-0.8)
                 .multilineTextAlignment(.center)
@@ -67,7 +77,7 @@ struct AliceHomeView: View {
                     .multilineTextAlignment(.center)
             }
             Button { store.loadNextRequest() } label: {
-                Label("Next request", systemImage: "arrow.right")
+                Label("Back to Alice", systemImage: "arrow.right")
                     .font(.plex(14, weight: .medium))
                     .frame(minHeight: 44)
             }
@@ -82,6 +92,7 @@ struct AliceHomeView: View {
         switch store.phase {
         case .approvedForTask: return "Approved for this task"
         case .rejected: return "Command rejected"
+        case .answered: return "Decision received"
         default: return "Approved once"
         }
     }
@@ -90,16 +101,18 @@ struct AliceHomeView: View {
         switch store.phase {
         case .approvedForTask: return "Bob can use this command again during the current task."
         case .rejected: return "This command isn't allowed. Bob will need another approach."
+        case .answered: return "Bob received the decision and can continue."
         default: return "Bob can run this command once. The next request is yours to decide."
         }
     }
 
     private var disconnected: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("Bring Bob along.").font(.plex(23, weight: .semibold))
-            Text("Connect a session to keep his next decision within reach.")
+            Text(store.pairing == nil ? "Bring Bob along." : "Waiting for Bob.").font(.plex(23, weight: .semibold))
+            Text(store.pairing == nil ? "Scan Bob's QR code to keep his next decision within reach." : "Your phone is paired. Keep Bob and the relay running; Alice reconnects automatically.")
                 .font(.plex(15)).foregroundStyle(Color.aliceSecondary)
-            PrimaryButton(title: "Connect to Bob") { store.connectSession() }
+            if let error = store.errorMessage { Text(error).font(.plex(13)).foregroundStyle(Color.aliceError) }
+            PrimaryButton(title: store.pairing == nil ? "Scan Bob's QR code" : "Connect another session", icon: "qrcode.viewfinder") { store.connectSession() }
         }.padding(24).aliceSurface(radius: 30)
     }
 }

@@ -8,7 +8,7 @@ struct DecisionDetailView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 22) {
                 HStack {
-                    Eyebrow(text: "Behind the command")
+                    Eyebrow(text: "Behind the request")
                     Spacer()
                     Button("Done") { dismiss() }.font(.plex(14, weight: .medium))
                 }
@@ -17,21 +17,20 @@ struct DecisionDetailView: View {
                     CommandSnippet(command: command)
                 }
                 Text(card.context).font(.plex(15)).foregroundStyle(Color.aliceSecondary)
-                if card.command == AliceFixtures.commandApproval.command {
+                if !card.explanations.isEmpty {
                     VStack(alignment: .leading, spacing: 16) {
-                        explanation("npm test", "Starts the project's test runner.")
-                        explanation("--runInBand", "Runs the tests one at a time.")
-                        explanation("--bail", "Stops when the first test fails.")
-                        explanation("auth", "Selects the authentication tests.")
+                        ForEach(Array(card.explanations.enumerated()), id: \.offset) { _, item in
+                            explanation(item.part, item.meaning)
+                        }
                     }
                     .padding(20).aliceSurface()
                 }
-                VStack(alignment: .leading, spacing: 12) {
+                if card.kind == .approval { VStack(alignment: .leading, spacing: 12) {
                     Eyebrow(text: "Your call")
                     explanation("Approve once", "Allow this execution. Ask again next time.")
                     explanation("Approve for task", "Allow this command again during the current task. The permission ends with the task.")
                     explanation("Reject", "Don't allow this command. Bob needs a different approach.")
-                }
+                } }
             }
             .padding(24).padding(.top, 12)
         }

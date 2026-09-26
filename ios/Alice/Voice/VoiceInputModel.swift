@@ -123,7 +123,7 @@ final class VoiceInputModel: ObservableObject {
             } catch {
                 guard !Task.isCancelled, let self, self.generation == attempt else { return }
                 self.phase = .review
-                self.message = VoiceError.delivery.localizedDescription
+                self.message = (error as? VoiceError ?? .delivery).localizedDescription
                 // Keep this exact input ID for an idempotent retry after an ambiguous timeout.
             }
         }

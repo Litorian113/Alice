@@ -16,6 +16,7 @@ struct DecisionCardView: View {
         VStack(spacing: 14) {
             requestBubble
             VStack(spacing: 12) {
+              if card.kind == .approval {
                 if let once = card.options.first(where: { $0.approvalChoice == .once }) {
                     ApprovalBubble(option: once, prominent: true) { choose(once) }
                 }
@@ -24,6 +25,36 @@ struct DecisionCardView: View {
                 } else {
                     HStack(alignment: .top, spacing: 12) { alternativeBubbles }
                 }
+              } else {
+                ForEach(card.options) { option in
+                    Button { choose(option) } label: {
+                        HStack(spacing: 14) {
+                            VStack(alignment: .leading, spacing: 6) {
+                                Text(option.label).font(.plex(18, weight: .semibold))
+                                if !option.detail.isEmpty { Text(option.detail).font(.plex(13)) }
+                            }
+                            Spacer(minLength: 4)
+                            Image(systemName: option.recommended ? "sparkles" : "arrow.right")
+                        }
+                        .foregroundStyle(option.recommended ? .white : Color.alicePrimary)
+                        .padding(20).frame(maxWidth: .infinity, minHeight: 72, alignment: .leading)
+                        .background(option.recommended ? Color.aliceAccent : .white,
+                                    in: RoundedRectangle(cornerRadius: 24))
+                    }.buttonStyle(ApprovalPressStyle())
+                    .accessibilityHint(option.recommended ? "Bob's recommendation" : "")
+                }
+              }
+            }
+            .disabled(!store.isConnected || store.hasPendingResponse)
+            if store.isSending {
+                ProgressView("Waiting for Bob…").font(.plex(14))
+            }
+            if let error = store.errorMessage {
+                Text(error).font(.plex(13)).foregroundStyle(Color.aliceError).multilineTextAlignment(.center)
+            }
+            if store.hasPendingResponse && !store.isSending {
+                Button("Retry this decision") { store.retryDecision() }
+                    .font(.plex(15, weight: .medium)).frame(minHeight: 44).disabled(!store.isConnected)
             }
         }
         .sheet(isPresented: $showsDetails) {
@@ -54,7 +85,7 @@ struct DecisionCardView: View {
                         .foregroundStyle(Color.aliceSecondary)
                         .frame(width: 44, height: 44)
                 }
-                .accessibilityLabel("What does this command do?")
+                .accessibilityLabel("About this request")
                 .accessibilityIdentifier("decision.context")
             }
             if let command = card.command {

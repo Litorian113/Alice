@@ -10,7 +10,9 @@
     "relay": "node relay/server.js",
     "dev": "node tools/dev.js",
     "mcp": "node companion-mcp/index.js",
+    "chat": "node acp/server.js",
     "phone": "node tools/mock-phone.js",
+    "pair:show": "node tools/show-pairing.js",
     "demo:bob": "node tools/fake-bob.js",
     "check:relay": "node tools/check-relay.js https://bob-relay.zeigma.com",
     "test": "node --test --test-timeout=60000 \"test/*.test.js\""

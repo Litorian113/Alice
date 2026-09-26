@@ -25,6 +25,13 @@ IBM Bob (IDE / Shell) ──stdio──▶ companion MCP server ──wss──�
 
 ## Quick start
 
+**For native Bob approvals on the phone, use the new [local ACP chat](docs/ACP_CHAT.md):**
+`cd backend && npm run chat`. It opens a separate Bob Shell session with a PC chat
+and forwards its native tool permission requests to Alice. Pair with the QR in
+that chat; the existing IDE session has separate credentials.
+
+**Start with [the iPhone + Bob test guide](docs/IPHONE_TEST.md).** Alice now scans Bob's QR, receives live questions and command approvals, and returns decisions after acknowledgement. Notifications use the free ntfy app; no paid Apple account is needed for this test. A new Alice/IBM-inspired start screen is included.
+
 ```sh
 # iOS app (macOS + Xcode 15)
 open ios/Alice.xcodeproj
@@ -38,5 +45,8 @@ demo/setup.sh ~/alice-demo   # standalone copy: Bob uses the enclosing git root 
 cd ~/alice-demo && BOB_API_KEY=… bob run --mode companion "The tests are failing. Fix them." < /dev/null
 ```
 
-The production relay runs at `https://bob-relay.zeigma.com`. It also serves a web phone
-page, which is useful until Alice handles pairing.
+The configured production relay is `https://bob-relay.zeigma.com`; verify availability before use (it returned HTTP 503 during integration). For local testing use `npm run dev -- --no-bob --configure-bob` in `backend/`. The relay also serves a web phone page for comparison.
+
+The existing IBM Bob IDE chat's own approval dialogs are not forwarded. Use the
+ACP chat above for native permission forwarding. The original investigation is in
+[Native IDE approvals](docs/NATIVE_APPROVALS.md).

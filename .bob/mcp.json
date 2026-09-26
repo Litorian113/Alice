@@ -2,6 +2,7 @@
   "mcpServers": {
     "bob-companion": {
       "command": "node",
+      "cwd": ".",
       "args": [
         "./backend/companion-mcp/index.js"
       ],
@@ -10,7 +11,8 @@
         "DECISION_TIMEOUT_S": "120",
         "MAX_DECISION_TIMEOUT_S": "540",
         "COMPANION_SESSION_FILE": ".bob/companion-session.json",
-        "COMPANION_QR": "web"
+        "COMPANION_LOCAL_CONFIG": ".bob/local-relay.json",
+        "COMPANION_QR": "app"
       },
       "timeout": 600000,
       "alwaysAllow": [

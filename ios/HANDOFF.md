@@ -4,7 +4,37 @@
 
 Stand: 26. September 2026. Diese Datei wurde auf ausdrücklichen Wunsch von Franz erstellt, weil der Projektordner umbenannt wurde und er ein neues Codex-Fenster öffnen muss. Sie ist der Arbeitskontext für den nächsten Agenten. Die öffentliche Produktbeschreibung steht in [README.md](README.md).
 
-## Nachtrag: vorbereitete Spracheingabe (26. September 2026)
+## Aktueller Nachtrag: Live-Anbindung (26. September 2026)
+
+**Neuer Weg für native Freigaben:** Franz hat einen separaten lokalen Bob-Chat über
+ACP beauftragt. Implementierung in `../backend/acp/`, Start mit `npm run chat`
+in `backend/`, Anleitung `../docs/ACP_CHAT.md`. Eigene Pairing-Datei
+`.bob/acp-session.json` und QR im Browser; die IDE-MCP-Session wird nicht übernommen.
+Der ACP-Adapter sendet native Werkzeugfreigaben mit `approve_once` / `reject` an
+Alice und gibt die ursprüngliche ACP-Option zurück. Die App benötigt dafür keinen
+neuen Build. `command` enthält bei `source: "acp"` vollständige Tool-Eingaben/Diffs
+bis 24.000 Zeichen / 30 KB, keine gekürzte Freigabe. Vor dem echten Bob-Test sind
+die separate Bob-Shell-Lizenzbestätigung und IBM-Anmeldung im Browser erforderlich.
+Mac-Bedienungshilfen wurden nur untersucht; kein Klick-Adapter wurde eingebaut.
+
+ACP-Prüfstand: 49 Backend-Tests bestanden. Bob Shell 2.0.5 war nach Franz'
+Lizenzbestätigung angemeldet und lieferte eine echte `session/request_permission`
+für den harmlosen `printf`-Test. Zuletzt wartete sie im neuen Browser-Chat;
+ACP-Phone-Count war noch 0. Echte Handy-Auswahl/Rückgabe noch nicht bestätigt.
+
+**Dieser Abschnitt hat Vorrang vor den historischen Beschreibungen unten.** Alice startet jetzt ungepaart und lädt keine automatischen Entscheidungs-Fixtures mehr. `Connection/Pairing.swift` liest App-/Web-QR-Links und speichert Zugangsdaten in der Keychain; `RelayClient` verbindet mit Backoff und reagiert auf Hintergrund/Vordergrund. `AliceSessionStore` verarbeitet echte Karten, Auswahlfragen, Status, Ablauf und Bestätigungen. Karten bleiben bis `ack`/Ablauf offen; Wiederholungen senden dieselbe Auswahl. Command-Erklärungen kommen aus Backend-Daten.
+
+Neue UI: `PairingSheet`, `NotificationSetupSheet`, `AliceSplashView`. Splash nutzt die bestehende Vektorfigur, IBM-Blau und Raster. URL-Schema `bobcompanion`, Kamera-/LAN-Berechtigung und auf private IPv4-Netze beschränkte ATS-Ausnahmen ergänzt. Signing/App-ID unverändert; keine APNs-Entitlements.
+
+Für den Test ohne bezahlten Apple-Account: ntfy installieren, Topic aus Profile → Notifications abonnieren, dann aktivieren. Mitteilungen kommen von ntfy, Entscheidungen werden in Alice getroffen. Native Alice-APNs ist nicht implementiert. `bobcompanion://open` öffnet Alice; nötigenfalls App manuell öffnen.
+
+Voice nutzt jetzt `RelayVoiceBridge`: Token vom authentifizierten Relay, Audio direkt zu AssemblyAI, geprüftes Transkript als `instruction`, `ack` als Bestätigung. Root-`.env` wird vom lokalen Relay geladen; `ASSEMBLYAI_API_KEY` muss gesetzt sein. Der API-Key war bei der Konfigurationsprüfung noch nicht gesetzt. Der HTTP-Adapter bleibt als alternative Schnittstelle bestehen.
+
+Backend erweitert: `sync`-Snapshot, eindeutige IDs über Prozessstarts hinweg, In-Memory-Deduplizierung für Antworten/Anweisungen, Ablaufprüfung beim Empfang, Push-Deduplizierung und Token-Ausgabe. Dockerfile enthält das neue Environment-Modul. Alle 40 Backend-Tests bestanden; Swift-Typcheck bestanden. Kein Simulator und keine echte Audio-/iPhone-Zustellung im automatischen Test.
+
+**Testanleitung:** [../docs/IPHONE_TEST.md](../docs/IPHONE_TEST.md). Das öffentliche Relay lieferte HTTP 503. Für diesen Mac wurde das lokale Relay auf `ws://192.168.2.228:8788` gestartet (8787 war schon belegt); `.bob/local-relay.json` enthält den ignorierten lokalen Override. Prozess/LAN-IP bei Fortsetzung neu prüfen. `npm run pair:show` erzeugt `.bob/pairing.html` mit denselben Zugangsdaten wie Bob. Nicht committen/teilen. Bob IDE ist installiert; ein `bob`-Shell-Befehl war nicht im PATH. Der eigentliche Chat-Test erfolgt durch Franz im Modus 📱 Companion.
+
+## Historischer Nachtrag: vorbereitete Spracheingabe (26. September 2026)
 
 Dieser Nachtrag ersetzt die älteren Aussagen unten zum reinen Voice-Platzhalter. `Alice/Voice/` enthält jetzt Mikrofonaufnahme, AssemblyAI-Streaming mit kurzlebigen Tokens, Transkriptprüfung und einen austauschbaren HTTP-Adapter für die Übermittlung an Bob. `VoiceInputSheet` bietet den zugehörigen Ablauf ohne Texteingabefeld oder Chat. Der API-Key wird nicht in der App gespeichert.
 

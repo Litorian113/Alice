@@ -38,15 +38,15 @@ The bottom navigation provides:
 
 ## Current status
 
-This repository contains a native SwiftUI prototype. Requests, connection state, approvals and usage figures are local fixtures. **No shell command is executed and no real task permission is granted by the app yet.** Prototype labels are intentionally absent from the product UI.
+Alice connects to the monorepo's MCP/relay backend. It starts unpaired, scans Bob's QR, stores credentials in Keychain and receives live choice/approval cards. Responses wait for Bob's acknowledgement; reconnect and expiry are handled. **The app does not execute commands itself.** Bob receives the decision and follows Companion mode's tool rules. Usage figures remain local fixtures.
 
-Voice input is prepared with native microphone capture, AssemblyAI streaming transcription, transcript review and a replaceable backend delivery adapter. It remains unavailable until backend services and a real paired session are injected. No API key is stored in the app and no live voice/backend connection is configured. IBM account sign-in, QR pairing, relay communication and push notifications still need to be connected.
+Voice uses native microphone capture, AssemblyAI streaming and transcript review. The authenticated relay issues temporary tokens and forwards reviewed text to Bob. Without a server-side API key it stays unavailable. Notifications use the free ntfy iOS app, configured under Profile. Native Alice APNs and IBM account sign-in are not implemented.
 
-See [Voice & backend integration](docs/VOICE_INTEGRATION.md) for the Swift interfaces, proposed token/input endpoints, JSON examples, authentication, delivery acknowledgements and the wiring steps for Christopher.
+See [the iPhone/Bob test guide](../docs/IPHONE_TEST.md), [the shared protocol](../docs/PROTOCOL.md) and [Voice integration](docs/VOICE_INTEGRATION.md). The start screen uses Alice's existing vector artwork and IBM-inspired blue/grid styling.
 
-Local backend secrets go in the ignored root `.env` (`ASSEMBLYAI_API_KEY`); copy [.env.example](../.env.example) on a fresh checkout. No service loads this file yet. Adding a key does not activate voice until the backend token service is connected.
+Local secrets go in the ignored repository-root `.env` (`ASSEMBLYAI_API_KEY`); copy [.env.example](../.env.example) on a fresh checkout. The local relay/dev runner loads it. Restart the relay after setting the key, then reconnect Alice.
 
-Returning to Alice or choosing **Next request** loads a fresh local approval. Disconnecting keeps the session disconnected until it is explicitly reconnected.
+Returning to Alice never fabricates a request. Pending cards come from Bob. Forgetting a session clears its Keychain pairing; backgrounding preserves it and reconnects on return.
 
 ## Run the app
 
@@ -124,7 +124,7 @@ xcrun swiftc -parse-as-library \
 
 The script writes an opaque 1024 × 1024 PNG into `AppIcon.appiconset`.
 
-## Planned connection to Bob
+## Connection to Bob
 
 ```text
 IBM Bob IDE / Shell
@@ -139,7 +139,7 @@ Companion MCP server
              Alice on iPhone
 ```
 
-Christopher owns the MCP server and relay, which live in [`backend/`](../backend) of this monorepo. The wire format and decision card rules are in [docs/PROTOCOL.md](../docs/PROTOCOL.md). The planned tools are `pair_phone`, `notify`, `ask_decision` and `get_instruction`.
+Christopher owns the MCP server and relay, which live in [`backend/`](../backend) of this monorepo. The wire format and decision card rules are in [docs/PROTOCOL.md](../docs/PROTOCOL.md). The tools are `pair_phone`, `notify`, `ask_decision`, `request_approval` and `get_instruction`.
 
 Alice will receive compact requests rather than a full IDE conversation. The relay and Bob integration must enforce command scope, task scope and expiry; the phone's selection alone does not grant a real permission.
 
@@ -180,7 +180,7 @@ Risk remains part of the model, although the main UI has no risk badge. High-ris
 
 ## Scope
 
-Next steps are real pairing, receiving Bob's approval requests, returning decisions, connecting the prepared voice services and usage integration. Companion customization can follow later.
+Next steps are the real-device walkthrough, production relay deployment, native APNs if desired, and real usage data. Companion customization can follow later.
 
 Alice is not a remote IDE or a full coding chat. The focus is a small, understandable decision at the moment Bob needs you.
 

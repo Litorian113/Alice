@@ -33,6 +33,9 @@ export class Companion extends EventEmitter {
     this.pending = new Map();
     /** @type {{id: string, text: string, at: string}[]} */
     this.instructions = [];
+    this.instructionReceipts = new Map();
+    this.decisionReceipts = new Map();
+    this.runId = crypto.randomBytes(6).toString('hex');
     // Commands the developer approved "for task" (canonical form). Cleared by endTask().
     /** @type {Set<string>} */
     this.taskApprovals = new Set();
@@ -55,7 +58,7 @@ export class Companion extends EventEmitter {
   }
 
   nextId(prefix) {
-    return `${prefix}_${++this.seq}`;
+    return `${prefix}_${this.runId}_${++this.seq}`;
   }
 
   start() {
@@ -127,6 +130,7 @@ export class Companion extends EventEmitter {
         if (firstConnect) this.log(`connected to relay, session ${this.sessionId}`);
         if (this.phones > before) this.log(`phone paired (${this.phones} connected)`);
         // A phone (re)joined or we reconnected: make sure it sees every open card.
+        this.send({ type: 'sync', decisions: [...this.pending.values()].map(({ card }) => card) });
         for (const { card } of this.pending.values()) this.send(card);
         this.emit('status');
         break;
@@ -139,9 +143,23 @@ export class Companion extends EventEmitter {
         this.resolveDecision(msg);
         break;
       case 'instruction': {
+        if (typeof msg.text !== 'string' || msg.text.length > LIMITS.freeText) {
+          this.send({ type: 'error', id: msg.id, error: 'instruction too long or invalid' });
+          break;
+        }
         const text = trimText(msg.text, LIMITS.freeText);
         if (!text) break;
         const id = typeof msg.id === 'string' ? msg.id : this.nextId('i');
+        if (this.instructionReceipts.has(id)) {
+          this.send(this.instructionReceipts.get(id) === text ? { type: 'ack', id }
+            : { type: 'error', id, error: 'input id already used' });
+          break;
+        }
+        if (this.instructionReceipts.size >= 2000 || this.instructions.length >= 100) {
+          this.send({ type: 'error', id, error: 'instruction queue full' });
+          break;
+        }
+        this.instructionReceipts.set(id, text);
         this.instructions.push({ id, text, at: new Date().toISOString() });
         this.send({ type: 'ack', id });
         this.log(`instruction queued: ${text}`);
@@ -167,9 +185,13 @@ export class Companion extends EventEmitter {
 
   // Sends the card and resolves with {optionId, text, via} or {expired: reason}.
   // Never rejects; never hangs past card.expiresAt.
-  askDecision(card, { signal } = {}) {
+  askDecision(card, { signal, apply } = {}) {
+    if (signal?.aborted) return Promise.resolve({ expired: 'cancelled' });
     return new Promise((resolve) => {
+      let settled = false;
       const done = (result) => {
+        if (settled) return;
+        settled = true;
         clearTimeout(timer);
         signal?.removeEventListener('abort', onAbort);
         this.pending.delete(card.id);
@@ -182,18 +204,29 @@ export class Companion extends EventEmitter {
       const onAbort = () => expire('cancelled');
       const timer = setTimeout(() => expire('timeout'), Math.max(0, Date.parse(card.expiresAt) - Date.now()));
       signal?.addEventListener('abort', onAbort, { once: true });
-      this.pending.set(card.id, { card, resolve: done });
+      this.pending.set(card.id, { card, resolve: done, apply });
       this.send(card);
     });
   }
 
   resolveDecision(msg) {
+    const previous = this.decisionReceipts.get(msg.id);
+    if (previous) {
+      this.send(previous === msg.optionId ? { type: 'ack', id: msg.id }
+        : { type: 'error', id: msg.id, error: 'decision already answered' });
+      return;
+    }
     const entry = this.pending.get(msg.id);
     if (!entry) {
       this.send({ type: 'decision_expired', id: msg.id, reason: 'unknown' });
       return;
     }
     const { card } = entry;
+    if (Date.parse(card.expiresAt) <= Date.now()) {
+      this.send({ type: 'decision_expired', id: msg.id, reason: 'timeout' });
+      entry.resolve({ expired: 'timeout' });
+      return;
+    }
     const option = card.options.find((o) => o.id === msg.optionId);
     // A note that comes with an option is always kept (e.g. why a command was rejected);
     // allowFreeText only decides whether text may replace the options entirely.
@@ -202,9 +235,34 @@ export class Companion extends EventEmitter {
       this.send({ type: 'error', id: msg.id, error: 'unknown optionId' });
       return;
     }
+    if (entry.applying) return;
+    if (entry.apply) {
+      entry.applying = true;
+      const result = { option, text, via: clean(msg.via) || 'app' };
+      Promise.resolve().then(() => {
+        if (this.pending.get(msg.id) !== entry) throw new Error('Request is no longer pending');
+        return entry.apply(result);
+      }).then(() => {
+        if (this.pending.get(msg.id) !== entry) return;
+        this.rememberDecision(msg.id, option?.id || '__text');
+        this.send({ type: 'ack', id: msg.id });
+        entry.resolve(result);
+      }).catch(() => {
+        if (this.pending.get(msg.id) !== entry) return;
+        this.send({ type: 'decision_expired', id: msg.id, reason: 'delivery_failed' });
+        entry.resolve({ expired: 'delivery_failed' });
+      });
+      return;
+    }
+    this.rememberDecision(msg.id, option?.id || '__text');
     this.send({ type: 'ack', id: msg.id });
     this.log(`decision ${msg.id}: ${option ? option.label : 'free text'}${text ? ` — "${text}"` : ''}`);
     entry.resolve({ option, text, via: clean(msg.via) || 'app' });
+  }
+
+  rememberDecision(id, optionId) {
+    this.decisionReceipts.set(id, optionId);
+    if (this.decisionReceipts.size > 2000) this.decisionReceipts.delete(this.decisionReceipts.keys().next().value);
   }
 
   isApprovedForTask(command) {

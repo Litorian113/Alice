@@ -322,11 +322,15 @@ test('request_approval: approve for task skips the phone until the task ends', a
 
 test('request_approval: timeout means not approved; high risk has no push buttons', async () => {
   pushes.length = 0;
-  const res = await call('request_approval', { command: 'git push --force origin main', title: 'Force-push', risk: 'high', timeout_s: 5 });
+  const pending = call('request_approval', { command: 'git push --force origin main', title: 'Force-push', risk: 'high', timeout_s: 5 });
+  const card = await p1.next('decision_request', m => m.title === 'Force-push');
+  const res = await pending;
   assert.match(res, /^not approved: no response.*Do NOT run `git push --force origin main`/);
-  await until(() => pushes.length === 1);
-  assert.equal(pushes[0].actions, undefined, 'no lock-screen buttons for high risk');
-  assert.equal((await p1.next('decision_expired')).reason, 'timeout');
+  // A push from the previous test can finish after this test clears the array.
+  // Select this request instead of relying on the shared asynchronous count.
+  await until(() => pushes.some(p => p.title === 'Force-push'));
+  assert.equal(pushes.find(p => p.title === 'Force-push').actions, undefined, 'no lock-screen buttons for high risk');
+  assert.equal((await p1.next('decision_expired', m => m.id === card.id)).reason, 'timeout');
 });
 
 test('request_approval: invalid command is refused before anything is sent', async () => {

@@ -34,6 +34,11 @@ struct ProfileView: View {
                     Spacer(minLength: 0)
                 }.padding(20).aliceSurface()
                 connection
+                if store.pairing != nil {
+                    Button { store.showsNotifications = true } label: {
+                        settingsRow("Notifications", subtitle: "Get a heads-up through ntfy", icon: "bell")
+                    }.buttonStyle(.plain).padding(.horizontal, 20).aliceSurface()
+                }
                 VStack(alignment: .leading, spacing: 0) {
                     Eyebrow(text: "Make yourself at home").padding(.bottom, 13)
                     Button { showsAccount = true } label: {
@@ -91,7 +96,7 @@ struct ProfileView: View {
                 Spacer()
                 HStack(spacing: 5) {
                     Circle().fill(store.isConnected ? Color.aliceSuccess : .aliceMuted).frame(width: 6, height: 6)
-                    Text(store.isConnected ? "Connected" : "Disconnected")
+                    Text(store.connectionText)
                         .font(.plex(11, weight: .medium))
                         .foregroundStyle(store.isConnected ? Color.aliceSuccess : .aliceSecondary)
                 }
@@ -100,17 +105,17 @@ struct ProfileView: View {
                 Image(systemName: "laptopcomputer").font(.system(size: 27)).foregroundStyle(Color.aliceAccent)
                     .frame(width: 48, height: 48).background(Color.aliceSurfaceRaised, in: RoundedRectangle(cornerRadius: 14))
                 VStack(alignment: .leading, spacing: 4) {
-                    Text(store.isConnected ? "Bob's workspace" : "No IDE connected")
+                    Text(store.pairing != nil ? "Bob's workspace" : "No IDE connected")
                         .font(.plex(16, weight: .medium))
-                    Text(store.isConnected ? "alice · Auth refactor" : "Connect to meet your companion.")
+                    Text(store.pairing?.relayURL.host ?? "Connect to meet your companion.")
                         .font(.plex(12)).foregroundStyle(Color.aliceSecondary)
                 }
             }
             Button {
-                if store.isConnected { store.disconnect() }
+                if store.pairing != nil { store.disconnect() }
                 else { store.connectSession() }
             } label: {
-                Label(store.isConnected ? "Disconnect session" : "Connect session",
+                Label(store.pairing != nil ? "Forget this session" : "Connect session",
                       systemImage: store.isConnected ? "link.badge.plus" : "link")
                     .font(.plex(13, weight: .medium))
                     .foregroundStyle(store.isConnected ? Color.aliceError : .aliceAccent)

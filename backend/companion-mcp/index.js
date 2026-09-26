@@ -33,7 +33,7 @@ const QR_MODE = env.COMPANION_QR === 'web' ? 'web' : 'app';
 const log = (...a) => process.stderr.write(`[bob-companion] ${a.join(' ')}\n`);
 
 const companion = new Companion({
-  relayUrl: env.RELAY_URL || 'ws://localhost:8787',
+  relayUrl: localRelayURL() || env.RELAY_URL || 'ws://localhost:8787',
   webUrl: env.RELAY_WEB_URL,
   ...loadSession(),
   log,
@@ -343,4 +343,19 @@ function loadSession() {
 function clampInt(v, dflt, min, max) {
   const n = Number.parseInt(v, 10);
   return Number.isFinite(n) ? Math.min(max, Math.max(min, n)) : dflt;
+}
+
+// Optional, gitignored per-machine override written by dev --configure-bob.
+// The shared MCP config can keep the production URL without hardcoding a LAN IP.
+function localRelayURL() {
+  if (!env.COMPANION_LOCAL_CONFIG) return '';
+  try {
+    const config = JSON.parse(fs.readFileSync(path.resolve(env.COMPANION_LOCAL_CONFIG), 'utf8'));
+    const url = new URL(config.relayUrl);
+    if (!['ws:', 'wss:'].includes(url.protocol)) throw new Error('invalid relay URL');
+    return url.toString();
+  } catch (error) {
+    if (error.code === 'ENOENT') return '';
+    throw new Error('Invalid local relay configuration. Check COMPANION_LOCAL_CONFIG.');
+  }
 }

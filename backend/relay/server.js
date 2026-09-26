@@ -18,6 +18,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { WebSocketServer } from 'ws';
+import { loadEnvironment } from './environment.js';
 
 const HELLO_TIMEOUT_MS = 10_000;
 const HEARTBEAT_MS = 30_000;
@@ -34,6 +35,9 @@ export function createRelay({
   devPhone = process.env.DEV_PHONE !== '0',
   log = (...a) => console.log(new Date().toISOString(), ...a),
   fetchImpl = globalThis.fetch,
+  assemblyAIKey = process.env.ASSEMBLYAI_API_KEY || '',
+  assemblyAIRegion = process.env.ASSEMBLYAI_REGION || 'eu',
+  speechModel = process.env.ASSEMBLYAI_SPEECH_MODEL || 'universal-3-6-pro',
 } = {}) {
   /** @type {Map<string, Room>} */
   const rooms = new Map();
@@ -76,7 +80,7 @@ export function createRelay({
       if (typeof secret !== 'string' || secret.length < 16 || secret.length > 128) return reject(ws, 'bad secret');
 
       if (role === 'bob') joinBob(ws, sessionId, secret);
-      else if (role === 'phone') joinPhone(ws, sessionId, secret, msg.pushTopic);
+      else if (role === 'phone') joinPhone(ws, sessionId, secret, msg.pushTopic, msg.pushClick);
       else reject(ws, 'bad role');
     });
   });
@@ -85,7 +89,8 @@ export function createRelay({
     let room = rooms.get(sessionId);
     if (room && !safeEqual(room.secret, secret)) return reject(ws, 'session exists');
     if (!room) {
-      room = { sessionId, secret, bob: null, phones: new Set(), pushTopics: new Set(), expiry: null };
+      room = { sessionId, secret, bob: null, phones: new Set(), pushTopics: new Set(), expiry: null,
+        pushClicks: new Map(), pushed: new Set(), voicePending: false, lastVoiceRequest: 0 };
       rooms.set(sessionId, room);
       log(`room ${sessionId} created`);
     } else {
@@ -116,7 +121,7 @@ export function createRelay({
     });
   }
 
-  function joinPhone(ws, sessionId, secret, pushTopic) {
+  function joinPhone(ws, sessionId, secret, pushTopic, pushClick) {
     const room = rooms.get(sessionId);
     // 4004: no such room (yet) — Bob may still be starting, clients should retry.
     // 4003: wrong secret — clients should give up and re-pair.
@@ -124,14 +129,26 @@ export function createRelay({
     if (!safeEqual(room.secret, secret)) return reject(ws, 'wrong secret');
     room.phones.add(ws);
     if (typeof pushTopic === 'string' && validPushTopic(pushTopic)) room.pushTopics.add(pushTopic);
+    if (room.pushTopics.has(pushTopic) && pushClick === 'bobcompanion://open') room.pushClicks.set(pushTopic, pushClick);
     log(`room ${sessionId} phone joined (${room.phones.size})`);
 
-    send(ws, { type: 'paired', sessionId, role: 'phone', bobOnline: !!room.bob });
+    send(ws, { type: 'paired', sessionId, role: 'phone', bobOnline: !!room.bob, voiceAvailable: !!assemblyAIKey });
     send(room.bob, { type: 'paired', sessionId, role: 'bob', phones: room.phones.size, push: room.pushTopics.size > 0 });
 
     ws.on('message', (raw) => {
       const msg = parse(raw);
       if (!msg || typeof msg.type !== 'string' || msg.type === 'hello') return;
+      if (msg.type === 'voice_session_request') { createVoiceSession(room, ws, msg); return; }
+      if (msg.type === 'push_unregister') {
+        room.pushTopics.delete(msg.topic);
+        room.pushClicks.delete(msg.topic);
+        return;
+      }
+      if (!['decision_response', 'instruction'].includes(msg.type)) return;
+      if (!room.bob || room.bob.readyState !== room.bob.OPEN) {
+        send(ws, { type: 'error', id: msg.id, error: 'Bob is offline' });
+        return;
+      }
       if (msg.type === 'decision_response') dropAnswerTokens(room.sessionId, msg.id);
       send(room.bob, msg);
     });
@@ -154,8 +171,12 @@ export function createRelay({
 
   function push(room, msg) {
     for (const topic of room.pushTopics) {
+      const key = `${topic}:${msg.type}:${msg.id}`;
+      if (room.pushed.has(key)) continue;
+      room.pushed.add(key);
+      if (room.pushed.size > 2000) room.pushed.delete(room.pushed.values().next().value);
       const p = topic.startsWith('ExponentPushToken[') ? pushExpo(topic, msg) : pushNtfy(room, topic, msg);
-      p.catch((err) => log(`push to ${topic.slice(0, 12)}… failed: ${err.message}`));
+      p.catch((err) => { room.pushed.delete(key); log(`push delivery failed: ${err.message}`); });
     }
   }
 
@@ -166,7 +187,7 @@ export function createRelay({
     }
     const approval = msg.kind === 'approval';
     const rec = msg.options.find((o) => o.recommended);
-    const body = pushDetails
+    const body = msg.source === 'acp' ? 'Bob needs your approval. Open Alice to review the complete operation.' : pushDetails
       ? [msg.command && `$ ${msg.command}`, msg.context, rec && `Recommended: ${rec.label}`].filter(Boolean).join('\n')
       : approval ? 'Bob wants to run a command' : 'Bob is waiting for your decision';
     return {
@@ -181,8 +202,10 @@ export function createRelay({
     const t = pushText(msg);
     const body = { topic, title: t.title, message: t.body, tags: t.tags, priority: t.priority ?? 3 };
     if (publicUrl) body.click = publicUrl.replace(/\/$/, '') + '/';
+    const nativeClick = room.pushClicks.get(topic);
+    if (nativeClick) body.click = nativeClick;
     // High-risk cards get no lock-screen buttons: answering needs the app's confirmation step.
-    if (msg.type === 'decision_request' && publicUrl && msg.risk !== 'high') {
+    if (msg.type === 'decision_request' && publicUrl && msg.risk !== 'high' && !nativeClick) {
       // ntfy allows at most 3 action buttons: recommended first, then the rest in order.
       const opts = [...msg.options].sort((a, b) => (b.recommended ? 1 : 0) - (a.recommended ? 1 : 0)).slice(0, 3);
       const token = crypto.randomBytes(18).toString('base64url');
@@ -240,6 +263,31 @@ export function createRelay({
 
   function dropAnswerTokens(sessionId, decisionId) {
     for (const [t, a] of answerTokens) if (a.sessionId === sessionId && a.decisionId === decisionId) answerTokens.delete(t);
+  }
+
+  // Issued only on an already authenticated phone socket; the permanent key stays here.
+  async function createVoiceSession(room, ws, msg) {
+    if (typeof msg.id !== 'string' || !/^[A-Za-z0-9_-]{1,64}$/.test(msg.id)) return;
+    const fail = (error) => send(ws, { type: 'error', id: msg.id, error });
+    if (!assemblyAIKey) return fail('voice unavailable');
+    if (!room.bob) return fail('Bob is offline');
+    if (room.voicePending || Date.now() - room.lastVoiceRequest < 5000) return fail('voice rate limited');
+    room.voicePending = true;
+    room.lastVoiceRequest = Date.now();
+    const host = { eu: 'streaming.eu.assemblyai.com', us: 'streaming.us.assemblyai.com', global: 'streaming.assemblyai.com' }[assemblyAIRegion];
+    try {
+      if (!host) throw new Error('invalid voice region');
+      const response = await fetchImpl(`https://${host}/v3/token?expires_in_seconds=60&max_session_duration_seconds=180`, {
+        headers: { authorization: assemblyAIKey }, signal: AbortSignal.timeout(12_000),
+      });
+      if (!response.ok) throw new Error('token request failed');
+      const body = await response.json();
+      if (typeof body.token !== 'string' || !body.token) throw new Error('invalid token response');
+      send(ws, { type: 'voice_session', id: msg.id, token: body.token,
+        expiresAt: new Date(Date.now() + 55_000).toISOString(),
+        websocketURL: `wss://${host}/v3/ws`, speechModel });
+    } catch { fail('voice session unavailable'); }
+    finally { room.voicePending = false; }
   }
 
   // ---- housekeeping ---------------------------------------------------------
@@ -316,6 +364,7 @@ function sendJson(res, status, body) {
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(fs.realpathSync(process.argv[1])).href) {
+  loadEnvironment();
   const relay = createRelay();
   relay.listen();
   for (const sig of ['SIGINT', 'SIGTERM']) process.on(sig, () => relay.close().then(() => process.exit(0)));
