@@ -6,7 +6,7 @@ enum MockData {
 
     // MARK: - Decision Cards
 
-    static let lowRiskDecision = DecisionCard(
+    static var lowRiskDecision: DecisionCard { DecisionCard(
         id: "d_01",
         title: "3 tests are failing",
         context: "Auth module refactored. 3 of 48 tests fail on outdated mocks.",
@@ -17,8 +17,8 @@ enum MockData {
             DecisionOption(id: "c", label: "Pause", detail: "Wait until I'm back")
         ],
         allowFreeText: true,
-        expiresAt: Date().addingTimeInterval(120)
-    )
+        expiresAt: nil
+    ) }
 
     static let mediumRiskDecision = DecisionCard(
         id: "d_02",
@@ -45,18 +45,6 @@ enum MockData {
         ],
         allowFreeText: false,
         expiresAt: Date().addingTimeInterval(300)
-    )
-
-    // MARK: - Bob Statuses
-
-    static let workingStatus = BobStatus(
-        currentActivity: "Refactoring authentication",
-        startedAt: Date().addingTimeInterval(-360)
-    )
-
-    static let testingStatus = BobStatus(
-        currentActivity: "Running test suite",
-        startedAt: Date().addingTimeInterval(-60)
     )
 
     // MARK: - Activity Log

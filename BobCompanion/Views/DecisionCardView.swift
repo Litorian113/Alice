@@ -2,173 +2,103 @@ import SwiftUI
 
 struct DecisionCardView: View {
     @EnvironmentObject var store: SessionStore
+    @AppStorage("hapticsEnabled") private var hapticsEnabled = true
     let card: DecisionCard
-
-    @State private var dragOffset: CGSize = .zero
+    @State private var showsDetails = false
+    @State private var confirmationOption: DecisionOption?
 
     var body: some View {
-        VStack(spacing: 0) {
-
-            // Header — attention state
-            VStack(spacing: 6) {
-                Text("BOB NEEDS YOU")
-                    .font(.system(size: 12, weight: .bold))
-                    .tracking(2)
-                    .foregroundColor(card.risk.color)
-                    .padding(.top, 60)
-
-                Text(card.title)
-                    .font(.system(size: 26, weight: .bold))
-                    .foregroundColor(.bcPrimary)
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal, 28)
-
-                Text(card.context)
-                    .font(.system(size: 15))
-                    .foregroundColor(.bcSecondary)
-                    .multilineTextAlignment(.center)
-                    .lineSpacing(3)
-                    .padding(.horizontal, 28)
-                    .padding(.top, 4)
-
-                // Risk badge
-                HStack(spacing: 4) {
-                    Circle()
-                        .fill(card.risk.color)
-                        .frame(width: 6, height: 6)
-                    Text(card.risk.label)
-                        .font(.system(size: 12, weight: .medium))
-                        .foregroundColor(card.risk.color)
+        VStack(alignment: .leading, spacing: 14) {
+            HStack {
+                HStack(spacing: 6) {
+                    Image(systemName: "bubble.left.and.text.bubble.right")
+                    Text("BOB NEEDS YOU").tracking(1.3)
                 }
-                .padding(.top, 8)
+                .font(.plex(10, weight: .semibold, relativeTo: .caption))
+                .foregroundStyle(Color.bcAccent)
+                Spacer()
+                Text(card.risk.label)
+                    .font(.plex(10, weight: .medium, relativeTo: .caption))
+                    .foregroundStyle(card.risk.color)
+                    .padding(.horizontal, 8).padding(.vertical, 4)
+                    .background(card.risk.color.opacity(0.08), in: Capsule())
             }
-
-            Spacer()
-
-            // Options
-            VStack(spacing: 10) {
-                Text("Bob recommends")
-                    .font(.system(size: 12, weight: .semibold))
-                    .tracking(1)
-                    .foregroundColor(.bcMuted)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.horizontal, 24)
-
+            VStack(alignment: .leading, spacing: 6) {
+                Text(card.title).font(.plex(23, weight: .semibold, relativeTo: .title2)).tracking(-0.6)
+                Text(card.context).font(.plex(13)).foregroundStyle(Color.bcSecondary).lineSpacing(2)
+            }
+            VStack(spacing: 8) {
                 ForEach(card.options) { option in
-                    OptionButton(option: option, risk: card.risk) {
-                        submitDecision(option: option)
+                    OptionButton(option: option) {
+                        if card.risk == .high { confirmationOption = option }
+                        else { submit(option) }
                     }
                 }
             }
-            .padding(.bottom, 16)
-
-            // More context link
-            Button {
-                store.expandDecision(card)
-            } label: {
-                HStack(spacing: 4) {
-                    Text("More context")
-                        .font(.system(size: 14))
-                        .foregroundColor(.bcMuted)
-                    Image(systemName: "chevron.right")
-                        .font(.system(size: 12))
-                        .foregroundColor(.bcMuted)
+            Button { showsDetails = true } label: {
+                HStack(spacing: 5) {
+                    Text("A little more context")
+                    Image(systemName: "arrow.up.right").font(.system(size: 10))
                 }
+                .font(.plex(12)).foregroundStyle(Color.bcSecondary)
+                .frame(maxWidth: .infinity).frame(minHeight: 30)
             }
-            .padding(.bottom, 40)
+            .accessibilityIdentifier("decision.context")
         }
-        .gesture(
-            DragGesture()
-                .onChanged { value in
-                    // Only allow horizontal drag if exactly 2 options
-                    if card.options.count == 2 {
-                        dragOffset = value.translation
-                    }
-                }
-                .onEnded { value in
-                    handleSwipe(value.translation)
-                    withAnimation { dragOffset = .zero }
-                }
-        )
-        .offset(x: dragOffset.width * 0.3)
+        .padding(18)
+        .companionSurface()
+        .sheet(isPresented: $showsDetails) {
+            DecisionDetailView(card: card)
+                .presentationDetents([.medium, .large])
+                .presentationDragIndicator(.visible)
+        }
+        .confirmationDialog("Confirm this high-risk decision", isPresented: Binding(
+            get: { confirmationOption != nil },
+            set: { if !$0 { confirmationOption = nil } }
+        ), titleVisibility: .visible) {
+            if let option = confirmationOption {
+                Button(option.label, role: .destructive) { submit(option) }
+            }
+            Button("Cancel", role: .cancel) { confirmationOption = nil }
+        } message: { Text(card.context) }
     }
 
-    private func submitDecision(option: DecisionOption) {
-        let generator = UIImpactFeedbackGenerator(style: .medium)
-        generator.impactOccurred()
+    private func submit(_ option: DecisionOption) {
+        if hapticsEnabled { UINotificationFeedbackGenerator().notificationOccurred(.success) }
         store.submitDecision(card: card, option: option)
     }
-
-    private func handleSwipe(_ translation: CGSize) {
-        guard card.options.count == 2 else { return }
-        let threshold: CGFloat = 80
-        if translation.width > threshold {
-            // swipe right → second option (index 1)
-            submitDecision(option: card.options[1])
-        } else if translation.width < -threshold {
-            // swipe left → first option (index 0)
-            submitDecision(option: card.options[0])
-        }
-    }
 }
-
-// MARK: - Option Button
 
 struct OptionButton: View {
     let option: DecisionOption
-    let risk: DecisionCard.RiskLevel
-    let action: () -> Void
+    var action: () -> Void
 
     var body: some View {
         Button(action: action) {
-            HStack(spacing: 14) {
-                if option.recommended {
-                    Image(systemName: "star.fill")
-                        .font(.system(size: 14))
-                        .foregroundColor(.bcRecommended)
-                }
-
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(option.label)
-                        .font(.system(size: 16, weight: option.recommended ? .bold : .regular))
-                        .foregroundColor(option.recommended ? .bcPrimary : .bcSecondary)
-
+            HStack(spacing: 10) {
+                VStack(alignment: .leading, spacing: 3) {
+                    HStack(spacing: 6) {
+                        Text(option.label).font(.plex(15, weight: .medium))
+                        if option.recommended {
+                            Image(systemName: "sparkles").font(.system(size: 11))
+                            Text("BOB'S PICK").font(.plex(8, weight: .semibold, relativeTo: .caption2)).tracking(0.8)
+                        }
+                    }
                     Text(option.detail)
-                        .font(.system(size: 13))
-                        .foregroundColor(option.recommended ? .bcSecondary : .bcMuted)
+                        .font(.plex(11))
+                        .foregroundStyle(option.recommended ? Color.white.opacity(0.85) : .bcSecondary)
                 }
-
-                Spacer()
-
-                if option.recommended {
-                    Image(systemName: "chevron.right")
-                        .font(.system(size: 13))
-                        .foregroundColor(.bcMuted)
-                }
+                Spacer(minLength: 0)
+                Image(systemName: option.recommended ? "arrow.right" : "chevron.right")
+                    .font(.system(size: option.recommended ? 16 : 11, weight: .medium))
             }
-            .padding(.horizontal, 20)
-            .padding(.vertical, 16)
-            .background(
-                option.recommended
-                    ? Color.bcSurfaceRaised
-                    : Color.bcSurface
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: 14)
-                    .stroke(
-                        option.recommended ? Color.bcRecommended.opacity(0.4) : Color.clear,
-                        lineWidth: 1
-                    )
-            )
-            .cornerRadius(14)
+            .foregroundStyle(option.recommended ? .white : Color.bcPrimary)
+            .padding(.horizontal, 14).padding(.vertical, 12)
+            .frame(maxWidth: .infinity, minHeight: 55, alignment: .leading)
+            .background(option.recommended ? Color.bcAccent : .bcBackground, in: RoundedRectangle(cornerRadius: 14))
         }
-        .padding(.horizontal, 24)
+        .buttonStyle(.plain)
+        .accessibilityIdentifier("decision.\(option.id)")
+        .accessibilityLabel("\(option.label). \(option.detail)\(option.recommended ? ". Bob recommends this option." : "")")
     }
-}
-
-#Preview {
-    DecisionCardView(card: MockData.lowRiskDecision)
-        .environmentObject(SessionStore())
-        .background(Color.bcBackground)
-        .preferredColorScheme(.dark)
 }

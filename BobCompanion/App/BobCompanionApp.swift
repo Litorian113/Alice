@@ -8,7 +8,7 @@ struct BobCompanionApp: App {
         WindowGroup {
             RootView()
                 .environmentObject(store)
-                .preferredColorScheme(.dark)
+                .preferredColorScheme(.light)
         }
     }
 }

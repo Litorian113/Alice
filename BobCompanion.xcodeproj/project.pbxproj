@@ -7,35 +7,47 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		00781B6BE07ABD4322F6693E /* PairingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91FB19C2236AED8187B0F915 /* PairingView.swift */; };
 		061206A901073BAE1242A464 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40AC52BE2F481F55FBF85E2F /* RootView.swift */; };
 		0A291272F260D80070FE1830 /* MockData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CC405AA389BD4D8134DB22D /* MockData.swift */; };
 		0D34238B588B1AE8DF982754 /* SessionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F3D17B7ADA287093D125710 /* SessionStore.swift */; };
 		121848D3062C838F9F1B3A56 /* DesignTokens.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DCE268FF11DEE96AF5BAAA4 /* DesignTokens.swift */; };
 		1711747389CAB432FB4A8391 /* ConnectedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8744162F5F3F31FAABA4A270 /* ConnectedView.swift */; };
 		2999EAF16F5161F643CACEB7 /* DecisionCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2C7C310916D8577061CD4CF /* DecisionCardView.swift */; };
+		32EEEED35492CC8522B7B639 /* InstructionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 544F8937E8682A3F55EC3490 /* InstructionSheet.swift */; };
+		47936944068868C2C342149A /* IBMPlexSans-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A066B476783C4C9EEB6B5094 /* IBMPlexSans-SemiBold.ttf */; };
 		488E407FFA03CFB5B0188669 /* BobCompanionApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E024CC17E615E3FACF3F8D5 /* BobCompanionApp.swift */; };
-		64E003462DD7A4B923CD324F /* TaskCompletedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCBBDB89EC601B4AEF97C66F /* TaskCompletedView.swift */; };
-		A01E3907AF9D05F59786C0FC /* DecisionConfirmedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A660D6EBC5B9B1A8BED07FA /* DecisionConfirmedView.swift */; };
+		576C08851A3943B05FAC562A /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C374917183ADBE8343CD6E62 /* ProfileView.swift */; };
+		8032CD7E0E403F05CAAA6589 /* UsageData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 160EE4C147078DCE57F8920F /* UsageData.swift */; };
+		94718C854D636542ADE8A5CD /* BobMascot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CBF15C45A4CF4DBB8E547A3 /* BobMascot.swift */; };
+		97F3B63ACB10402B2FFE39A5 /* OFL.txt in Resources */ = {isa = PBXBuildFile; fileRef = 5220CA1375087F22934E3298 /* OFL.txt */; };
 		AF31559BDC237ECB462AF484 /* DecisionDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53B3A051B6EEC8C3BC845D1C /* DecisionDetailView.swift */; };
+		E1606EBC95991216380E0299 /* UsageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FF3E61AF91772374C9DE7D9 /* UsageView.swift */; };
+		EA60268733FACDFA4E1428EE /* IBMPlexSans-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = EEFDAAC1B5609B726B664C05 /* IBMPlexSans-Regular.ttf */; };
+		EAB2464C07EC34A915E57072 /* IBMPlexSans-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = DE4B56E1FD6C3335DF3FE530 /* IBMPlexSans-Medium.ttf */; };
 		F9BEFA8BC1C3AC6B897D02C2 /* DecisionCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1BAFE55DEA5C875CF10555B /* DecisionCard.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		1A660D6EBC5B9B1A8BED07FA /* DecisionConfirmedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecisionConfirmedView.swift; sourceTree = "<group>"; };
+		160EE4C147078DCE57F8920F /* UsageData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsageData.swift; sourceTree = "<group>"; };
+		2CBF15C45A4CF4DBB8E547A3 /* BobMascot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BobMascot.swift; sourceTree = "<group>"; };
 		35FBD4A5F481FB073EEB9B73 /* BobCompanion.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = BobCompanion.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		40AC52BE2F481F55FBF85E2F /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		4B90FFF90115B166325504B3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		4F3D17B7ADA287093D125710 /* SessionStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionStore.swift; sourceTree = "<group>"; };
+		5220CA1375087F22934E3298 /* OFL.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = OFL.txt; sourceTree = "<group>"; };
 		53B3A051B6EEC8C3BC845D1C /* DecisionDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecisionDetailView.swift; sourceTree = "<group>"; };
+		544F8937E8682A3F55EC3490 /* InstructionSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstructionSheet.swift; sourceTree = "<group>"; };
+		5FF3E61AF91772374C9DE7D9 /* UsageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsageView.swift; sourceTree = "<group>"; };
 		8744162F5F3F31FAABA4A270 /* ConnectedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectedView.swift; sourceTree = "<group>"; };
 		8CC405AA389BD4D8134DB22D /* MockData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockData.swift; sourceTree = "<group>"; };
 		8DCE268FF11DEE96AF5BAAA4 /* DesignTokens.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesignTokens.swift; sourceTree = "<group>"; };
 		8E024CC17E615E3FACF3F8D5 /* BobCompanionApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BobCompanionApp.swift; sourceTree = "<group>"; };
-		91FB19C2236AED8187B0F915 /* PairingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PairingView.swift; sourceTree = "<group>"; };
+		A066B476783C4C9EEB6B5094 /* IBMPlexSans-SemiBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "IBMPlexSans-SemiBold.ttf"; sourceTree = "<group>"; };
 		A1BAFE55DEA5C875CF10555B /* DecisionCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecisionCard.swift; sourceTree = "<group>"; };
-		CCBBDB89EC601B4AEF97C66F /* TaskCompletedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskCompletedView.swift; sourceTree = "<group>"; };
+		C374917183ADBE8343CD6E62 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
 		D2C7C310916D8577061CD4CF /* DecisionCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecisionCardView.swift; sourceTree = "<group>"; };
+		DE4B56E1FD6C3335DF3FE530 /* IBMPlexSans-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "IBMPlexSans-Medium.ttf"; sourceTree = "<group>"; };
+		EEFDAAC1B5609B726B664C05 /* IBMPlexSans-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "IBMPlexSans-Regular.ttf"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -52,11 +64,12 @@
 			children = (
 				8744162F5F3F31FAABA4A270 /* ConnectedView.swift */,
 				D2C7C310916D8577061CD4CF /* DecisionCardView.swift */,
-				1A660D6EBC5B9B1A8BED07FA /* DecisionConfirmedView.swift */,
 				53B3A051B6EEC8C3BC845D1C /* DecisionDetailView.swift */,
-				91FB19C2236AED8187B0F915 /* PairingView.swift */,
+				544F8937E8682A3F55EC3490 /* InstructionSheet.swift */,
+				C374917183ADBE8343CD6E62 /* ProfileView.swift */,
 				40AC52BE2F481F55FBF85E2F /* RootView.swift */,
-				CCBBDB89EC601B4AEF97C66F /* TaskCompletedView.swift */,
+				5FF3E61AF91772374C9DE7D9 /* UsageView.swift */,
+				49EFBCEAF58473A659A87082 /* Components */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -68,6 +81,25 @@
 				4F3D17B7ADA287093D125710 /* SessionStore.swift */,
 			);
 			path = Model;
+			sourceTree = "<group>";
+		};
+		49EFBCEAF58473A659A87082 /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				2CBF15C45A4CF4DBB8E547A3 /* BobMascot.swift */,
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
+		5904061AFC387F8642DDC9BB /* Fonts */ = {
+			isa = PBXGroup;
+			children = (
+				DE4B56E1FD6C3335DF3FE530 /* IBMPlexSans-Medium.ttf */,
+				EEFDAAC1B5609B726B664C05 /* IBMPlexSans-Regular.ttf */,
+				A066B476783C4C9EEB6B5094 /* IBMPlexSans-SemiBold.ttf */,
+				5220CA1375087F22934E3298 /* OFL.txt */,
+			);
+			path = Fonts;
 			sourceTree = "<group>";
 		};
 		9788F218CE49DA5BE6B8F60D = {
@@ -82,6 +114,7 @@
 			isa = PBXGroup;
 			children = (
 				8CC405AA389BD4D8134DB22D /* MockData.swift */,
+				160EE4C147078DCE57F8920F /* UsageData.swift */,
 			);
 			path = Mock;
 			sourceTree = "<group>";
@@ -93,9 +126,18 @@
 				EE4A0009AF0ABB94525F3812 /* App */,
 				A2507DE1FCB92D99EB13D7FD /* Mock */,
 				26B638FB01AC3A1FACBF8B25 /* Model */,
+				ED1A5D8366E02F93E83EC6A3 /* Resources */,
 				15A150BA7DFA9077D80703EE /* Views */,
 			);
 			path = BobCompanion;
+			sourceTree = "<group>";
+		};
+		ED1A5D8366E02F93E83EC6A3 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				5904061AFC387F8642DDC9BB /* Fonts */,
+			);
+			path = Resources;
 			sourceTree = "<group>";
 		};
 		EE4A0009AF0ABB94525F3812 /* App */ = {
@@ -115,6 +157,7 @@
 			buildConfigurationList = 31E83345C3FAF46D7847A9A5 /* Build configuration list for PBXNativeTarget "BobCompanion" */;
 			buildPhases = (
 				9A8CFA836EF150B3C639C38D /* Sources */,
+				503D2B19D148E03CD0360035 /* Resources */,
 			);
 			buildRules = (
 			);
@@ -160,23 +203,39 @@
 		};
 /* End PBXProject section */
 
+/* Begin PBXResourcesBuildPhase section */
+		503D2B19D148E03CD0360035 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EAB2464C07EC34A915E57072 /* IBMPlexSans-Medium.ttf in Resources */,
+				EA60268733FACDFA4E1428EE /* IBMPlexSans-Regular.ttf in Resources */,
+				47936944068868C2C342149A /* IBMPlexSans-SemiBold.ttf in Resources */,
+				97F3B63ACB10402B2FFE39A5 /* OFL.txt in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		9A8CFA836EF150B3C639C38D /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				488E407FFA03CFB5B0188669 /* BobCompanionApp.swift in Sources */,
+				94718C854D636542ADE8A5CD /* BobMascot.swift in Sources */,
 				1711747389CAB432FB4A8391 /* ConnectedView.swift in Sources */,
 				F9BEFA8BC1C3AC6B897D02C2 /* DecisionCard.swift in Sources */,
 				2999EAF16F5161F643CACEB7 /* DecisionCardView.swift in Sources */,
-				A01E3907AF9D05F59786C0FC /* DecisionConfirmedView.swift in Sources */,
 				AF31559BDC237ECB462AF484 /* DecisionDetailView.swift in Sources */,
 				121848D3062C838F9F1B3A56 /* DesignTokens.swift in Sources */,
+				32EEEED35492CC8522B7B639 /* InstructionSheet.swift in Sources */,
 				0A291272F260D80070FE1830 /* MockData.swift in Sources */,
-				00781B6BE07ABD4322F6693E /* PairingView.swift in Sources */,
+				576C08851A3943B05FAC562A /* ProfileView.swift in Sources */,
 				061206A901073BAE1242A464 /* RootView.swift in Sources */,
 				0D34238B588B1AE8DF982754 /* SessionStore.swift in Sources */,
-				64E003462DD7A4B923CD324F /* TaskCompletedView.swift in Sources */,
+				8032CD7E0E403F05CAAA6589 /* UsageData.swift in Sources */,
+				E1606EBC95991216380E0299 /* UsageView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -196,7 +255,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.bobcompanion.app;
 				SDKROOT = iphoneos;
-				SWIFT_VERSION = 5.9;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
@@ -333,7 +392,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.bobcompanion.app;
 				SDKROOT = iphoneos;
-				SWIFT_VERSION = 5.9;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
