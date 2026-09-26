@@ -1,0 +1,17 @@
+{
+  "name": "bob-companion",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Steer IBM Bob from your phone: MCP server + relay",
+  "type": "module",
+  "workspaces": ["relay", "companion-mcp"],
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "relay": "node relay/server.js",
+    "mcp": "node companion-mcp/index.js",
+    "phone": "node tools/mock-phone.js",
+    "demo:bob": "node tools/fake-bob.js",
+    "check:relay": "node tools/check-relay.js https://bob-relay.zeigma.com",
+    "test": "node --test --test-timeout=60000 \"test/*.test.js\""
+  }
+}

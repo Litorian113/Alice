@@ -1,0 +1,9 @@
+{
+  "name": "bob-companion-relay",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "main": "server.js",
+  "scripts": { "start": "node server.js" },
+  "dependencies": { "ws": "^8.21.3" }
+}
