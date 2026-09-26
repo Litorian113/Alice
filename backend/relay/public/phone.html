@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0f1115">
+<title>Bob Companion</title>
+<style>
+  :root {
+    --bg: #f4f5f7; --card: #ffffff; --ink: #14161a; --muted: #5d6470; --line: #dde0e6;
+    --accent: #0f62fe; --accent-ink: #ffffff; --ok: #198038; --warn: #b28600; --bad: #da1e28;
+    --radius: 14px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #0f1115; --card: #1a1d23; --ink: #eef0f3; --muted: #9aa2ae; --line: #2c313a;
+            --accent: #4589ff; --accent-ink: #0b0d10; --ok: #42be65; --warn: #f1c21b; --bad: #fa4d56; }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--bg); color: var(--ink);
+    font: 16px/1.4 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  main { max-width: 520px; margin: 0 auto; padding: 16px 16px calc(24px + env(safe-area-inset-bottom)); }
+  header { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 4px 0 16px; }
+  h1 { font-size: 18px; margin: 0; letter-spacing: -0.01em; }
+  .pill { font-size: 13px; padding: 4px 10px; border-radius: 999px; background: var(--card);
+    border: 1px solid var(--line); color: var(--muted); white-space: nowrap; }
+  .pill.on { color: var(--ok); border-color: color-mix(in srgb, var(--ok) 40%, var(--line)); }
+  .pill.off { color: var(--bad); }
+  section { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 16px; margin-bottom: 12px; }
+  .card { border-left: 4px solid var(--accent); animation: in .25s ease-out; }
+  .card.high { border-left-color: var(--bad); }
+  .card.medium { border-left-color: var(--warn); }
+  @keyframes in { from { transform: translateY(8px); opacity: 0; } }
+  .meta { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted);
+    text-transform: uppercase; letter-spacing: .04em; margin-bottom: 6px; }
+  .title { font-size: 19px; font-weight: 650; margin: 0 0 6px; }
+  .ctx { color: var(--muted); margin: 0 0 14px; }
+  .opts { display: grid; gap: 8px; }
+  button { font: inherit; color: inherit; cursor: pointer; }
+  .opt { text-align: left; width: 100%; padding: 12px 14px; border-radius: 12px; background: transparent;
+    border: 1px solid var(--line); min-height: 52px; }
+  .opt:active { transform: scale(.99); }
+  .opt b { display: block; font-weight: 600; }
+  .opt span { display: block; font-size: 14px; color: var(--muted); }
+  .opt.rec { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+  .opt.rec span { color: inherit; opacity: .85; }
+  .opt.rec b::after { content: "  ★ recommended"; font-weight: 500; font-size: 12px; opacity: .85; }
+  .opt.approve { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+  .opt.approve span { color: inherit; opacity: .85; }
+  .opt.reject { border-color: color-mix(in srgb, var(--bad) 50%, var(--line)); color: var(--bad); }
+  .cmd { margin: 0 0 12px; padding: 12px 14px; border-radius: 12px; background: #161b2e; color: #e7ecfc;
+    font: 13px/1.45 ui-monospace, SFMono-Regular, Menlo, monospace; white-space: pre-wrap; word-break: break-all; }
+  .cmd::before { content: "› "; color: #9cb6ff; }
+  details.explain { margin: -4px 0 14px; font-size: 14px; color: var(--muted); }
+  details.explain summary { cursor: pointer; }
+  details.explain dl { margin: 8px 0 0; display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; }
+  details.explain dt { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--ink); }
+  details.explain dd { margin: 0; }
+  .row { display: flex; gap: 8px; margin-top: 10px; }
+  input { font: inherit; color: inherit; flex: 1; min-width: 0; padding: 10px 12px; border-radius: 10px;
+    border: 1px solid var(--line); background: var(--bg); }
+  .send { padding: 10px 14px; border-radius: 10px; border: 0; background: var(--ink); color: var(--bg); font-weight: 600; }
+  .feed { list-style: none; margin: 0; padding: 0; }
+  .feed li { padding: 8px 0; border-top: 1px solid var(--line); font-size: 15px; display: flex; gap: 8px; }
+  .feed li:first-child { border-top: 0; }
+  .feed time { color: var(--muted); font-size: 12px; margin-left: auto; white-space: nowrap; padding-left: 8px; }
+  .muted { color: var(--muted); font-size: 14px; }
+  h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); margin: 0 0 8px; }
+  code { font-size: 13px; word-break: break-all; }
+  .done { opacity: .55; }
+  a { color: var(--accent); }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>Bob Companion</h1>
+    <span id="status" class="pill">not paired</span>
+  </header>
+
+  <section id="pairBox" hidden>
+    <h2>Pair</h2>
+    <p class="muted">Scan the QR code from <code>pair_phone</code> with your camera, or paste the link here.</p>
+    <div class="row"><input id="pairInput" placeholder="bobcompanion://pair?… or http…/#s=…&k=…"><button class="send" id="pairBtn">Pair</button></div>
+  </section>
+
+  <div id="cards"></div>
+
+  <section id="instrBox" hidden>
+    <h2>Tell Bob</h2>
+    <div class="row"><input id="instrInput" placeholder="e.g. also update the README"><button class="send" id="instrBtn">Send</button></div>
+  </section>
+
+  <section id="feedBox" hidden>
+    <h2>Activity</h2>
+    <ul class="feed" id="feed"></ul>
+  </section>
+
+  <section id="pushBox" hidden>
+    <h2>Push when this page is closed</h2>
+    <p class="muted">Install the <a href="https://ntfy.sh/" target="_blank" rel="noopener">ntfy app</a> and subscribe to topic <code id="topic"></code>. Cards arrive with answer buttons.</p>
+    <p class="muted"><button class="send" id="forgetBtn" style="background:var(--bad)">Unpair</button></p>
+  </section>
+</main>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const store = {
+  get(k) { try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} },
+  del(k) { try { localStorage.removeItem(k); } catch {} },
+};
+
+let pairing = null, ws = null, backoff = 1000, seq = 0;
+const cards = new Map();
+
+let topic = store.get('bc.topic');
+if (!topic) {
+  const b = crypto.getRandomValues(new Uint8Array(12));
+  topic = 'bobc-' + Array.from(b, (x) => x.toString(16).padStart(2, '0')).join('');
+  store.set('bc.topic', topic);
+}
+$('topic').textContent = topic;
+
+function parseLink(text) {
+  try {
+    const u = new URL(text.trim());
+    if (u.protocol === 'bobcompanion:') {
+      const p = u.searchParams;
+      return p.get('s') && p.get('k') ? { s: p.get('s'), k: p.get('k'), r: p.get('r') } : null;
+    }
+    const p = new URLSearchParams(u.hash.slice(1));
+    return p.get('s') && p.get('k') ? { s: p.get('s'), k: p.get('k'), r: p.get('r') || wsUrl(u) } : null;
+  } catch { return null; }
+}
+const wsUrl = (u) => (u.protocol === 'https:' ? 'wss://' : 'ws://') + u.host;
+
+function setStatus(text, cls) { const el = $('status'); el.textContent = text; el.className = 'pill ' + (cls || ''); }
+
+function connect() {
+  if (!pairing) return;
+  ws = new WebSocket(pairing.r);
+  ws.onopen = () => ws.send(JSON.stringify({ type: 'hello', role: 'phone', sessionId: pairing.s, secret: pairing.k, pushTopic: topic }));
+  ws.onmessage = (e) => handle(JSON.parse(e.data));
+  ws.onclose = (e) => {
+    if (e.code === 4003) {
+      setStatus('pairing rejected', 'off');
+      addFeed('⚠️', 'Pairing rejected (stale QR?) — scan again.');
+      forget(false);
+      return;
+    }
+    // 4001 session ended / 4004 unknown session: Bob may come back with the same
+    // session (fixed COMPANION_SESSION_ID), so keep retrying.
+    setStatus(e.code === 4001 || e.code === 4004 ? 'waiting for Bob…' : 'reconnecting…', 'off');
+    setTimeout(connect, backoff);
+    backoff = Math.min(backoff * 2, 10000);
+  };
+}
+
+function handle(m) {
+  switch (m.type) {
+    case 'paired': backoff = 1000; setStatus(m.bobOnline ? 'Bob online' : 'Bob offline', m.bobOnline ? 'on' : ''); break;
+    case 'bob_status': setStatus(m.online ? 'Bob online' : 'Bob offline', m.online ? 'on' : ''); break;
+    case 'notify': addFeed({ success: '✅', error: '❌' }[m.level] || '💬', m.message); buzz([80]); break;
+    case 'decision_request': if (!cards.has(m.id)) { cards.set(m.id, m); renderCard(m); buzz([120, 60, 120]); } break;
+    case 'ack': closeCard(m.id, 'Sent'); break;
+    case 'decision_expired': closeCard(m.id, m.reason === 'timeout' ? 'Expired: Bob went ahead conservatively' : 'Closed'); break;
+    case 'error': addFeed('⚠️', m.error); break;
+  }
+}
+
+function renderCard(c) {
+  const el = document.createElement('section');
+  el.className = 'card ' + c.risk;
+  el.id = 'card-' + c.id;
+  const approval = c.kind === 'approval';
+  el.innerHTML = `<div class="meta"><span>${approval ? 'approval · ' : ''}${c.risk} risk</span><span class="exp"></span></div>
+    <p class="title"></p><pre class="cmd" hidden></pre><p class="ctx"></p><details class="explain" hidden><summary>What does it do?</summary><dl></dl></details><div class="opts"></div>`;
+  el.querySelector('.title').textContent = c.title;
+  el.querySelector('.ctx').textContent = c.context;
+  if (c.command) { const pre = el.querySelector('.cmd'); pre.hidden = false; pre.textContent = c.command; }
+  if (c.explanations && c.explanations.length) {
+    const d = el.querySelector('.explain'); d.hidden = false;
+    for (const e of c.explanations) {
+      const dt = document.createElement('dt'); dt.textContent = e.part;
+      const dd = document.createElement('dd'); dd.textContent = e.meaning;
+      d.querySelector('dl').append(dt, dd);
+    }
+  }
+  const opts = el.querySelector('.opts');
+  for (const o of c.options) {
+    const b = document.createElement('button');
+    b.className = 'opt' + (o.recommended ? ' rec' : '') + (o.id === 'approve_once' ? ' approve' : '') + (o.id === 'reject' ? ' reject' : '');
+    b.innerHTML = '<b></b><span></span>';
+    b.querySelector('b').textContent = o.label;
+    b.querySelector('span').textContent = o.detail || '';
+    b.onclick = () => {
+      // Mirror the app: high-risk cards need a second confirmation for anything but reject.
+      if (c.risk === 'high' && o.id !== 'reject' && !confirm(`${o.label}?\n\n${c.command || c.title}`)) return;
+      answer(c.id, o.id, el.querySelector('input')?.value);
+    };
+    opts.append(b);
+  }
+  if (c.allowFreeText) {
+    const row = document.createElement('div');
+    row.className = 'row';
+    row.innerHTML = '<input placeholder="Note or other instruction (optional)"><button class="send">Send text</button>';
+    row.querySelector('button').onclick = () => { const t = row.querySelector('input').value.trim(); if (t) answer(c.id, undefined, t); };
+    el.append(row);
+  }
+  $('cards').prepend(el);
+  tickExpiry();
+}
+
+function answer(id, optionId, text) {
+  if (!ws || ws.readyState !== 1) return addFeed('⚠️', 'Not connected — try again in a moment.');
+  const msg = { type: 'decision_response', id };
+  if (optionId) msg.optionId = optionId;
+  if (text && text.trim()) msg.text = text.trim();
+  ws.send(JSON.stringify(msg));
+  document.querySelectorAll(`#card-${CSS.escape(id)} button`).forEach((b) => (b.disabled = true));
+}
+
+function closeCard(id, label) {
+  const c = cards.get(id);
+  if (!c) return;
+  cards.delete(id);
+  document.getElementById('card-' + id)?.remove();
+  addFeed('🗳️', `${c.title} — ${label}`);
+}
+
+function addFeed(icon, text) {
+  const li = document.createElement('li');
+  li.innerHTML = '<span></span><span></span><time></time>';
+  li.children[0].textContent = icon;
+  li.children[1].textContent = text;
+  li.children[2].textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  $('feed').prepend(li);
+  while ($('feed').children.length > 50) $('feed').lastChild.remove();
+}
+
+function tickExpiry() {
+  for (const c of cards.values()) {
+    const s = Math.max(0, Math.round((Date.parse(c.expiresAt) - Date.now()) / 1000));
+    const el = document.querySelector(`#card-${CSS.escape(c.id)} .exp`);
+    if (el) el.textContent = `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')} left`;
+  }
+}
+setInterval(tickExpiry, 1000);
+
+function buzz(p) { try { navigator.vibrate?.(p); } catch {} }
+
+function show(paired) {
+  $('pairBox').hidden = paired;
+  for (const id of ['instrBox', 'feedBox', 'pushBox']) $(id).hidden = !paired;
+}
+
+function pair(p) {
+  pairing = p;
+  store.set('bc.pairing', p);
+  history.replaceState(null, '', location.pathname);
+  show(true);
+  setStatus('connecting…');
+  connect();
+}
+
+function forget(closeSocket = true) {
+  store.del('bc.pairing');
+  pairing = null;
+  if (closeSocket && ws) { ws.onclose = null; ws.close(); }
+  cards.clear();
+  $('cards').innerHTML = '';
+  show(false);
+  if (closeSocket) setStatus('not paired');
+}
+
+$('pairBtn').onclick = () => { const p = parseLink($('pairInput').value); p ? pair(p) : alert('That does not look like a pairing link.'); };
+$('forgetBtn').onclick = () => forget();
+$('instrBtn').onclick = () => {
+  const t = $('instrInput').value.trim();
+  if (!t || !ws || ws.readyState !== 1) return;
+  ws.send(JSON.stringify({ type: 'instruction', id: `i_${Date.now().toString(36)}_${++seq}`, text: t }));
+  addFeed('➡️', t);
+  $('instrInput').value = '';
+};
+
+const fromHash = location.hash.length > 1 ? parseLink(location.href) : null;
+const saved = store.get('bc.pairing');
+if (fromHash) pair(fromHash);
+else if (saved) pair(saved);
+else show(false);
+</script>
+</body>
+</html>

@@ -1,0 +1,26 @@
+{
+  "mcpServers": {
+    "bob-companion": {
+      "command": "node",
+      "args": [
+        "./backend/companion-mcp/index.js"
+      ],
+      "env": {
+        "RELAY_URL": "wss://bob-relay.zeigma.com",
+        "DECISION_TIMEOUT_S": "120",
+        "MAX_DECISION_TIMEOUT_S": "540",
+        "COMPANION_SESSION_FILE": ".bob/companion-session.json",
+        "COMPANION_QR": "web"
+      },
+      "timeout": 600000,
+      "alwaysAllow": [
+        "pair_phone",
+        "ask_decision",
+        "request_approval",
+        "notify",
+        "get_instruction"
+      ],
+      "disabled": false
+    }
+  }
+}

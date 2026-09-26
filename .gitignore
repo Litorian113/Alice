@@ -31,3 +31,11 @@ Pods/
 .env
 .env.*
 !.env.example
+
+# Node (backend/)
+node_modules/
+*.log
+
+# Pairing credentials written by the companion MCP server (COMPANION_SESSION_FILE)
+.bob/companion-session.json
+**/.bob/companion-session.json
