@@ -5,14 +5,15 @@
 //
 //   RELAY_URL=wss://relay.example.com node tools/fake-bob.js [--loop 20]
 //
-// Keys: d = next sample decision card   h = high-risk card   n = notify
+// Keys: d = next sample choice card     h = high-risk choice card
+//       a = next sample approval card   x = high-risk approval card   n = notify
 //       e = error notify               s = success notify   l = list open cards
 //       q = quit
 // --loop N sends a notify + a card every N seconds (unattended mode).
 
 import readline from 'node:readline';
 import qrcode from 'qrcode-terminal';
-import { normalizeCard } from '../companion-mcp/card.js';
+import { normalizeApproval, normalizeCard } from '../companion-mcp/card.js';
 import { Companion } from '../companion-mcp/companion.js';
 
 const relayUrl = process.env.RELAY_URL || 'ws://localhost:8787';
@@ -76,9 +77,47 @@ const HIGH_RISK = {
   ],
 };
 
+const APPROVALS = [
+  {
+    // Same request as the iOS app's fixture (AliceFixtures.commandApproval).
+    command: 'npm test -- --runInBand --bail auth',
+    title: 'Run the auth tests',
+    context: "Checks that sign-in still works after Bob's changes. Stops at the first failing test.",
+    risk: 'low',
+    explanations: [
+      { part: 'npm test', meaning: "Starts the project's test runner." },
+      { part: '--runInBand', meaning: 'Runs the tests one at a time.' },
+      { part: '--bail', meaning: 'Stops when the first test fails.' },
+      { part: 'auth', meaning: 'Selects the authentication tests.' },
+    ],
+  },
+  {
+    command: 'npm install zod@4',
+    title: 'Add the zod package',
+    context: 'Needed to validate the new config file. Adds one dependency.',
+    risk: 'medium',
+    explanations: [
+      { part: 'npm install', meaning: 'Downloads a package and adds it to package.json.' },
+      { part: 'zod@4', meaning: 'The schema validation library, version 4.' },
+    ],
+  },
+];
+
+const HIGH_RISK_APPROVAL = {
+  command: 'git push --force origin main',
+  title: 'Force-push to main',
+  context: 'Rewrites history on origin. Two commits others may have pulled will disappear.',
+  risk: 'high',
+  explanations: [
+    { part: '--force', meaning: 'Overwrites the remote branch even if it has other commits.' },
+    { part: 'origin main', meaning: 'The shared main branch on GitHub.' },
+  ],
+};
+
 const log = (...a) => console.log(`[fake-bob] ${a.join(' ')}`);
 const companion = new Companion({ relayUrl, log });
 let sample = 0;
+let approvalSample = 0;
 
 function printPairing() {
   qrcode.generate(companion.pairLink, { small: true }, (q) => console.log(`\n${q}`));
@@ -87,8 +126,8 @@ function printPairing() {
   console.log(`web link ${companion.webPairLink}\n`);
 }
 
-async function ask(input, timeoutS = 120) {
-  const card = normalizeCard(input, { id: companion.nextId('d'), timeoutS });
+async function ask(input, timeoutS = 120, normalize = normalizeCard) {
+  const card = normalize(input, { id: companion.nextId('d'), timeoutS });
   log(`→ ${card.id} "${card.title}" (${card.options.map((o) => o.id + ':' + o.label).join(', ')})`);
   const res = await companion.askDecision(card);
   if (res.expired) log(`← ${card.id} expired (${res.expired})`);
@@ -107,13 +146,16 @@ printPairing();
 if (loopS) {
   setInterval(() => {
     companion.notify(`Heartbeat ${new Date().toLocaleTimeString()}`, 'info');
-    ask(SAMPLES[sample++ % SAMPLES.length], Math.max(10, loopS - 2));
+    // Alternate choice and approval cards.
+    const t = Math.max(10, loopS - 2);
+    if (sample <= approvalSample) ask(SAMPLES[sample++ % SAMPLES.length], t);
+    else ask(APPROVALS[approvalSample++ % APPROVALS.length], t, normalizeApproval);
   }, loopS * 1000);
 }
 
 readline.emitKeypressEvents(process.stdin);
 if (process.stdin.isTTY) process.stdin.setRawMode(true);
-console.log('keys: d=decision h=high-risk n=notify s=success e=error l=list p=pairing q=quit');
+console.log('keys: d=choice h=high-risk choice a=approval x=high-risk approval n=notify s=success e=error l=list p=pairing q=quit');
 process.stdin.on('keypress', (_s, key) => {
   if (!key) return;
   if (key.name === 'q' || (key.ctrl && key.name === 'c')) {
@@ -123,6 +165,8 @@ process.stdin.on('keypress', (_s, key) => {
   const k = key.name;
   if (k === 'd') ask(SAMPLES[sample++ % SAMPLES.length]);
   else if (k === 'h') ask(HIGH_RISK, 60);
+  else if (k === 'a') ask(APPROVALS[approvalSample++ % APPROVALS.length], 120, normalizeApproval);
+  else if (k === 'x') ask(HIGH_RISK_APPROVAL, 60, normalizeApproval);
   else if (k === 'n') log(companion.notify('Running the test suite (48 tests)…', 'info') ? 'notify sent' : 'not sent');
   else if (k === 's') log(companion.notify('All 48 tests pass. Branch pushed.', 'success') ? 'notify sent' : 'not sent');
   else if (k === 'e') log(companion.notify('Build failed: missing env var DATABASE_URL', 'error') ? 'notify sent' : 'not sent');

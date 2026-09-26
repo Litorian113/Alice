@@ -12,6 +12,10 @@ export const LIMITS = {
   maxOptions: 4,
   notify: 200,
   freeText: 500,
+  command: 500,
+  explanations: 6,
+  explanationPart: 40,
+  explanationMeaning: 100,
 };
 
 export const RISKS = ['low', 'medium', 'high'];
@@ -44,14 +48,16 @@ export function firstSentences(text, n) {
   return parts.slice(0, n).join(' ');
 }
 
-// Reduce raw ask_decision input to a card that satisfies the contract.
+// Every card has the same shape, whatever its kind, and every key is always present
+// (null / "" / false / [] when unused) so strict decoders (Swift Codable) never
+// hit a missing key:
+//
+//   kind "choice"    next-step options, ids a-d            (ask_decision)
+//   kind "approval"  run this exact command? fixed ids     (request_approval)
+
+// Choice card from raw ask_decision input.
 // Throws a CardError with a Bob-readable message if the input can't be salvaged.
 export function normalizeCard(input, { id, now = Date.now(), timeoutS = 120 } = {}) {
-  const title = trimText(input.title, LIMITS.title);
-  if (!title) throw new CardError('title is required');
-
-  const context = trimText(firstSentences(input.context, LIMITS.contextSentences), LIMITS.context);
-
   let options = (Array.isArray(input.options) ? input.options : [])
     .map((o) => ({
       label: trimText(o?.label, LIMITS.label),
@@ -86,23 +92,84 @@ export function normalizeCard(input, { id, now = Date.now(), timeoutS = 120 } = 
     options = options.filter((_, i) => keep.has(i));
   }
 
-  const risk = RISKS.includes(input.risk) ? input.risk : 'medium';
+  return baseCard(input, {
+    id,
+    kind: 'choice',
+    command: input.command == null || !String(input.command).trim() ? null : checkCommand(input.command),
+    options: options.map((o, i) => ({ id: OPTION_IDS[i], ...o })),
+    allowFreeText: input.allow_free_text !== false,
+    expiresAt: expiry(now, timeoutS),
+  });
+}
 
+// Approval options: ids are fixed so the app can style them (approve / reject).
+export const APPROVAL_OPTIONS = [
+  { id: 'approve_once', label: 'Approve once', detail: 'Just this time', recommended: false },
+  { id: 'approve_for_task', label: 'Approve for task', detail: 'Allow this command for this task', recommended: false },
+  { id: 'reject', label: 'Reject', detail: "Don't run it", recommended: false },
+];
+
+// Approval card from raw request_approval input. The command is shown and approved
+// verbatim — it is never trimmed, because the developer must approve exactly what runs.
+export function normalizeApproval(input, { id, now = Date.now(), timeoutS = 120 } = {}) {
+  return baseCard(input, {
+    id,
+    kind: 'approval',
+    command: checkCommand(input.command),
+    options: APPROVAL_OPTIONS.map((o) => ({ ...o })),
+    allowFreeText: input.allow_free_text === true,
+    expiresAt: expiry(now, timeoutS),
+  });
+}
+
+function baseCard(input, { id, kind, command, options, allowFreeText, expiresAt }) {
+  const title = trimText(input.title, LIMITS.title);
+  if (!title) throw new CardError('title is required');
   return {
     type: 'decision_request',
     id,
+    kind,
     title,
-    context,
-    risk,
-    options: options.map((o, i) => {
-      const out = { id: OPTION_IDS[i], label: o.label };
-      if (o.detail) out.detail = o.detail;
-      if (o.recommended) out.recommended = true;
-      return out;
-    }),
-    allowFreeText: input.allow_free_text !== false,
-    expiresAt: new Date(now + timeoutS * 1000).toISOString(),
+    context: trimText(firstSentences(input.context, LIMITS.contextSentences), LIMITS.context),
+    command,
+    explanations: normalizeExplanations(input.explanations),
+    risk: RISKS.includes(input.risk) ? input.risk : 'medium',
+    options,
+    allowFreeText,
+    expiresAt,
   };
+}
+
+// Commands are approved verbatim: reject what can't be shown in full instead of trimming.
+export function checkCommand(command) {
+  const s = String(command ?? '').trim();
+  if (!s) throw new CardError('command is required');
+  if (s.length > LIMITS.command) {
+    throw new CardError(`command is ${s.length} chars; the limit is ${LIMITS.command}. Split it into smaller commands or a script`);
+  }
+  return s;
+}
+
+// Optional "what each part does" list for the app's detail sheet.
+function normalizeExplanations(list) {
+  if (!Array.isArray(list)) return [];
+  return list
+    .map((e) => ({ part: trimText(e?.part, LIMITS.explanationPart), meaning: trimText(e?.meaning, LIMITS.explanationMeaning) }))
+    .filter((e) => e.part && e.meaning)
+    .slice(0, LIMITS.explanations);
+}
+
+// ISO 8601 without fractional seconds: Swift's .iso8601 decoding rejects milliseconds.
+// Rounded up to the next whole second, because the wait timer runs until expiresAt:
+// truncating would cut up to 999 ms off the timeout.
+function expiry(now, timeoutS) {
+  const ms = Math.ceil((now + timeoutS * 1000) / 1000) * 1000;
+  return new Date(ms).toISOString().replace(/\.000Z$/, 'Z');
+}
+
+// Canonical form used to match "approved for this task" commands.
+export function commandKey(command) {
+  return String(command ?? '').trim().replace(/\s+/g, ' ');
 }
 
 export class CardError extends Error {}

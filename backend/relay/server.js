@@ -48,7 +48,7 @@ export function createRelay({
     if (url.pathname === '/healthz') {
       return sendJson(res, 200, { ok: true, rooms: rooms.size });
     }
-    const m = url.pathname.match(/^\/a\/([A-Za-z0-9_-]{16,})\/([a-d])$/);
+    const m = url.pathname.match(/^\/a\/([A-Za-z0-9_-]{16,})\/([a-z0-9_]{1,32})$/);
     if (m && req.method === 'POST') {
       return answerFromPush(res, m[1], m[2]);
     }
@@ -164,12 +164,13 @@ export function createRelay({
       const title = { success: 'Bob: done', error: 'Bob: failed' }[msg.level] || 'Bob';
       return { title, body: pushDetails ? String(msg.message) : 'New status update', tags: [{ success: 'white_check_mark', error: 'x' }[msg.level] || 'robot'] };
     }
+    const approval = msg.kind === 'approval';
     const rec = msg.options.find((o) => o.recommended);
     const body = pushDetails
-      ? [msg.context, rec && `Recommended: ${rec.label}`].filter(Boolean).join('\n')
-      : 'Bob is waiting for your decision';
+      ? [msg.command && `$ ${msg.command}`, msg.context, rec && `Recommended: ${rec.label}`].filter(Boolean).join('\n')
+      : approval ? 'Bob wants to run a command' : 'Bob is waiting for your decision';
     return {
-      title: pushDetails ? msg.title : 'Bob needs a decision',
+      title: pushDetails ? msg.title : approval ? 'Bob needs approval' : 'Bob needs a decision',
       body,
       tags: [msg.risk === 'high' ? 'warning' : 'question'],
       priority: msg.risk === 'high' ? 5 : 4,
@@ -180,7 +181,8 @@ export function createRelay({
     const t = pushText(msg);
     const body = { topic, title: t.title, message: t.body, tags: t.tags, priority: t.priority ?? 3 };
     if (publicUrl) body.click = publicUrl.replace(/\/$/, '') + '/';
-    if (msg.type === 'decision_request' && publicUrl) {
+    // High-risk cards get no lock-screen buttons: answering needs the app's confirmation step.
+    if (msg.type === 'decision_request' && publicUrl && msg.risk !== 'high') {
       // ntfy allows at most 3 action buttons: recommended first, then the rest in order.
       const opts = [...msg.options].sort((a, b) => (b.recommended ? 1 : 0) - (a.recommended ? 1 : 0)).slice(0, 3);
       const token = crypto.randomBytes(18).toString('base64url');

@@ -46,7 +46,7 @@ cat > "$target/.bob/mcp.json" <<EOF
         "MAX_DECISION_TIMEOUT_S": "540"
       },
       "timeout": 600000,
-      "alwaysAllow": ["pair_phone", "ask_decision", "notify", "get_instruction"]
+      "alwaysAllow": ["pair_phone", "ask_decision", "request_approval", "notify", "get_instruction"]
     }
   }
 }

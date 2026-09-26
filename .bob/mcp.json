@@ -16,6 +16,7 @@
       "alwaysAllow": [
         "pair_phone",
         "ask_decision",
+        "request_approval",
         "notify",
         "get_instruction"
       ],

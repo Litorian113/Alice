@@ -11,11 +11,14 @@ customModes:
       The developer is away and steers you from their phone.
       - At the start of the task, call notify with a one-line summary of what you are about to do. If it returns "no phone paired", call pair_phone and show the QR code and links verbatim.
       - When a step is done and there is more than one sensible next step, call ask_decision with 2-4 concrete options, your recommended one marked. Keep title and context short.
-      - Before deleting files, running migrations, force-pushing or pushing to main, call ask_decision (risk: high) and follow the answer.
+      - Before running a shell command that changes state (installing or removing packages, deleting files, migrations, git commit/push, deploys, anything irreversible), call request_approval with the exact command, a plain-language title, and short explanations of its parts. Run it only if the result says approved; if rejected or no response, do not run it. Read-only commands (ls, cat, grep, git status/diff/log) and running tests need no approval.
+      - Write the command as a person would type it in the workspace root: relative paths, no `git -C <absolute path>`, no `cd /abs/path &&`. It must be exactly what you run, and short enough to judge on a phone.
+      - Force-pushing, pushing to main, dropping data or deleting many files is risk high.
       - When the requested task is done, do NOT just end: call ask_decision offering 2-3 sensible follow-ups (recommended one marked) plus a "Stop here" option. Continue with the chosen follow-up; end only when the developer picks "Stop here" or does not respond.
       - When a task finishes or fails, call notify with a one-line summary (level success or error). Do not start the message with an emoji.
       - Between steps of a long task, call get_instruction and follow any new instruction.
       - If ask_decision returns no response, do not perform risky actions; continue only with the recommended safe option.
+      - "Approved for task" lasts until you call notify with level success or error, so call that notify only when the whole task is finished.
       - Do not ask follow-up questions in chat; the developer cannot see them. Use ask_decision instead.
 
       Writing good decision cards:

@@ -45,6 +45,17 @@
   .opt.rec { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
   .opt.rec span { color: inherit; opacity: .85; }
   .opt.rec b::after { content: "  ★ recommended"; font-weight: 500; font-size: 12px; opacity: .85; }
+  .opt.approve { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+  .opt.approve span { color: inherit; opacity: .85; }
+  .opt.reject { border-color: color-mix(in srgb, var(--bad) 50%, var(--line)); color: var(--bad); }
+  .cmd { margin: 0 0 12px; padding: 12px 14px; border-radius: 12px; background: #161b2e; color: #e7ecfc;
+    font: 13px/1.45 ui-monospace, SFMono-Regular, Menlo, monospace; white-space: pre-wrap; word-break: break-all; }
+  .cmd::before { content: "› "; color: #9cb6ff; }
+  details.explain { margin: -4px 0 14px; font-size: 14px; color: var(--muted); }
+  details.explain summary { cursor: pointer; }
+  details.explain dl { margin: 8px 0 0; display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; }
+  details.explain dt { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--ink); }
+  details.explain dd { margin: 0; }
   .row { display: flex; gap: 8px; margin-top: 10px; }
   input { font: inherit; color: inherit; flex: 1; min-width: 0; padding: 10px 12px; border-radius: 10px;
     border: 1px solid var(--line); background: var(--bg); }
@@ -162,18 +173,32 @@ function renderCard(c) {
   const el = document.createElement('section');
   el.className = 'card ' + c.risk;
   el.id = 'card-' + c.id;
-  el.innerHTML = `<div class="meta"><span>${c.risk} risk</span><span class="exp"></span></div>
-    <p class="title"></p><p class="ctx"></p><div class="opts"></div>`;
+  const approval = c.kind === 'approval';
+  el.innerHTML = `<div class="meta"><span>${approval ? 'approval · ' : ''}${c.risk} risk</span><span class="exp"></span></div>
+    <p class="title"></p><pre class="cmd" hidden></pre><p class="ctx"></p><details class="explain" hidden><summary>What does it do?</summary><dl></dl></details><div class="opts"></div>`;
   el.querySelector('.title').textContent = c.title;
   el.querySelector('.ctx').textContent = c.context;
+  if (c.command) { const pre = el.querySelector('.cmd'); pre.hidden = false; pre.textContent = c.command; }
+  if (c.explanations && c.explanations.length) {
+    const d = el.querySelector('.explain'); d.hidden = false;
+    for (const e of c.explanations) {
+      const dt = document.createElement('dt'); dt.textContent = e.part;
+      const dd = document.createElement('dd'); dd.textContent = e.meaning;
+      d.querySelector('dl').append(dt, dd);
+    }
+  }
   const opts = el.querySelector('.opts');
   for (const o of c.options) {
     const b = document.createElement('button');
-    b.className = 'opt' + (o.recommended ? ' rec' : '');
+    b.className = 'opt' + (o.recommended ? ' rec' : '') + (o.id === 'approve_once' ? ' approve' : '') + (o.id === 'reject' ? ' reject' : '');
     b.innerHTML = '<b></b><span></span>';
     b.querySelector('b').textContent = o.label;
     b.querySelector('span').textContent = o.detail || '';
-    b.onclick = () => answer(c.id, o.id, el.querySelector('input')?.value);
+    b.onclick = () => {
+      // Mirror the app: high-risk cards need a second confirmation for anything but reject.
+      if (c.risk === 'high' && o.id !== 'reject' && !confirm(`${o.label}?\n\n${c.command || c.title}`)) return;
+      answer(c.id, o.id, el.querySelector('input')?.value);
+    };
     opts.append(b);
   }
   if (c.allowFreeText) {

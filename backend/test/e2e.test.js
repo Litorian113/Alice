@@ -99,10 +99,10 @@ async function until(fn, ms = 3000) {
 let creds;
 let p1;
 
-test('MCP server lists the four tools', async () => {
+test('MCP server lists the five tools', async () => {
   client = await startMcp();
   const { tools } = await client.listTools();
-  assert.deepEqual(tools.map((t) => t.name).sort(), ['ask_decision', 'get_instruction', 'notify', 'pair_phone']);
+  assert.deepEqual(tools.map((t) => t.name).sort(), ['ask_decision', 'get_instruction', 'notify', 'pair_phone', 'request_approval']);
 });
 
 test('before pairing: notify and ask_decision return immediately', async () => {
@@ -261,6 +261,89 @@ test('instructions queue and pop in order', async () => {
   assert.match(first, /1 more queued/);
   assert.match(await call('get_instruction'), /"Then stop"$/);
   assert.equal(await call('get_instruction'), 'none');
+});
+
+const APPROVAL = {
+  command: 'npm test -- --runInBand --bail auth',
+  title: 'Run the auth tests',
+  context: "Checks that sign-in still works after Bob's changes.",
+  risk: 'low',
+  explanations: [{ part: '--bail', meaning: 'Stops when the first test fails.' }],
+};
+
+test('request_approval: approval card reaches the phone; approve once', async () => {
+  pushes.length = 0;
+  const pending = call('request_approval', APPROVAL);
+  const card = await p1.next('decision_request', (m) => m.kind === 'approval');
+  assert.equal(card.command, APPROVAL.command);
+  assert.deepEqual(card.options.map((o) => o.id), ['approve_once', 'approve_for_task', 'reject']);
+  assert.deepEqual(card.explanations, APPROVAL.explanations);
+  await until(() => pushes.length === 1);
+  assert.match(pushes[0].message, /^\$ npm test -- --runInBand --bail auth/);
+  assert.deepEqual(pushes[0].actions.map((a) => a.label), ['Approve once', 'Approve for task', 'Reject']);
+  p1.send({ type: 'decision_response', id: card.id, optionId: 'approve_once', text: null });
+  assert.match(await pending, /^approved once: run `npm test -- --runInBand --bail auth`/);
+  // Approve once does not carry over.
+  const again = call('request_approval', APPROVAL);
+  const card2 = await p1.next('decision_request', (m) => m.kind === 'approval');
+  p1.send({ type: 'decision_response', id: card2.id, optionId: 'reject', text: 'use yarn' });
+  const res = await again;
+  assert.match(res, /^rejected: do NOT run/);
+  assert.match(res, /Their note: "use yarn"/, 'a note with an option is kept even when free text is off');
+});
+
+test('request_approval: approve for task skips the phone until the task ends', async () => {
+  const first = call('request_approval', APPROVAL);
+  const card = await p1.next('decision_request', (m) => m.kind === 'approval');
+  p1.send({ type: 'decision_response', id: card.id, optionId: 'approve_for_task' });
+  assert.match(await first, /^approved for task/);
+
+  const before = p1.inbox.length;
+  // Same command, different whitespace: still approved, and no card is sent.
+  const auto = await call('request_approval', { ...APPROVAL, command: ' npm test  --  --runInBand\t--bail auth ' });
+  assert.match(auto, /^approved: .* already approved for this task/);
+  await new Promise((r) => setTimeout(r, 200));
+  assert.equal(p1.inbox.filter((m) => m.type === 'decision_request').length, p1.inbox.slice(0, before).filter((m) => m.type === 'decision_request').length);
+
+  // A different command still asks.
+  const other = call('request_approval', { ...APPROVAL, command: 'npm install zod' });
+  const c2 = await p1.next('decision_request', (m) => m.command === 'npm install zod');
+  p1.send({ type: 'decision_response', id: c2.id, optionId: 'reject' });
+  assert.match(await other, /^rejected/);
+
+  // Task finished → permission gone.
+  await call('notify', { message: 'done', level: 'success' });
+  await p1.next('notify', (m) => m.message === 'done');
+  const after = call('request_approval', APPROVAL);
+  const c3 = await p1.next('decision_request', (m) => m.kind === 'approval');
+  p1.send({ type: 'decision_response', id: c3.id, optionId: 'approve_once' });
+  assert.match(await after, /^approved once/);
+});
+
+test('request_approval: timeout means not approved; high risk has no push buttons', async () => {
+  pushes.length = 0;
+  const res = await call('request_approval', { command: 'git push --force origin main', title: 'Force-push', risk: 'high', timeout_s: 5 });
+  assert.match(res, /^not approved: no response.*Do NOT run `git push --force origin main`/);
+  await until(() => pushes.length === 1);
+  assert.equal(pushes[0].actions, undefined, 'no lock-screen buttons for high risk');
+  assert.equal((await p1.next('decision_expired')).reason, 'timeout');
+});
+
+test('request_approval: invalid command is refused before anything is sent', async () => {
+  const r = await client.callTool({ name: 'request_approval', arguments: { title: 'x', command: 'x'.repeat(501) } });
+  assert.equal(r.isError, true);
+  assert.match(r.content[0].text, /limit is 500/);
+});
+
+test('answering an approval from a push notification action', async () => {
+  pushes.length = 0;
+  const pending = call('request_approval', { ...APPROVAL, command: 'npm run lint' });
+  await until(() => pushes.length === 1);
+  const action = pushes[0].actions.find((a) => a.label === 'Approve for task');
+  const r = await fetch(`http://localhost:${relayPort}${new URL(action.url).pathname}`, { method: 'POST' });
+  assert.equal(r.status, 200);
+  assert.match(await pending, /^approved for task: run `npm run lint`/);
+  await call('notify', { message: 'task over', level: 'success' });
 });
 
 test('room closes after Bob exits; phone is told', async () => {

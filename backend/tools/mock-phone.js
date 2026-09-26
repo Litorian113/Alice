@@ -2,9 +2,9 @@
 // Terminal stand-in for the phone app. Pairs with a link and lets you answer cards.
 //
 //   node tools/mock-phone.js '<bobcompanion://pair?... | http://relay/#s=..&k=.. | path/to/companion-session.json>'
-//                            [--auto rec,stop] [--delay seconds] [--topic <ntfyTopic>] [--relay ws://host:8787]
+//                            [--auto rec,stop] [--approve once|task|reject] [--delay seconds] [--topic <ntfyTopic>] [--relay ws://host:8787]
 //
-// At the prompt:  a / b / c / d   answer the newest open card
+// At the prompt:  a / b / 1 / 2   answer the newest open card (option id or number)
 //                 a some note     answer with a note
 //                 > text          answer with free text only (no option)
 //                 ! text          send a free-text instruction
@@ -67,13 +67,15 @@ function onMessage(raw) {
       printCard(msg);
       if (auto) {
         // --auto takes a comma list consumed one card at a time; the last entry repeats.
-        // Entries: an option id (a-d), "rec" (recommended), or "stop" (a Stop/Pause/Done option).
+        // Entries: an option id (a-d, approve_once…), a number, "rec", "once", "task", or "stop".
         const plan = auto.split(',');
-        const pick = plan[Math.min(autoCount++, plan.length - 1)];
+        // --approve <once|task|reject> answers approval cards separately from the --auto plan.
+        const pick = msg.kind === 'approval' && flag('--approve') ? flag('--approve') : plan[Math.min(autoCount++, plan.length - 1)];
+        const alias = { once: 'approve_once', task: 'approve_for_task' }[pick] || pick;
         const opt =
-          pick === 'rec' ? msg.options.find((o) => o.recommended) || msg.options[0]
+          alias === 'rec' ? msg.options.find((o) => o.recommended) || msg.options[0]
           : pick === 'stop' ? msg.options.find((o) => /stop|pause|done|finish|wait/i.test(o.label)) || msg.options.at(-1)
-          : msg.options.find((o) => o.id === pick);
+          : msg.options.find((o) => o.id === alias) || msg.options[Number(alias) - 1];
         console.log(`→ auto-tapping ${opt?.id}) ${opt?.label}`);
         setTimeout(() => answer(msg.id, opt?.id, ''), Number(flag('--delay') ?? 1.5) * 1000);
       }
@@ -105,8 +107,10 @@ rl?.on('line', (line) => {
     if (!card) console.log('no open card');
     else if (s.startsWith('>')) answer(card.id, undefined, s.slice(1).trim());
     else {
-      const [optionId, ...note] = s.split(' ');
-      answer(card.id, optionId, note.join(' '));
+      const [pick, ...note] = s.split(' ');
+      // Accept an option id or its 1-based number (handy for approve_once etc.).
+      const opt = card.options.find((o) => o.id === pick) || card.options[Number(pick) - 1];
+      answer(card.id, opt ? opt.id : pick, note.join(' '));
     }
   }
   rl.prompt();
@@ -118,9 +122,12 @@ function answer(id, optionId, text) {
 
 function printCard(c) {
   const risk = { low: '🟢', medium: '🟡', high: '🔴' }[c.risk];
-  console.log(`\n┌ ${risk} ${c.title}   [${c.id}, expires ${new Date(c.expiresAt).toLocaleTimeString()}]`);
+  const kind = c.kind === 'approval' ? 'APPROVAL ' : '';
+  console.log(`\n┌ ${risk} ${kind}${c.title}   [${c.id}, expires ${c.expiresAt ? new Date(c.expiresAt).toLocaleTimeString() : 'never'}]`);
+  if (c.command) console.log(`│ $ ${c.command}`);
   if (c.context) console.log(`│ ${c.context}`);
-  for (const o of c.options) console.log(`│  ${o.id}) ${o.label}${o.recommended ? ' ★' : ''}${o.detail ? `  — ${o.detail}` : ''}`);
+  for (const e of c.explanations || []) console.log(`│   ${e.part} — ${e.meaning}`);
+  c.options.forEach((o, i) => console.log(`│  ${i + 1}. ${o.id}) ${o.label}${o.recommended ? ' ★' : ''}${o.detail ? `  — ${o.detail}` : ''}`));
   console.log(`└${c.allowFreeText ? ' (free text allowed: "a note" or "> text")' : ''}`);
 }
 

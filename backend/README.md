@@ -13,7 +13,7 @@ Paths are relative to `backend/` unless they start with `../`.
 
 | Path | What |
 | --- | --- |
-| `companion-mcp/` | MCP server Bob spawns. Tools: `pair_phone`, `ask_decision`, `notify`, `get_instruction` |
+| `companion-mcp/` | MCP server Bob spawns. Tools: `pair_phone`, `ask_decision` (choice card), `request_approval` (approval card for one exact command), `notify`, `get_instruction` |
 | `relay/` | Single-file WebSocket relay: rooms, secret check, forwarding, ntfy/Expo push, notification answer buttons. Also serves a dev phone page at `/` |
 | [`../docs/PROTOCOL.md`](../docs/PROTOCOL.md) | **Contract for the app team**: pairing, messages, decision card rules, push |
 | `../.bob/` | `mcp.json` (registers the server) and `custom_modes.yaml` (the **📱 Companion** mode with the steering rules) |
@@ -28,7 +28,7 @@ Paths are relative to `backend/` unless they start with `../`.
 ```sh
 cd backend
 npm install
-npm test                      # 25 tests, ~12 s
+npm test                      # 37 tests, ~20 s
 npm run relay                 # local relay on 0.0.0.0:8787 (optional; configs point at wss://bob-relay.zeigma.com)
 npm run check:relay           # smoke-test the production relay
 ```
@@ -69,7 +69,7 @@ Bob does **not** pass your shell environment to MCP servers. Put everything in t
 `env` block of `mcp.json`.
 
 `.bob/mcp.json` also sets `"timeout": 600000` (milliseconds, the per-server request
-timeout) and `alwaysAllow` for all four tools, so Bob doesn't stop for approval while
+timeout) and `alwaysAllow` for all five tools, so Bob doesn't stop for approval while
 you're away.
 
 ### Relay

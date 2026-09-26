@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { CardError, LIMITS, firstSentences, normalizeCard, trimText } from '../companion-mcp/card.js';
+import { APPROVAL_OPTIONS, CardError, LIMITS, commandKey, firstSentences, normalizeApproval, normalizeCard, trimText } from '../companion-mcp/card.js';
 
 const base = {
   title: 'Refactor done, 3 tests failing',
@@ -18,16 +18,19 @@ test('handoff example card passes through unchanged', () => {
   assert.deepEqual(card, {
     type: 'decision_request',
     id: 'd_42',
+    kind: 'choice',
     title: 'Refactor done, 3 tests failing',
     context: 'Auth module refactored. 3 of 48 tests fail on outdated mocks.',
+    command: null,
+    explanations: [],
     risk: 'low',
     options: [
       { id: 'a', label: 'Fix tests', detail: 'Update mocks, then rerun', recommended: true },
-      { id: 'b', label: 'Revert refactor', detail: 'Back to last green commit' },
-      { id: 'c', label: 'Pause', detail: "Wait until I'm back" },
+      { id: 'b', label: 'Revert refactor', detail: 'Back to last green commit', recommended: false },
+      { id: 'c', label: 'Pause', detail: "Wait until I'm back", recommended: false },
     ],
     allowFreeText: true,
-    expiresAt: '2026-09-26T14:05:00.000Z',
+    expiresAt: '2026-09-26T14:05:00Z',
   });
 });
 
@@ -84,11 +87,80 @@ test('fewer than 2 usable options is an error', () => {
   assert.throws(() => normalizeCard({ ...base, title: '  ' }, { id: 'd' }), CardError);
 });
 
-test('risk defaults to medium, free text defaults on, empty detail omitted', () => {
+test('risk defaults to medium, free text defaults on, empty detail is ""', () => {
   const card = normalizeCard({ title: 't', options: [{ label: 'x', detail: '' }, { label: 'y' }], risk: 'extreme' }, { id: 'd' });
   assert.equal(card.risk, 'medium');
   assert.equal(card.allowFreeText, true);
   assert.equal(card.context, '');
-  assert.ok(!('detail' in card.options[0]));
+  assert.equal(card.options[0].detail, '');
+  assert.equal(card.options[0].recommended, false);
   assert.equal(normalizeCard({ ...base, allow_free_text: false }, { id: 'd' }).allowFreeText, false);
+});
+
+// Keys every card must carry (the iOS app decodes with synthesized Codable, which
+// fails on a missing non-optional key).
+const CARD_KEYS = ['allowFreeText', 'command', 'context', 'expiresAt', 'explanations', 'id', 'kind', 'options', 'risk', 'title', 'type'];
+const OPTION_KEYS = ['detail', 'id', 'label', 'recommended'];
+
+test('choice and approval cards have the same, complete key set', () => {
+  const choice = normalizeCard({ title: 't', options: [{ label: 'x' }, { label: 'y' }] }, { id: 'd' });
+  const approval = normalizeApproval({ title: 't', command: 'ls' }, { id: 'd' });
+  for (const card of [choice, approval]) {
+    assert.deepEqual(Object.keys(card).sort(), CARD_KEYS);
+    for (const o of card.options) assert.deepEqual(Object.keys(o).sort(), OPTION_KEYS);
+    assert.match(card.expiresAt, /^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\dZ$/, 'no fractional seconds (Swift .iso8601)');
+  }
+});
+
+test('approval card: fixed option ids, command verbatim, free text off by default', () => {
+  const command = 'npm test -- --runInBand   --bail auth';
+  const card = normalizeApproval(
+    {
+      title: 'Run the auth tests',
+      context: "Checks that sign-in still works after Bob's changes. Stops at the first failing test.",
+      command: `  ${command}\n`,
+      risk: 'low',
+      explanations: [{ part: '--bail', meaning: 'Stops when the first test fails.' }, { part: '', meaning: 'dropped' }],
+    },
+    { id: 'd_9' },
+  );
+  assert.equal(card.kind, 'approval');
+  assert.equal(card.command, command, 'only outer whitespace trimmed');
+  assert.deepEqual(card.options.map((o) => o.id), ['approve_once', 'approve_for_task', 'reject']);
+  assert.deepEqual(card.options, APPROVAL_OPTIONS);
+  assert.deepEqual(card.explanations, [{ part: '--bail', meaning: 'Stops when the first test fails.' }]);
+  assert.equal(card.allowFreeText, false);
+  assert.equal(normalizeApproval({ title: 't', command: 'ls', allow_free_text: true }, { id: 'd' }).allowFreeText, true);
+});
+
+test('commands are never trimmed: too long or empty is an error', () => {
+  assert.throws(() => normalizeApproval({ title: 't', command: 'x'.repeat(LIMITS.command + 1) }, { id: 'd' }), /limit is 500/);
+  assert.throws(() => normalizeApproval({ title: 't', command: '   ' }, { id: 'd' }), CardError);
+  const ok = 'y'.repeat(LIMITS.command);
+  assert.equal(normalizeApproval({ title: 't', command: ok }, { id: 'd' }).command, ok);
+});
+
+test('choice card can show an optional command', () => {
+  const card = normalizeCard({ title: 'Migration ready', command: 'npm run migrate', options: [{ label: 'Run it' }, { label: 'Skip' }] }, { id: 'd' });
+  assert.equal(card.command, 'npm run migrate');
+  assert.equal(card.kind, 'choice');
+});
+
+test('explanations are capped', () => {
+  const many = Array.from({ length: 10 }, (_, i) => ({ part: `p${i}`, meaning: 'm'.repeat(300) }));
+  const card = normalizeApproval({ title: 't', command: 'ls', explanations: many }, { id: 'd' });
+  assert.equal(card.explanations.length, LIMITS.explanations);
+  assert.ok(card.explanations.every((e) => e.meaning.length <= LIMITS.explanationMeaning));
+});
+
+test('commandKey normalizes whitespace only', () => {
+  assert.equal(commandKey(' npm  test\n--bail '), 'npm test --bail');
+  assert.notEqual(commandKey('npm test'), commandKey('npm Test'));
+});
+
+test('expiresAt is rounded up, never shortening the timeout', () => {
+  const now = Date.parse('2026-09-26T14:03:00.999Z');
+  const card = normalizeCard(base, { id: 'd', now, timeoutS: 5 });
+  assert.equal(card.expiresAt, '2026-09-26T14:03:06Z');
+  assert.ok(Date.parse(card.expiresAt) >= now + 5000);
 });

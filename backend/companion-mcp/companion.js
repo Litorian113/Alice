@@ -5,7 +5,7 @@
 import crypto from 'node:crypto';
 import { EventEmitter } from 'node:events';
 import WebSocket from 'ws';
-import { LIMITS, clean, trimText } from './card.js';
+import { LIMITS, clean, commandKey, trimText } from './card.js';
 
 export class Companion extends EventEmitter {
   constructor({
@@ -33,6 +33,9 @@ export class Companion extends EventEmitter {
     this.pending = new Map();
     /** @type {{id: string, text: string, at: string}[]} */
     this.instructions = [];
+    // Commands the developer approved "for task" (canonical form). Cleared by endTask().
+    /** @type {Set<string>} */
+    this.taskApprovals = new Set();
 
     this.seq = 0;
     this.stopped = false;
@@ -191,8 +194,10 @@ export class Companion extends EventEmitter {
       return;
     }
     const { card } = entry;
-    const text = card.allowFreeText ? trimText(msg.text, LIMITS.freeText) : '';
     const option = card.options.find((o) => o.id === msg.optionId);
+    // A note that comes with an option is always kept (e.g. why a command was rejected);
+    // allowFreeText only decides whether text may replace the options entirely.
+    const text = option || card.allowFreeText ? trimText(msg.text, LIMITS.freeText) : '';
     if (!option && !text) {
       this.send({ type: 'error', id: msg.id, error: 'unknown optionId' });
       return;
@@ -200,6 +205,21 @@ export class Companion extends EventEmitter {
     this.send({ type: 'ack', id: msg.id });
     this.log(`decision ${msg.id}: ${option ? option.label : 'free text'}${text ? ` — "${text}"` : ''}`);
     entry.resolve({ option, text, via: clean(msg.via) || 'app' });
+  }
+
+  isApprovedForTask(command) {
+    return this.taskApprovals.has(commandKey(command));
+  }
+
+  approveForTask(command) {
+    this.taskApprovals.add(commandKey(command));
+  }
+
+  // The task finished or failed: "approve for task" permissions end here.
+  endTask() {
+    const n = this.taskApprovals.size;
+    this.taskApprovals.clear();
+    if (n) this.log(`task ended, cleared ${n} task approval(s)`);
   }
 
   popInstruction() {
