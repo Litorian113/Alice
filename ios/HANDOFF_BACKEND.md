@@ -9,7 +9,7 @@ Stand: 26. September 2026, von Christopher. Ergänzt [HANDOFF.md](HANDOFF.md); d
 - Es gibt jetzt **zwei Kartentypen in einer Form**: `kind: "choice"` (nächster Schritt, Optionen `a`–`d`) und `kind: "approval"` (Befehl freigeben, Optionen `approve_once` / `approve_for_task` / `reject`, genau wie in deinen Fixtures).
 - Die Karten sind so gebaut, dass dein aktuelles `DecisionCard`-Codable sie **ohne Absturz decodieren** kann (alle Keys immer vorhanden, Datum ohne Millisekunden).
 - Damit Alice live funktioniert, fehlen in der App: Relay-Verbindung, Pairing, Antworten für Choice-Karten und die Darstellung nach `kind`. Details und Code-Skizzen unten.
-- Das Relay läuft unter `wss://bob-relay.zeigma.com`, sobald es auf Coolify deployt ist (**Stand jetzt: noch nicht live**, liefert 503). Bis dahin: lokales Relay, siehe [Testen](#testen-ohne-bob).
+- **Entwickeln geht komplett lokal:** `cd backend && npm install && npm run dev` startet Relay + Fake-Bob auf deinem Mac, mit QR-Links auf die LAN-Adresse des Macs, damit das iPhone im selben WLAN verbinden kann. Siehe [Lokal entwickeln](#lokal-entwickeln-ohne-bob). Das Produktions-Relay `wss://bob-relay.zeigma.com` kommt am 27. September dazu; am App-Code ändert sich dadurch nichts, nur die URL im QR-Link.
 
 ## So hängt alles zusammen
 
@@ -21,7 +21,7 @@ IBM Bob ──stdio──▶ Companion-MCP-Server ──wss──▶ Relay ◀�
 
 Alice spricht **nur mit dem Relay**, über **eine** WebSocket-Verbindung. Keine HTTP-API, keine Accounts. Das Relay leitet Nachrichten innerhalb eines „Raums“ (Session) zwischen Bob und Handy weiter.
 
-Als **Referenz-Client** gibt es eine fertige Web-Version im Relay: [`backend/relay/public/phone.html`](../backend/relay/public/phone.html) (ca. 300 Zeilen JavaScript, ohne Framework). Sie macht alles, was Alice tun muss (Pairing, Verbindung, Reconnect, beide Kartentypen, Antworten, Anweisungen). Im Zweifel dort nachsehen, wie es gemeint ist.
+Als **Referenz-Client** gibt es eine fertige Web-Version im Relay: [`backend/relay/public/phone.html`](../backend/relay/public/phone.html) (ca. 300 Zeilen JavaScript, ohne Framework). Sie macht alles, was Alice tun muss (Pairing, Verbindung, Reconnect, beide Kartentypen, Antworten, Anweisungen). Im Zweifel dort nachsehen, wie es gemeint ist. Lokal läuft sie unter `http://<Mac-IP>:8787/`.
 
 ## Der Vertrag auf einer Seite
 
@@ -246,27 +246,52 @@ Dein `VoiceInputSending` kann direkt über das Relay laufen, ohne `POST /v1/inpu
 
 Das `ack` mit gleicher id ist die Empfangsbestätigung. **Noch nicht gebaut** (Christopher): der Token-Endpunkt für AssemblyAI (`POST /v1/voice/sessions`) und die Deduplizierung wiederholter Anweisungen mit gleicher id (ein Retry mit derselben UUID landet derzeit doppelt bei Bob).
 
-## Testen ohne Bob
+## Lokal entwickeln (ohne Bob)
 
-Auf dem Mac (Node 22+):
+Auf dem Mac (Node 22+), **ein Befehl**:
 
 ```sh
 cd backend && npm install
-npm run relay                                        # Relay auf 0.0.0.0:8787
-RELAY_URL=ws://localhost:8787 npm run demo:bob       # „Fake-Bob“: zeigt QR + Links, schickt Karten
+npm run dev
 ```
 
-Tasten im Fake-Bob: `d` Choice-Karte, `a` Approval-Karte (u. a. genau dein `npm test -- --runInBand --bail auth` mit Erklärungen), `h` / `x` High-Risk Choice / Approval, `n` / `s` / `e` Notify info / success / error. Unbeaufsichtigt: `npm run demo:bob -- --loop 20` (abwechselnd Choice und Approval). Fake-Bob benutzt denselben Code wie der echte MCP-Server, also exakt dieselben Nachrichten.
+Das startet das Relay auf Port 8787 und einen **Fake-Bob**, der sich wie der echte MCP-Server verhält (gleicher Code, exakt dieselben Nachrichten). Ausgabe:
 
-- **Web-Version** zum Vergleich: `http://localhost:8787/#s=…&k=…` (Link steht im Fake-Bob-Output).
-- **iPhone gegen lokales Relay:** `ws://<Mac-Name>.local:8787`. Unverschlüsseltes `ws://` kann an App Transport Security scheitern. Für lokale Tests `NSAllowsLocalNetworking` setzen oder, sobald live, gleich `wss://bob-relay.zeigma.com` nehmen.
-- **Mit echtem Bob:** `demo/setup.sh ~/alice-demo` legt ein Demo-Projekt mit kaputten Tests an. Dann `cd ~/alice-demo && BOB_API_KEY=… bob run --mode companion "The tests are failing. Fix them, then commit the fix." < /dev/null`. Bob fragt per Approval-Karte vor dem Commit und danach per Choice-Karte, wie es weitergeht.
+```text
+Local Alice backend
+  relay (phone)      ws://192.168.1.23:8787     ← LAN-Adresse deines Macs, steht auch im QR-Link
+  relay (simulator)  ws://localhost:8787
+  web phone page     http://192.168.1.23:8787/
+[QR-Code]  app link bobcompanion://pair?s=…&k=…&r=ws%3A%2F%2F192.168.1.23%3A8787
+           web link http://192.168.1.23:8787/#s=…&k=…
+```
+
+Tasten im Fake-Bob: `d` Choice-Karte, `a` Approval-Karte (u. a. genau dein `npm test -- --runInBand --bail auth` mit Erklärungen), `h` / `x` High-Risk Choice / Approval, `n` / `s` / `e` Notify info / success / error, `p` Pairing-Links erneut zeigen. Antworten erscheinen als `← d_4 [approve_for_task] …`.
+
+Varianten: `npm run dev -- --loop 20` (unbeaufsichtigt, abwechselnd Choice und Approval), `npm run dev -- --host dein-mac.local` (Hostname statt IP im Link), `npm run dev -- --no-bob` (nur Relay, z. B. für echten Bob).
+
+**Worauf du in der App achten musst (nur lokal):**
+- iPhone und Mac im **selben WLAN**. Der Link enthält die IP des Macs; `localhost` würde auf dem iPhone das iPhone selbst meinen. Im **Simulator** geht `ws://localhost:8787`.
+- **Local-Network-Berechtigung** (iOS 14+): Verbindungen ins LAN brauchen `NSLocalNetworkUsageDescription` in der `Info.plist`, sonst scheitert die Verbindung still. iOS fragt einmal nach.
+- **App Transport Security:** Lokal ist es unverschlüsseltes `ws://`. Falls `URLSessionWebSocketTask` mit einem ATS-Fehler abbricht, für Debug `NSAppTransportSecurity` → `NSAllowsLocalNetworking = YES` setzen. Gegen das Produktions-Relay (`wss://`) ist das nicht nötig.
+- Die **Web-Version** unter `http://<Mac-IP>:8787/` zeigt zum Vergleich, wie es aussehen und sich verhalten soll.
+- **ntfy lokal:** Push kommt über ntfy.sh auch lokal an; die Antwort-Buttons in der Benachrichtigung rufen den Mac auf, funktionieren also nur im selben WLAN.
+
+**Mit echtem Bob gegen dein lokales Relay** (braucht Bob Shell + `BOB_KEY` aus `.env`):
+
+```sh
+npm run dev -- --no-bob                                     # Terminal 1
+RELAY_URL=ws://<Mac-IP>:8787 demo/setup.sh ~/alice-demo     # Terminal 2, im Repo-Root
+cd ~/alice-demo && BOB_API_KEY=… bob run --mode companion "The tests are failing. Fix them, then commit the fix." < /dev/null
+```
+
+Bob zeigt den QR über `pair_phone` bzw. in `~/alice-demo/.bob/companion-session.json` stehen die Zugangsdaten. Bob fragt per Approval-Karte vor dem Commit und danach per Choice-Karte, wie es weitergeht.
 
 ## Offene Punkte
 
 | Punkt | Wer |
 | --- | --- |
-| Relay auf Coolify deployen (`/backend/relay`, Domain `bob-relay.zeigma.com`), dann `COMPANION_QR` ggf. auf `app` | Christopher |
+| Produktions-Relay auf Coolify (`/backend/relay`, `bob-relay.zeigma.com`), geplant 27. September; danach `COMPANION_QR` ggf. auf `app` | Christopher |
 | Design der Choice-Karte in Alice | Franz |
 | Punkte 1–7 oben (Model, Decoding, Antworten, Darstellung, Relay-Client, Pairing) | Franz |
 | APNs statt ntfy? | beide entscheiden, dann Christopher (Relay) + Franz (Token) |

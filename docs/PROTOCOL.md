@@ -217,6 +217,9 @@ no card content leaves the relay.
 
 ## Testing without Bob
 
+Quickest: `cd backend && npm install && npm run dev` (relay + fake Bob, pairing links point at this
+machine's LAN IP so an iPhone on the same Wi-Fi can connect). Or step by step:
+
 ```sh
 cd backend
 npm install

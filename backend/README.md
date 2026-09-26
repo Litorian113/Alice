@@ -18,6 +18,7 @@ Paths are relative to `backend/` unless they start with `../`.
 | [`../docs/PROTOCOL.md`](../docs/PROTOCOL.md) | **Contract for the app team**: pairing, messages, decision card rules, push |
 | `../.bob/` | `mcp.json` (registers the server) and `custom_modes.yaml` (the **📱 Companion** mode with the steering rules) |
 | `tools/fake-bob.js` | Plays Bob against a relay so the app can be built without Bob |
+| `tools/dev.js` | `npm run dev`: relay + fake Bob in one process, advertising the LAN address so a real iPhone can pair (`--loop N`, `--host`, `--no-bob`) |
 | `tools/check-relay.js` | Smoke-tests a deployed relay (HTTP, wss pairing, forwarding, idle hold) |
 | `tools/mock-phone.js` | Terminal phone: answer cards, send instructions, auto-answer for scripted runs |
 | `../demo/` | `sample-app/` (failing tests) + `setup.sh`, which creates a standalone Bob workspace from it |
@@ -29,7 +30,8 @@ Paths are relative to `backend/` unless they start with `../`.
 cd backend
 npm install
 npm test                      # 37 tests, ~20 s
-npm run relay                 # local relay on 0.0.0.0:8787 (optional; configs point at wss://bob-relay.zeigma.com)
+npm run dev                   # local relay + fake Bob, pairing links use this machine's LAN IP (for iPhone dev)
+npm run relay                 # local relay only, on 0.0.0.0:8787
 npm run check:relay           # smoke-test the production relay
 ```
 

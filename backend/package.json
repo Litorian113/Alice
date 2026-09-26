@@ -8,6 +8,7 @@
   "engines": { "node": ">=20" },
   "scripts": {
     "relay": "node relay/server.js",
+    "dev": "node tools/dev.js",
     "mcp": "node companion-mcp/index.js",
     "phone": "node tools/mock-phone.js",
     "demo:bob": "node tools/fake-bob.js",
