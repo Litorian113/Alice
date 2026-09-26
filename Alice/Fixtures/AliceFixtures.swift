@@ -2,9 +2,24 @@ import Foundation
 
 // MARK: - Mock data for all app states — no backend needed
 
-enum MockData {
+enum AliceFixtures {
 
     // MARK: - Decision Cards
+
+    static var commandApproval: DecisionCard { DecisionCard(
+        id: UUID().uuidString,
+        title: "Run the auth tests",
+        context: "Checks that sign-in still works after Bob's changes. Stops at the first failing test.",
+        risk: .low,
+        options: [
+            DecisionOption(id: ApprovalChoice.once.rawValue, label: "Approve once", detail: "Just this time"),
+            DecisionOption(id: ApprovalChoice.reject.rawValue, label: "Reject", detail: "Don't run it"),
+            DecisionOption(id: ApprovalChoice.task.rawValue, label: "Approve for task", detail: "Allow this command for this task")
+        ],
+        allowFreeText: false,
+        expiresAt: nil,
+        command: "npm test -- --runInBand --bail auth"
+    ) }
 
     static var lowRiskDecision: DecisionCard { DecisionCard(
         id: "d_01",

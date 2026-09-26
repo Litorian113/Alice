@@ -8,15 +8,15 @@
 
 /* Begin PBXBuildFile section */
 		A920F5D6C73448A4B121C0A1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A920F5D6C73448A4B121C0A2 /* Assets.xcassets */; };
-		061206A901073BAE1242A464 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40AC52BE2F481F55FBF85E2F /* RootView.swift */; };
-		0A291272F260D80070FE1830 /* MockData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CC405AA389BD4D8134DB22D /* MockData.swift */; };
-		0D34238B588B1AE8DF982754 /* SessionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F3D17B7ADA287093D125710 /* SessionStore.swift */; };
-		121848D3062C838F9F1B3A56 /* DesignTokens.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DCE268FF11DEE96AF5BAAA4 /* DesignTokens.swift */; };
-		1711747389CAB432FB4A8391 /* ConnectedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8744162F5F3F31FAABA4A270 /* ConnectedView.swift */; };
+		061206A901073BAE1242A464 /* AliceRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40AC52BE2F481F55FBF85E2F /* AliceRootView.swift */; };
+		0A291272F260D80070FE1830 /* AliceFixtures.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CC405AA389BD4D8134DB22D /* AliceFixtures.swift */; };
+		0D34238B588B1AE8DF982754 /* AliceSessionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F3D17B7ADA287093D125710 /* AliceSessionStore.swift */; };
+		121848D3062C838F9F1B3A56 /* AliceTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DCE268FF11DEE96AF5BAAA4 /* AliceTheme.swift */; };
+		1711747389CAB432FB4A8391 /* AliceHomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8744162F5F3F31FAABA4A270 /* AliceHomeView.swift */; };
 		2999EAF16F5161F643CACEB7 /* DecisionCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2C7C310916D8577061CD4CF /* DecisionCardView.swift */; };
-		32EEEED35492CC8522B7B639 /* InstructionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 544F8937E8682A3F55EC3490 /* InstructionSheet.swift */; };
+		32EEEED35492CC8522B7B639 /* VoiceInputSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 544F8937E8682A3F55EC3490 /* VoiceInputSheet.swift */; };
 		47936944068868C2C342149A /* IBMPlexSans-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A066B476783C4C9EEB6B5094 /* IBMPlexSans-SemiBold.ttf */; };
-		488E407FFA03CFB5B0188669 /* BobCompanionApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E024CC17E615E3FACF3F8D5 /* BobCompanionApp.swift */; };
+		488E407FFA03CFB5B0188669 /* AliceApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E024CC17E615E3FACF3F8D5 /* AliceApp.swift */; };
 		576C08851A3943B05FAC562A /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C374917183ADBE8343CD6E62 /* ProfileView.swift */; };
 		8032CD7E0E403F05CAAA6589 /* UsageData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 160EE4C147078DCE57F8920F /* UsageData.swift */; };
 		94718C854D636542ADE8A5CD /* AliceMascot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CBF15C45A4CF4DBB8E547A3 /* AliceMascot.swift */; };
@@ -32,18 +32,18 @@
 		A920F5D6C73448A4B121C0A2 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		160EE4C147078DCE57F8920F /* UsageData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsageData.swift; sourceTree = "<group>"; };
 		2CBF15C45A4CF4DBB8E547A3 /* AliceMascot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AliceMascot.swift; sourceTree = "<group>"; };
-		35FBD4A5F481FB073EEB9B73 /* BobCompanion.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BobCompanion.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		40AC52BE2F481F55FBF85E2F /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
+		35FBD4A5F481FB073EEB9B73 /* Alice.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Alice.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		40AC52BE2F481F55FBF85E2F /* AliceRootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AliceRootView.swift; sourceTree = "<group>"; };
 		4B90FFF90115B166325504B3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
-		4F3D17B7ADA287093D125710 /* SessionStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionStore.swift; sourceTree = "<group>"; };
+		4F3D17B7ADA287093D125710 /* AliceSessionStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AliceSessionStore.swift; sourceTree = "<group>"; };
 		5220CA1375087F22934E3298 /* OFL.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = OFL.txt; sourceTree = "<group>"; };
 		53B3A051B6EEC8C3BC845D1C /* DecisionDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecisionDetailView.swift; sourceTree = "<group>"; };
-		544F8937E8682A3F55EC3490 /* InstructionSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstructionSheet.swift; sourceTree = "<group>"; };
+		544F8937E8682A3F55EC3490 /* VoiceInputSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceInputSheet.swift; sourceTree = "<group>"; };
 		5FF3E61AF91772374C9DE7D9 /* UsageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsageView.swift; sourceTree = "<group>"; };
-		8744162F5F3F31FAABA4A270 /* ConnectedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectedView.swift; sourceTree = "<group>"; };
-		8CC405AA389BD4D8134DB22D /* MockData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockData.swift; sourceTree = "<group>"; };
-		8DCE268FF11DEE96AF5BAAA4 /* DesignTokens.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesignTokens.swift; sourceTree = "<group>"; };
-		8E024CC17E615E3FACF3F8D5 /* BobCompanionApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BobCompanionApp.swift; sourceTree = "<group>"; };
+		8744162F5F3F31FAABA4A270 /* AliceHomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AliceHomeView.swift; sourceTree = "<group>"; };
+		8CC405AA389BD4D8134DB22D /* AliceFixtures.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AliceFixtures.swift; sourceTree = "<group>"; };
+		8DCE268FF11DEE96AF5BAAA4 /* AliceTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AliceTheme.swift; sourceTree = "<group>"; };
+		8E024CC17E615E3FACF3F8D5 /* AliceApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AliceApp.swift; sourceTree = "<group>"; };
 		A066B476783C4C9EEB6B5094 /* IBMPlexSans-SemiBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "IBMPlexSans-SemiBold.ttf"; sourceTree = "<group>"; };
 		A1BAFE55DEA5C875CF10555B /* DecisionCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecisionCard.swift; sourceTree = "<group>"; };
 		C374917183ADBE8343CD6E62 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
@@ -56,7 +56,7 @@
 		033391AE5932F91E41A3B943 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				35FBD4A5F481FB073EEB9B73 /* BobCompanion.app */,
+				35FBD4A5F481FB073EEB9B73 /* Alice.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -64,12 +64,12 @@
 		15A150BA7DFA9077D80703EE /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				8744162F5F3F31FAABA4A270 /* ConnectedView.swift */,
+				8744162F5F3F31FAABA4A270 /* AliceHomeView.swift */,
 				D2C7C310916D8577061CD4CF /* DecisionCardView.swift */,
 				53B3A051B6EEC8C3BC845D1C /* DecisionDetailView.swift */,
-				544F8937E8682A3F55EC3490 /* InstructionSheet.swift */,
+				544F8937E8682A3F55EC3490 /* VoiceInputSheet.swift */,
 				C374917183ADBE8343CD6E62 /* ProfileView.swift */,
-				40AC52BE2F481F55FBF85E2F /* RootView.swift */,
+				40AC52BE2F481F55FBF85E2F /* AliceRootView.swift */,
 				5FF3E61AF91772374C9DE7D9 /* UsageView.swift */,
 				49EFBCEAF58473A659A87082 /* Components */,
 			);
@@ -80,7 +80,7 @@
 			isa = PBXGroup;
 			children = (
 				A1BAFE55DEA5C875CF10555B /* DecisionCard.swift */,
-				4F3D17B7ADA287093D125710 /* SessionStore.swift */,
+				4F3D17B7ADA287093D125710 /* AliceSessionStore.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -107,31 +107,31 @@
 		9788F218CE49DA5BE6B8F60D = {
 			isa = PBXGroup;
 			children = (
-				A93895219D1674BD79B53582 /* BobCompanion */,
+				A93895219D1674BD79B53582 /* Alice */,
 				033391AE5932F91E41A3B943 /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-		A2507DE1FCB92D99EB13D7FD /* Mock */ = {
+		A2507DE1FCB92D99EB13D7FD /* Fixtures */ = {
 			isa = PBXGroup;
 			children = (
-				8CC405AA389BD4D8134DB22D /* MockData.swift */,
+				8CC405AA389BD4D8134DB22D /* AliceFixtures.swift */,
 				160EE4C147078DCE57F8920F /* UsageData.swift */,
 			);
-			path = Mock;
+			path = Fixtures;
 			sourceTree = "<group>";
 		};
-		A93895219D1674BD79B53582 /* BobCompanion */ = {
+		A93895219D1674BD79B53582 /* Alice */ = {
 			isa = PBXGroup;
 			children = (
 				4B90FFF90115B166325504B3 /* Info.plist */,
 				EE4A0009AF0ABB94525F3812 /* App */,
-				A2507DE1FCB92D99EB13D7FD /* Mock */,
+				A2507DE1FCB92D99EB13D7FD /* Fixtures */,
 				26B638FB01AC3A1FACBF8B25 /* Model */,
 				ED1A5D8366E02F93E83EC6A3 /* Resources */,
 				15A150BA7DFA9077D80703EE /* Views */,
 			);
-			path = BobCompanion;
+			path = Alice;
 			sourceTree = "<group>";
 		};
 		ED1A5D8366E02F93E83EC6A3 /* Resources */ = {
@@ -146,8 +146,8 @@
 		EE4A0009AF0ABB94525F3812 /* App */ = {
 			isa = PBXGroup;
 			children = (
-				8E024CC17E615E3FACF3F8D5 /* BobCompanionApp.swift */,
-				8DCE268FF11DEE96AF5BAAA4 /* DesignTokens.swift */,
+				8E024CC17E615E3FACF3F8D5 /* AliceApp.swift */,
+				8DCE268FF11DEE96AF5BAAA4 /* AliceTheme.swift */,
 			);
 			path = App;
 			sourceTree = "<group>";
@@ -155,9 +155,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		B93FAE3E4424BB1198EA5D18 /* BobCompanion */ = {
+		B93FAE3E4424BB1198EA5D18 /* Alice */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 31E83345C3FAF46D7847A9A5 /* Build configuration list for PBXNativeTarget "BobCompanion" */;
+			buildConfigurationList = 31E83345C3FAF46D7847A9A5 /* Build configuration list for PBXNativeTarget "Alice" */;
 			buildPhases = (
 				9A8CFA836EF150B3C639C38D /* Sources */,
 				503D2B19D148E03CD0360035 /* Resources */,
@@ -166,11 +166,11 @@
 			);
 			dependencies = (
 			);
-			name = BobCompanion;
+			name = Alice;
 			packageProductDependencies = (
 			);
-			productName = BobCompanion;
-			productReference = 35FBD4A5F481FB073EEB9B73 /* BobCompanion.app */;
+			productName = Alice;
+			productReference = 35FBD4A5F481FB073EEB9B73 /* Alice.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -182,7 +182,7 @@
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1430;
 			};
-			buildConfigurationList = A1FA718A1C0858FFE8C663B9 /* Build configuration list for PBXProject "BobCompanion" */;
+			buildConfigurationList = A1FA718A1C0858FFE8C663B9 /* Build configuration list for PBXProject "Alice" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -196,7 +196,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				B93FAE3E4424BB1198EA5D18 /* BobCompanion */,
+				B93FAE3E4424BB1198EA5D18 /* Alice */,
 			);
 		};
 /* End PBXProject section */
@@ -221,18 +221,18 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				488E407FFA03CFB5B0188669 /* BobCompanionApp.swift in Sources */,
+				488E407FFA03CFB5B0188669 /* AliceApp.swift in Sources */,
 				94718C854D636542ADE8A5CD /* AliceMascot.swift in Sources */,
-				1711747389CAB432FB4A8391 /* ConnectedView.swift in Sources */,
+				1711747389CAB432FB4A8391 /* AliceHomeView.swift in Sources */,
 				F9BEFA8BC1C3AC6B897D02C2 /* DecisionCard.swift in Sources */,
 				2999EAF16F5161F643CACEB7 /* DecisionCardView.swift in Sources */,
 				AF31559BDC237ECB462AF484 /* DecisionDetailView.swift in Sources */,
-				121848D3062C838F9F1B3A56 /* DesignTokens.swift in Sources */,
-				32EEEED35492CC8522B7B639 /* InstructionSheet.swift in Sources */,
-				0A291272F260D80070FE1830 /* MockData.swift in Sources */,
+				121848D3062C838F9F1B3A56 /* AliceTheme.swift in Sources */,
+				32EEEED35492CC8522B7B639 /* VoiceInputSheet.swift in Sources */,
+				0A291272F260D80070FE1830 /* AliceFixtures.swift in Sources */,
 				576C08851A3943B05FAC562A /* ProfileView.swift in Sources */,
-				061206A901073BAE1242A464 /* RootView.swift in Sources */,
-				0D34238B588B1AE8DF982754 /* SessionStore.swift in Sources */,
+				061206A901073BAE1242A464 /* AliceRootView.swift in Sources */,
+				0D34238B588B1AE8DF982754 /* AliceSessionStore.swift in Sources */,
 				8032CD7E0E403F05CAAA6589 /* UsageData.swift in Sources */,
 				E1606EBC95991216380E0299 /* UsageView.swift in Sources */,
 			);
@@ -247,7 +247,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				DEVELOPMENT_TEAM = R3Q58R4888;
-				INFOPLIST_FILE = BobCompanion/Info.plist;
+				INFOPLIST_FILE = Alice/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -384,7 +384,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				DEVELOPMENT_TEAM = R3Q58R4888;
-				INFOPLIST_FILE = BobCompanion/Info.plist;
+				INFOPLIST_FILE = Alice/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -399,7 +399,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		31E83345C3FAF46D7847A9A5 /* Build configuration list for PBXNativeTarget "BobCompanion" */ = {
+		31E83345C3FAF46D7847A9A5 /* Build configuration list for PBXNativeTarget "Alice" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				E4042B78BEE2BCA35131390F /* Debug */,
@@ -408,7 +408,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
 		};
-		A1FA718A1C0858FFE8C663B9 /* Build configuration list for PBXProject "BobCompanion" */ = {
+		A1FA718A1C0858FFE8C663B9 /* Build configuration list for PBXProject "Alice" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				7556D4F204577A8D307D214C /* Debug */,

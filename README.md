@@ -1,188 +1,184 @@
 # Alice
 
-> **Let Bob work. Step in when it matters.**
+**The mobile partner for IBM Bob.**
 
-A companion for IBM Bob — IBM Bob 2.0 Hackathon · September 2026
+Bob works in your IDE. Alice brings the decisions that need you to your phone, so you can step away from the desk and keep things moving with a tap.
 
-**Team:** Franz Anhäupl · Christopher Pietsch
+> **Bob builds. Alice keeps you in the loop.**
 
----
+IBM Bob 2.0 Hackathon · September 2026
 
-## What is Alice?
+**Franz Anhäupl** — iOS app & interaction design
 
-Alice is a lightweight mobile companion that lets developers step away from their computer while IBM Bob continues working autonomously. Alice brings Bob's decision requests to the phone and passes the developer's instructions back. Alice and Bob are two distinct characters: Bob works in the IDE; Alice keeps the developer in the loop.
+**Christopher Pietsch** — MCP server & relay
 
-The developer receives:
+## Meet Alice
 
-- a short description of the situation
-- 2–4 possible next steps
-- Bob's recommended option
-- an indication of risk
+Alice and Bob are partners. Bob writes code, runs tools and handles the development task. Alice shows what Bob wants to do, explains the command in plain language and brings your decision back to him.
 
-One tap. Bob continues.
+The name is a nod to the familiar Alice-and-Bob pair in computer science. Alice shares Bob's friendly robot style, with a violet shell, a turquoise `//` hair clip, a headset and an A badge.
 
----
+## The experience
 
-## The Problem
+Alice opens on a single decision, with the exact command and an explanation of what it does. Three action bubbles keep the choice clear:
 
-Autonomous coding agents can work for extended periods without supervision — until suddenly they can't.
+| Action | Intended permission |
+| --- | --- |
+| **Approve once** | Allow this command to run once; ask again next time. |
+| **Approve for task** | Allow this command again during the current task. |
+| **Reject** | Do not allow the command; Bob needs another approach. |
 
-Alice bridges the gap between *agent running* and *agent waiting for you*:
+An info button explains the command's individual arguments. A short confirmation replaces the request after a choice. There is no chat history or text composer.
 
-```
-Today:        Developer watches → waits → responds → watches again
+The bottom navigation provides:
 
-With Companion:  Developer starts task → leaves → Bob asks when it matters → tap → done
-```
+- **Usage** — token charts for today, week and month, input/output totals and Bobcoins.
+- **Alice** — the current decision and the companion. The center button becomes a microphone here.
+- **Profile** — session controls, a local display name, haptic feedback and companion motion settings.
 
----
+## Current status
 
-## Architecture
+This repository contains a native SwiftUI prototype. Requests, connection state, approvals and usage figures are local fixtures. **No shell command is executed and no real task permission is granted by the app yet.** Prototype labels are intentionally absent from the product UI.
 
-```
-IBM Bob  ──stdio──>  Companion MCP Server  ──wss──>  Relay  ──wss──>  Mobile App
-                                                        │
-                                                      Push ──────────────────────>  Phone
-```
+The microphone opens a voice input placeholder. Recording, transcription, IBM account sign-in, QR pairing, relay communication and push notifications still need to be connected.
 
-- **IBM Bob** runs the development task and calls Companion MCP tools
-- **Companion MCP Server** — local Node.js server, exposes tools to Bob, bridges to relay
-- **Relay** — lightweight remote WebSocket server, connects MCP server and phone
-- **Mobile App** — native SwiftUI iOS app, currently runs against local demo data
-- **Push** — ntfy.sh (prototype), so the phone wakes up even when the app is closed
+Returning to Alice or choosing **Next request** loads a fresh local approval. Disconnecting keeps the session disconnected until it is explicitly reconnected.
 
----
+## Run the app
 
-## MCP Tools
+Requirements: macOS, Xcode 15 or newer, and an iPhone or simulator running iOS 17 or newer. There are no package dependencies.
 
-| Tool | Description |
-|---|---|
-| `pair_phone` | Returns pairing state and QR pairing URL |
-| `notify` | Sends a non-blocking status notification to the phone |
-| `ask_decision` | Sends a decision card, blocks until the developer responds |
-| `get_instruction` | Checks whether the developer sent a free-text instruction |
-
----
-
-## Decision Card
-
-```json
-{
-  "type": "decision_request",
-  "id": "d_42",
-  "title": "Refactor done, 3 tests failing",
-  "context": "Auth module refactored. 3 of 48 tests fail on outdated mocks.",
-  "risk": "low",
-  "options": [
-    { "id": "a", "label": "Fix tests", "detail": "Update mocks, then rerun", "recommended": true },
-    { "id": "b", "label": "Revert refactor", "detail": "Back to last green commit" },
-    { "id": "c", "label": "Pause", "detail": "Wait until I'm back" }
-  ],
-  "allowFreeText": true,
-  "expiresAt": "2026-09-26T14:05:00Z"
-}
-```
-
----
-
-## Repository Structure
-
-```
-bob-companion-app/     ← this repo — Swift/SwiftUI iOS app (Franz)
-companion-mcp/         ← MCP server (Christopher)
-companion-relay/       ← WebSocket relay (Christopher)
-```
-
----
-
-## Minimum Viable Demo
-
-```
-Bob works autonomously
-  ↓
-Bob calls ask_decision()
-  ↓
-Phone receives decision card
-  ↓
-Developer taps an option
-  ↓
-Bob receives the choice
-  ↓
-Bob continues
-```
-
-Everything else is a bonus.
-
----
-
-## App Stack
-
-| Layer | Technology |
-|---|---|
-| Language | Swift (Swift 5 language mode) |
-| UI | SwiftUI |
-| IDE | Xcode 15+ |
-| Minimum iOS | 17.0 |
-| Gestures | SwiftUI `.gesture()`, `UIImpactFeedbackGenerator` |
-| WebSocket (later) | `URLSessionWebSocketTask` — built-in, no dependencies |
-| Push (later) | ntfy.sh |
-
----
-
-## Mobile App
-
-The app opens directly on **Alice**, with a local authentication-refactor demo. A curved bottom bar keeps **Usage** on the left and **Profile** on the right. The raised center button shows Alice on the other tabs and becomes a microphone on the Alice screen.
-
-- **Alice:** animated vector companion, decision bubbles, Bob's recommendation, context sheet, working/completed/reverted/paused states, and typed instructions.
-- **Usage:** interactive stacked token chart for today/week/month, input/output totals, and an illustrative Bobcoin allowance. Companion customization is a future feature.
-- **Profile:** editable local display name, demo disconnect/reconnect, persistent haptic and animation preferences, and app information.
-
-The visual system uses light surfaces, IBM blue, and bundled [IBM Plex Sans](https://github.com/IBM/plex). The font license is included in `BobCompanion/Resources/Fonts/OFL.txt`. Alice shares Bob's bold robot outlines and friendly face, with a violet bob-shaped shell, mint `//` hair clip, headset, and an A badge. She is drawn natively in SwiftUI, with blinking and floating motion that respects Reduce Motion and the profile preference. The app icon is rendered from the same artwork with `scripts/render-app-icon.swift`.
-
-The installed app is named **Alice**. The existing Xcode project path, target and bundle identifier are retained so the app continues updating the same installation.
-
-### Demo behavior
-
-Every return from Usage or Profile to Alice starts a fresh demo, while a disconnected session stays disconnected until explicitly reconnected.
-
-1. Bob has refactored the authentication module. Three tests fail because of outdated mocks.
-2. **Fix tests** updates the mocks and finishes with 48/48 passing tests.
-3. **Revert refactor** restores the previous version and finishes with passing tests.
-4. **Pause** stays paused. **Replay demo** restarts the scenario.
-5. The microphone opens a **voice preview** with an editable sample phrase. The text input sends arbitrary instructions into the local conversation.
-
-No backend, IBM account, live billing, real microphone recording, QR pairing, or push notifications are connected. Demo data is labeled in the UI. Disconnecting or restarting cancels delayed demo work. The existing decision-card/response models remain the integration point for the relay.
-
-### Run
-
-From the repository root:
+Open the project from the repository root:
 
 ```bash
-open BobCompanion.xcodeproj
+open Alice.xcodeproj
 ```
 
-Select an iPhone simulator and Run. Minimum deployment target: iOS 17. There are no package dependencies. For a physical device, select your signing team in Xcode.
+Select the **Alice** scheme, choose an iPhone or simulator, and press **Run**. For a physical iPhone, select your own development team in Signing & Capabilities. If needed, trust the developer certificate on the phone.
 
-If source files or build settings change outside Xcode, regenerate using [XcodeGen](https://github.com/yonaskolb/XcodeGen):
+Project and product names are **Alice**. The bundle identifier remains `com.bobcompanion.app` to retain the existing installation and signing identity; it is the only intentional legacy brand identifier.
+
+### Project generation
+
+The Xcode project is tracked alongside its [XcodeGen](https://github.com/yonaskolb/XcodeGen) specification:
 
 ```bash
 xcodegen generate
 ```
 
-### Validation
+Set `DEVELOPMENT_TEAM` in `project.yml` to your own team before regenerating if you use a different account. The spec preserves the current signing team.
 
-The app builds for the iOS Simulator. Interaction and visual review can be done directly in Xcode; no additional test suite is included.
+## Project structure
 
----
+```text
+Alice/
+├── App/
+│   ├── AliceApp.swift              # Entry point
+│   └── AliceTheme.swift            # Colors, typography and shared surfaces
+├── Model/
+│   ├── AliceSessionStore.swift     # Navigation, approvals and session state
+│   └── DecisionCard.swift          # Request/response models and approval choices
+├── Fixtures/
+│   ├── AliceFixtures.swift         # Local decision requests
+│   └── UsageData.swift             # Token usage fixtures and periods
+├── Views/
+│   ├── AliceRootView.swift         # App shell and Alice navigation
+│   ├── AliceHomeView.swift         # Companion and current request
+│   ├── DecisionCardView.swift      # Command and approval bubbles
+│   ├── DecisionDetailView.swift    # Command explanation
+│   ├── VoiceInputSheet.swift       # Voice input placeholder
+│   ├── UsageView.swift
+│   ├── ProfileView.swift
+│   └── Components/AliceMascot.swift
+└── Resources/
+    ├── Assets.xcassets/            # App icon
+    └── Fonts/                     # IBM Plex Sans and its license
+Alice.xcodeproj/
+project.yml
+scripts/render-app-icon.swift
+```
 
-## Hackathon Scope
+Alice's state uses `AliceSessionStore`, `AliceTab` and `AlicePhase`. The mascot is native vector artwork; animation respects Reduce Motion and the profile preference. Existing local profile and preference keys are retained during the rename.
 
-**In scope:** pairing, status notifications, decision requests, Bob recommendation, sending decisions back, Bob continuing after response, fast interaction experiments, demo-ready end-to-end flow.
+### App icon
 
-**Out of scope:** full remote Bob control, production auth, accounts, multi-user sessions, persistent history, full mobile code editor.
+The icon uses the same Alice face as the app. To regenerate it on macOS, run from the repository root:
 
----
+```bash
+xcrun swiftc -parse-as-library \
+  -target "$(uname -m)-apple-macosx14.0" \
+  Alice/Views/Components/AliceMascot.swift \
+  Alice/App/AliceTheme.swift \
+  Alice/Model/DecisionCard.swift \
+  scripts/render-app-icon.swift \
+  -o /tmp/alice-render-app-icon
+/tmp/alice-render-app-icon
+```
 
-## License
+The script writes an opaque 1024 × 1024 PNG into `AppIcon.appiconset`.
+
+## Planned connection to Bob
+
+```text
+IBM Bob IDE / Shell
+        │ MCP over stdio
+        ▼
+Companion MCP server
+        │ WebSocket
+        ▼
+      Relay ──────────► Push service
+        │ WebSocket           │
+        ▼                     ▼
+             Alice on iPhone
+```
+
+Christopher owns the MCP server and relay, which are separate from this iOS repository. The planned tools are `pair_phone`, `notify`, `ask_decision` and `get_instruction`.
+
+Alice will receive compact requests rather than a full IDE conversation. The relay and Bob integration must enforce command scope, task scope and expiry; the phone's selection alone does not grant a real permission.
+
+### Approval request
+
+The optional `command` field extends the decision-card model. Example payload:
+
+```json
+{
+  "type": "decision_request",
+  "id": "approval_42",
+  "title": "Run the auth tests",
+  "context": "Checks that sign-in still works after Bob's changes. Stops at the first failing test.",
+  "command": "npm test -- --runInBand --bail auth",
+  "risk": "low",
+  "options": [
+    { "id": "approve_once", "label": "Approve once", "detail": "Just this time", "recommended": false },
+    { "id": "reject", "label": "Reject", "detail": "Don't run it", "recommended": false },
+    { "id": "approve_for_task", "label": "Approve for task", "detail": "Allow this command for this task", "recommended": false }
+  ],
+  "allowFreeText": false,
+  "expiresAt": null
+}
+```
+
+The current example assumes a Jest-based project. Alice preserves the selected option ID in its response:
+
+```json
+{
+  "type": "decision_response",
+  "id": "approval_42",
+  "optionId": "approve_once",
+  "text": null
+}
+```
+
+Risk remains part of the model, although the main UI has no risk badge. High-risk approvals retain an explicit confirmation step.
+
+## Scope
+
+Next steps are real pairing, receiving Bob's approval requests, returning decisions, voice input and usage integration. Companion customization can follow later.
+
+Alice is not a remote IDE or a full coding chat. The focus is a small, understandable decision at the moment Bob needs you.
+
+## Credits
+
+Alice uses bundled [IBM Plex Sans](https://github.com/IBM/plex). The font license is included in [OFL.txt](Alice/Resources/Fonts/OFL.txt).
 
 Hackathon prototype — IBM Bob 2.0 Hackathon, September 2026.

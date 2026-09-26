@@ -2,11 +2,11 @@ import SwiftUI
 
 @main
 struct AliceApp: App {
-    @StateObject private var store = SessionStore()
+    @StateObject private var store = AliceSessionStore()
 
     var body: some Scene {
         WindowGroup {
-            RootView()
+            AliceRootView()
                 .environmentObject(store)
                 .preferredColorScheme(.light)
         }

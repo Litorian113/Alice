@@ -1,14 +1,14 @@
 import SwiftUI
 
-struct RootView: View {
-    @EnvironmentObject var store: SessionStore
+struct AliceRootView: View {
+    @EnvironmentObject var store: AliceSessionStore
 
     var body: some View {
         ZStack {
-            Color.bcBackground.ignoresSafeArea()
+            Color.aliceBackground.ignoresSafeArea()
             Group {
                 switch store.selectedTab {
-                case .alice: ConnectedView()
+                case .alice: AliceHomeView()
                 case .usage: UsageView()
                 case .profile: ProfileView()
                 }
@@ -16,20 +16,20 @@ struct RootView: View {
             .frame(maxWidth: 600)
         }
         .font(.plex(15))
-        .foregroundStyle(Color.bcPrimary)
-        .safeAreaInset(edge: .bottom, spacing: 0) { CompanionNavigation() }
-        .sheet(isPresented: $store.showsInstruction) {
-            InstructionSheet(voiceMode: store.prefersVoice)
+        .foregroundStyle(Color.alicePrimary)
+        .safeAreaInset(edge: .bottom, spacing: 0) { AliceNavigation() }
+        .sheet(isPresented: $store.showsVoiceInput) {
+            VoiceInputSheet()
                 .presentationDetents([.large])
                 .presentationDragIndicator(.visible)
                 .presentationCornerRadius(32)
         }
-        .tint(.bcAccent)
+        .tint(.aliceAccent)
     }
 }
 
-struct CompanionNavigation: View {
-    @EnvironmentObject var store: SessionStore
+struct AliceNavigation: View {
+    @EnvironmentObject var store: AliceSessionStore
     @AppStorage("hapticsEnabled") private var hapticsEnabled = true
     private var onAlice: Bool { store.selectedTab == .alice }
 
@@ -37,7 +37,7 @@ struct CompanionNavigation: View {
         ZStack(alignment: .top) {
             NavigationNotch()
                 .fill(.white)
-                .shadow(color: Color.bcPrimary.opacity(0.06), radius: 18, y: -4)
+                .shadow(color: Color.alicePrimary.opacity(0.06), radius: 18, y: -4)
                 .ignoresSafeArea(edges: .bottom)
             HStack(alignment: .top, spacing: 0) {
                 tab(.usage, icon: "chart.bar.xaxis")
@@ -45,14 +45,14 @@ struct CompanionNavigation: View {
                     Button {
                         if hapticsEnabled { UIImpactFeedbackGenerator(style: .soft).impactOccurred() }
                         if onAlice {
-                            if store.isDemoConnected { store.openInstruction(voice: true) }
-                            else { store.connectDemo() }
+                            if store.isConnected { store.openVoiceInput() }
+                            else { store.connectSession() }
                         } else { store.selectTab(.alice) }
                     } label: {
                         ZStack {
-                            Circle().fill(LinearGradient(colors: [.bcAccent, Color(hex: "7160E8")], startPoint: .topLeading, endPoint: .bottomTrailing))
+                            Circle().fill(LinearGradient(colors: [.aliceAccent, Color(hex: "7160E8")], startPoint: .topLeading, endPoint: .bottomTrailing))
                             if onAlice {
-                                Image(systemName: store.isDemoConnected ? "mic.fill" : "plus")
+                                Image(systemName: store.isConnected ? "mic.fill" : "plus")
                                     .font(.system(size: 27, weight: .medium))
                                     .foregroundStyle(.white)
                             } else {
@@ -62,14 +62,16 @@ struct CompanionNavigation: View {
                         }
                         .frame(width: 68, height: 68)
                         .overlay(Circle().stroke(.white.opacity(0.3), lineWidth: 1))
-                        .shadow(color: Color.bcAccent.opacity(0.26), radius: 12, y: 6)
+                        .shadow(color: Color.aliceAccent.opacity(0.26), radius: 12, y: 6)
                     }
                     .buttonStyle(.plain)
-                    .accessibilityLabel(onAlice ? (store.isDemoConnected ? "Talk to Alice" : "Start demo session") : "Alice")
+                    .accessibilityLabel(onAlice ? (store.isConnected ? "Talk to Alice" : "Connect to Bob") : "Alice")
                     .accessibilityIdentifier("nav.alice")
-                    Text(onAlice ? (store.isDemoConnected ? "Talk to Alice" : "Meet Alice") : "Alice")
-                        .font(.plex(11, weight: .medium, relativeTo: .caption))
-                        .foregroundStyle(onAlice ? Color.bcAccent : .bcSecondary)
+                    if !onAlice {
+                        Text("Alice")
+                            .font(.plex(11, weight: .medium, relativeTo: .caption))
+                            .foregroundStyle(Color.aliceSecondary)
+                    }
                 }
                 .frame(width: 120)
                 tab(.profile, icon: "person.crop.circle")
@@ -79,7 +81,7 @@ struct CompanionNavigation: View {
         .frame(height: 101)
     }
 
-    private func tab(_ tab: CompanionTab, icon: String) -> some View {
+    private func tab(_ tab: AliceTab, icon: String) -> some View {
         Button {
             if hapticsEnabled { UISelectionFeedbackGenerator().selectionChanged() }
             store.selectTab(tab)
@@ -88,7 +90,7 @@ struct CompanionNavigation: View {
                 Image(systemName: icon).font(.system(size: 23, weight: .regular))
                 Text(tab.rawValue).font(.plex(12, weight: .medium, relativeTo: .caption))
             }
-            .foregroundStyle(store.selectedTab == tab ? Color.bcAccent : .bcSecondary)
+            .foregroundStyle(store.selectedTab == tab ? Color.aliceAccent : .aliceSecondary)
             .frame(maxWidth: .infinity)
             .frame(minHeight: 58)
             .contentShape(Rectangle())
@@ -116,23 +118,17 @@ private struct NavigationNotch: Shape {
     }
 }
 
-struct AppHeader: View {
+struct AliceHeader: View {
     var body: some View {
         HStack(alignment: .firstTextBaseline, spacing: 5) {
             Text("Alice").font(.plex(25, weight: .semibold, relativeTo: .title2))
             Spacer()
-            HStack(spacing: 5) {
-                Circle().fill(Color.bcAccent).frame(width: 5, height: 5)
-                Text("DEMO").font(.plex(9, weight: .semibold, relativeTo: .caption2)).tracking(1.2)
-            }
-            .foregroundStyle(Color.bcAccent)
-            .padding(.horizontal, 10).padding(.vertical, 6)
-            .background(Color.bcAccent.opacity(0.07), in: Capsule())
+
         }
         .padding(.vertical, 12)
     }
 }
 
 #Preview {
-    RootView().environmentObject(SessionStore()).preferredColorScheme(.light)
+    AliceRootView().environmentObject(AliceSessionStore()).preferredColorScheme(.light)
 }

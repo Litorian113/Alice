@@ -1,14 +1,14 @@
 import AppKit
 import SwiftUI
 
-// Compile alongside AliceMascot.swift, DesignTokens.swift and DecisionCard.swift.
+// Compile alongside AliceMascot.swift, AliceTheme.swift and DecisionCard.swift.
 // Uses the exact face from the instruction sheet, with animation disabled.
 @main
 struct RenderAppIcon {
     @MainActor
     static func main() throws {
         let artwork = ZStack {
-            Color.bcBackground
+            Color.aliceBackground
             AliceMascot(faceOnly: true, animated: false)
                 .frame(width: 920, height: 920 * 184 / 240)
         }
@@ -32,7 +32,7 @@ struct RenderAppIcon {
         let bitmap = NSBitmapImageRep(cgImage: context.makeImage()!)
 
         let destination = CommandLine.arguments.dropFirst().first
-            ?? "BobCompanion/Resources/Assets.xcassets/AppIcon.appiconset/AppIcon.png"
+            ?? "Alice/Resources/Assets.xcassets/AppIcon.appiconset/AppIcon.png"
         guard let png = bitmap.representation(using: .png, properties: [:]) else {
             throw NSError(domain: "RenderAppIcon", code: 2,
                           userInfo: [NSLocalizedDescriptionKey: "Couldn't encode the icon."])

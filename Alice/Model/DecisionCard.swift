@@ -10,6 +10,20 @@ struct DecisionCard: Identifiable, Codable, Equatable {
     let options: [DecisionOption]
     let allowFreeText: Bool
     let expiresAt: Date?
+    // Optional extension for command approvals; older relay cards can omit it.
+    let command: String?
+
+    init(id: String, title: String, context: String, risk: RiskLevel,
+         options: [DecisionOption], allowFreeText: Bool, expiresAt: Date?, command: String? = nil) {
+        self.id = id
+        self.title = title
+        self.context = context
+        self.risk = risk
+        self.options = options
+        self.allowFreeText = allowFreeText
+        self.expiresAt = expiresAt
+        self.command = command
+    }
 
     enum RiskLevel: String, Codable {
         case low
@@ -18,11 +32,19 @@ struct DecisionCard: Identifiable, Codable, Equatable {
     }
 }
 
+enum ApprovalChoice: String {
+    case once = "approve_once"
+    case task = "approve_for_task"
+    case reject = "reject"
+}
+
 struct DecisionOption: Identifiable, Codable, Equatable {
     let id: String
     let label: String
     let detail: String
     let recommended: Bool
+
+    var approvalChoice: ApprovalChoice? { ApprovalChoice(rawValue: id) }
 
     init(id: String, label: String, detail: String, recommended: Bool = false) {
         self.id = id

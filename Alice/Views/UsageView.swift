@@ -9,12 +9,12 @@ struct UsageView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 24) {
-                AppHeader()
+                AliceHeader()
                 VStack(alignment: .leading, spacing: 6) {
                     Eyebrow(text: "A little work. A little progress.")
                     Text("Your usage").font(.plex(34, weight: .semibold, relativeTo: .largeTitle)).tracking(-1)
                     Text("Big ideas, one token at a time.")
-                        .font(.plex(15)).foregroundStyle(Color.bcSecondary)
+                        .font(.plex(15)).foregroundStyle(Color.aliceSecondary)
                 }
                 periodPicker
                 tokenChart
@@ -24,17 +24,13 @@ struct UsageView: View {
                     VStack(alignment: .leading, spacing: 5) {
                         Text("An Alice that's so you.").font(.plex(17, weight: .semibold))
                         Text("Colors, outfits, a little personality.\nCompanion customization is coming later.")
-                            .font(.plex(12)).foregroundStyle(Color.bcSecondary)
+                            .font(.plex(12)).foregroundStyle(Color.aliceSecondary)
                     }
                     Spacer(minLength: 0)
                 }
                 .padding(19)
                 .background(Color(hex: "EEEAFB"), in: RoundedRectangle(cornerRadius: 22))
-                Text("Sample data · Token usage and Bobcoins aren't connected to your IBM account yet.")
-                    .font(.plex(11)).foregroundStyle(Color.bcSecondary)
-                    .frame(maxWidth: .infinity, alignment: .center)
-                    .multilineTextAlignment(.center)
-                    .padding(.bottom, 18)
+                Color.clear.frame(height: 8)
             }.padding(.horizontal, 24)
         }.scrollIndicators(.hidden)
     }
@@ -47,7 +43,7 @@ struct UsageView: View {
                     selectedIndex = nil
                 } label: {
                     Text(item.rawValue).font(.plex(14, weight: .medium))
-                        .foregroundStyle(period == item ? Color.bcPrimary : .bcSecondary)
+                        .foregroundStyle(period == item ? Color.alicePrimary : .aliceSecondary)
                         .frame(maxWidth: .infinity).padding(.vertical, 11)
                         .background(period == item ? Color.white : .clear, in: RoundedRectangle(cornerRadius: 12))
                 }
@@ -57,7 +53,7 @@ struct UsageView: View {
             }
         }
         .padding(5)
-        .background(Color.bcSurfaceRaised, in: RoundedRectangle(cornerRadius: 16))
+        .background(Color.aliceSurfaceRaised, in: RoundedRectangle(cornerRadius: 16))
     }
 
     private var tokenChart: some View {
@@ -68,15 +64,15 @@ struct UsageView: View {
                     HStack(alignment: .firstTextBaseline, spacing: 6) {
                         Text((selectedSample?.tokens ?? period.total).tokenLabel)
                             .font(.plex(43, weight: .semibold, relativeTo: .largeTitle)).tracking(-1.5).contentTransition(.numericText())
-                        Text("tokens").font(.plex(13)).foregroundStyle(Color.bcSecondary)
+                        Text("tokens").font(.plex(13)).foregroundStyle(Color.aliceSecondary)
                     }
-                    Text(period.caption).font(.plex(12)).foregroundStyle(Color.bcSecondary)
+                    Text(period.caption).font(.plex(12)).foregroundStyle(Color.aliceSecondary)
                 }
                 Spacer()
                 Image(systemName: "chart.xyaxis.line")
                     .font(.system(size: 19))
-                    .foregroundStyle(Color.bcAccent)
-                    .padding(11).background(Color.bcAccent.opacity(0.07), in: RoundedRectangle(cornerRadius: 14))
+                    .foregroundStyle(Color.aliceAccent)
+                    .padding(11).background(Color.aliceAccent.opacity(0.07), in: RoundedRectangle(cornerRadius: 14))
             }
             Chart {
                 ForEach(period.samples) { sample in
@@ -86,29 +82,29 @@ struct UsageView: View {
                         .foregroundStyle(by: .value("Type", "Output"))
                     if selectedIndex == sample.id {
                         RuleMark(x: .value("Selected", sample.id))
-                            .foregroundStyle(Color.bcPrimary.opacity(0.3))
+                            .foregroundStyle(Color.alicePrimary.opacity(0.3))
                             .lineStyle(StrokeStyle(lineWidth: 1, dash: [4, 4]))
                     }
                 }
             }
-            .chartForegroundStyleScale(["Input": Color.bcAccent, "Output": Color(hex: "B9A4EE")])
+            .chartForegroundStyleScale(["Input": Color.aliceAccent, "Output": Color(hex: "B9A4EE")])
             .chartLegend(.hidden)
             .chartXSelection(value: $selectedIndex)
             .chartXAxis {
                 AxisMarks(values: period.samples.map(\.id)) { value in
                     AxisValueLabel {
                         if let index = value.as(Int.self), period.samples.indices.contains(index) {
-                            Text(period.samples[index].label).font(.plex(10)).foregroundStyle(Color.bcSecondary)
+                            Text(period.samples[index].label).font(.plex(10)).foregroundStyle(Color.aliceSecondary)
                         }
                     }
                 }
             }
             .chartYAxis {
                 AxisMarks(position: .leading, values: .automatic(desiredCount: 4)) { value in
-                    AxisGridLine(stroke: StrokeStyle(lineWidth: 1, dash: [3, 4])).foregroundStyle(Color.bcBorder)
+                    AxisGridLine(stroke: StrokeStyle(lineWidth: 1, dash: [3, 4])).foregroundStyle(Color.aliceBorder)
                     AxisValueLabel {
                         if let amount = value.as(Double.self) {
-                            Text("\(Int(amount / 1000))k").font(.plex(9)).foregroundStyle(Color.bcMuted)
+                            Text("\(Int(amount / 1000))k").font(.plex(9)).foregroundStyle(Color.aliceMuted)
                         }
                     }
                 }
@@ -116,18 +112,18 @@ struct UsageView: View {
             .frame(height: 170)
             .accessibilityLabel("\(period.rawValue) token usage, \(period.total.tokenLabel) total")
             HStack(spacing: 8) {
-                Circle().fill(Color.bcAccent).frame(width: 7, height: 7)
-                Text("Input").font(.plex(12)).foregroundStyle(Color.bcSecondary)
+                Circle().fill(Color.aliceAccent).frame(width: 7, height: 7)
+                Text("Input").font(.plex(12)).foregroundStyle(Color.aliceSecondary)
                 Spacer()
                 Text((period.total * 0.78).tokenLabel).font(.plex(14, weight: .medium))
-                Rectangle().fill(Color.bcBorder).frame(width: 1, height: 24).padding(.horizontal, 10)
+                Rectangle().fill(Color.aliceBorder).frame(width: 1, height: 24).padding(.horizontal, 10)
                 Circle().fill(Color(hex: "B9A4EE")).frame(width: 7, height: 7)
-                Text("Output").font(.plex(12)).foregroundStyle(Color.bcSecondary)
+                Text("Output").font(.plex(12)).foregroundStyle(Color.aliceSecondary)
                 Spacer()
                 Text((period.total * 0.22).tokenLabel).font(.plex(14, weight: .medium))
             }
         }
-        .padding(22).companionSurface()
+        .padding(22).aliceSurface()
     }
 
     private var bobcoins: some View {
@@ -152,12 +148,12 @@ struct UsageView: View {
                             .frame(width: max(8, geometry.size.width * 3.82 / 40))
                     }
             }.frame(height: 6)
-            Text("ibm-hackathon-lablab · sample allowance")
+            Text("ibm-hackathon-lablab")
                 .font(.plex(11)).foregroundStyle(.white.opacity(0.6))
         }
         .foregroundStyle(.white)
         .padding(22)
-        .background(Color.bcPrimary, in: RoundedRectangle(cornerRadius: 24))
+        .background(Color.alicePrimary, in: RoundedRectangle(cornerRadius: 24))
         .accessibilityElement(children: .combine)
     }
 }

@@ -1,20 +1,20 @@
 import SwiftUI
 
 extension Color {
-    static let bcBackground = Color(hex: "F5F7FC")
-    static let bcSurface = Color.white
-    static let bcSurfaceRaised = Color(hex: "EDF1FA")
-    static let bcPrimary = Color(hex: "15233F")
-    static let bcSecondary = Color(hex: "65718A")
-    static let bcMuted = Color(hex: "768197")
-    static let bcAccent = Color(hex: "0F62FE")
-    static let bcRecommended = Color(hex: "7154D8")
-    static let bcBorder = Color(hex: "E3E8F2")
-    static let bcRiskLow = Color(hex: "198061")
-    static let bcRiskMedium = Color(hex: "AD6800")
-    static let bcRiskHigh = Color(hex: "C13C4B")
-    static let bcSuccess = bcRiskLow
-    static let bcError = bcRiskHigh
+    static let aliceBackground = Color(hex: "F5F7FC")
+    static let aliceSurface = Color.white
+    static let aliceSurfaceRaised = Color(hex: "EDF1FA")
+    static let alicePrimary = Color(hex: "15233F")
+    static let aliceSecondary = Color(hex: "65718A")
+    static let aliceMuted = Color(hex: "768197")
+    static let aliceAccent = Color(hex: "0F62FE")
+    static let aliceRecommended = Color(hex: "7154D8")
+    static let aliceBorder = Color(hex: "E3E8F2")
+    static let aliceRiskLow = Color(hex: "198061")
+    static let aliceRiskMedium = Color(hex: "AD6800")
+    static let aliceRiskHigh = Color(hex: "C13C4B")
+    static let aliceSuccess = aliceRiskLow
+    static let aliceError = aliceRiskHigh
 
     init(hex: String) {
         let hex = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
@@ -41,9 +41,9 @@ extension Font {
 extension DecisionCard.RiskLevel {
     var color: Color {
         switch self {
-        case .low: return .bcRiskLow
-        case .medium: return .bcRiskMedium
-        case .high: return .bcRiskHigh
+        case .low: return .aliceRiskLow
+        case .medium: return .aliceRiskMedium
+        case .high: return .aliceRiskHigh
         }
     }
     var label: String {
@@ -55,18 +55,18 @@ extension DecisionCard.RiskLevel {
     }
 }
 
-struct SurfaceModifier: ViewModifier {
+struct AliceSurfaceModifier: ViewModifier {
     var radius: CGFloat = 24
     func body(content: Content) -> some View {
         content
-            .background(Color.bcSurface, in: RoundedRectangle(cornerRadius: radius))
-            .overlay(RoundedRectangle(cornerRadius: radius).stroke(Color.bcBorder.opacity(0.7), lineWidth: 1))
+            .background(Color.aliceSurface, in: RoundedRectangle(cornerRadius: radius))
+            .overlay(RoundedRectangle(cornerRadius: radius).stroke(Color.aliceBorder.opacity(0.7), lineWidth: 1))
     }
 }
 
 extension View {
-    func companionSurface(radius: CGFloat = 24) -> some View {
-        modifier(SurfaceModifier(radius: radius))
+    func aliceSurface(radius: CGFloat = 24) -> some View {
+        modifier(AliceSurfaceModifier(radius: radius))
     }
 }
 
@@ -76,7 +76,7 @@ struct Eyebrow: View {
         Text(text.uppercased())
             .font(.plex(10, weight: .semibold, relativeTo: .caption2))
             .tracking(1.8)
-            .foregroundStyle(Color.bcSecondary)
+            .foregroundStyle(Color.aliceSecondary)
     }
 }
 
@@ -94,7 +94,7 @@ struct PrimaryButton: View {
             .font(.plex(16, weight: .medium))
             .foregroundStyle(.white)
             .padding(18)
-            .background(Color.bcAccent, in: RoundedRectangle(cornerRadius: 18))
+            .background(Color.aliceAccent, in: RoundedRectangle(cornerRadius: 18))
         }
         .buttonStyle(.plain)
     }
