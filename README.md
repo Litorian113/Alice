@@ -88,7 +88,7 @@ IBM Bob  ──stdio──>  Companion MCP Server  ──wss──>  Relay  ─�
 ## Repository Structure
 
 ```
-bob-companion-app/     ← this repo — Expo/React Native mobile app (Franz)
+bob-companion-app/     ← this repo — Swift/SwiftUI iOS app (Franz)
 companion-mcp/         ← MCP server (Christopher)
 companion-relay/       ← WebSocket relay (Christopher)
 ```
@@ -115,36 +115,69 @@ Everything else is a bonus.
 
 ---
 
+## App Stack
+
+| Layer | Technology |
+|---|---|
+| Language | Swift 5.9 |
+| UI | SwiftUI |
+| IDE | Xcode 15+ |
+| Minimum iOS | 17.0 |
+| Gestures | SwiftUI `.gesture()`, `UIImpactFeedbackGenerator` |
+| WebSocket (later) | `URLSessionWebSocketTask` — built-in, no dependencies |
+| Push (later) | ntfy.sh |
+
+---
+
 ## Mobile App Screens
 
 | Screen | Description |
 |---|---|
 | **Pair** | Scan QR code shown by Bob |
-| **Connected** | Live status — what Bob is currently doing |
-| **Decision** | Decision card with options and Bob's recommendation |
-| **Completed** | Task finished confirmation |
+| **Connected** | Calm state — Bob is working, activity log |
+| **Decision Card** | Attention state — Bob's recommendation + alternatives |
+| **Decision Detail** | Progressive disclosure — full context if needed |
+| **Decision Confirmed** | Resolution state — brief bridge back to calm |
+| **Task Completed** | Success notification |
 
 ---
 
 ## Interaction Patterns (P0 → P2)
 
 - **P0** — tap to select an option
-- **P1** — swipe left/right for binary decisions
+- **P1** — swipe left/right for binary decisions (2-option cards)
 - **P2** — shake-to-accept Bob's recommendation (low-risk only)
 
 ---
 
 ## Getting Started
 
-> Setup instructions will be added as the implementation progresses.
+### Requirements
+- macOS with Xcode 15+
+- iOS 17+ device or simulator
+- [xcodegen](https://github.com/yonaskolb/XcodeGen) (`brew install xcodegen`)
+
+### Open in Xcode
 
 ```bash
-# Install dependencies
-npm install
-
-# Start the app
-npx expo start
+cd BobCompanion
+open BobCompanion.xcodeproj
 ```
+
+Select your device or simulator and hit **Run**. No package dependencies.
+
+### Regenerate project file
+
+If you add Swift files outside Xcode:
+
+```bash
+cd BobCompanion
+xcodegen generate
+```
+
+### Mock mode
+
+The app runs fully without a backend. On the Pairing screen tap **"Skip — use mock session"** to jump straight into the connected state. Tap **"Simulate decision (mock)"** to trigger a decision card and walk through the full flow.
 
 ---
 
