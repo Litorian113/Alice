@@ -9,6 +9,7 @@ targets:
     type: application
     platform: iOS
     sources:
+      # Includes Voice/ adapters and contracts; configuration is injected at runtime.
       - path: Alice
     settings:
       base:

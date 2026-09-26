@@ -7,160 +7,183 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		A920F5D6C73448A4B121C0A1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A920F5D6C73448A4B121C0A2 /* Assets.xcassets */; };
-		061206A901073BAE1242A464 /* AliceRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40AC52BE2F481F55FBF85E2F /* AliceRootView.swift */; };
-		0A291272F260D80070FE1830 /* AliceFixtures.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CC405AA389BD4D8134DB22D /* AliceFixtures.swift */; };
-		0D34238B588B1AE8DF982754 /* AliceSessionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F3D17B7ADA287093D125710 /* AliceSessionStore.swift */; };
-		121848D3062C838F9F1B3A56 /* AliceTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DCE268FF11DEE96AF5BAAA4 /* AliceTheme.swift */; };
-		1711747389CAB432FB4A8391 /* AliceHomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8744162F5F3F31FAABA4A270 /* AliceHomeView.swift */; };
-		2999EAF16F5161F643CACEB7 /* DecisionCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2C7C310916D8577061CD4CF /* DecisionCardView.swift */; };
-		32EEEED35492CC8522B7B639 /* VoiceInputSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 544F8937E8682A3F55EC3490 /* VoiceInputSheet.swift */; };
-		47936944068868C2C342149A /* IBMPlexSans-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A066B476783C4C9EEB6B5094 /* IBMPlexSans-SemiBold.ttf */; };
-		488E407FFA03CFB5B0188669 /* AliceApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E024CC17E615E3FACF3F8D5 /* AliceApp.swift */; };
-		576C08851A3943B05FAC562A /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C374917183ADBE8343CD6E62 /* ProfileView.swift */; };
-		8032CD7E0E403F05CAAA6589 /* UsageData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 160EE4C147078DCE57F8920F /* UsageData.swift */; };
-		94718C854D636542ADE8A5CD /* AliceMascot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CBF15C45A4CF4DBB8E547A3 /* AliceMascot.swift */; };
-		97F3B63ACB10402B2FFE39A5 /* OFL.txt in Resources */ = {isa = PBXBuildFile; fileRef = 5220CA1375087F22934E3298 /* OFL.txt */; };
-		AF31559BDC237ECB462AF484 /* DecisionDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53B3A051B6EEC8C3BC845D1C /* DecisionDetailView.swift */; };
-		E1606EBC95991216380E0299 /* UsageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FF3E61AF91772374C9DE7D9 /* UsageView.swift */; };
-		EA60268733FACDFA4E1428EE /* IBMPlexSans-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = EEFDAAC1B5609B726B664C05 /* IBMPlexSans-Regular.ttf */; };
-		EAB2464C07EC34A915E57072 /* IBMPlexSans-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = DE4B56E1FD6C3335DF3FE530 /* IBMPlexSans-Medium.ttf */; };
-		F9BEFA8BC1C3AC6B897D02C2 /* DecisionCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1BAFE55DEA5C875CF10555B /* DecisionCard.swift */; };
+		24A022AE3E7E1EF67BC8F0A0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F24E3CE7C53F96207E36E0E3 /* Assets.xcassets */; };
+		342ADE3909B06D28CDAB79D0 /* DecisionDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A78F53A53A915C52AD21FAE /* DecisionDetailView.swift */; };
+		344C0C222DE099DC9236CAFD /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93AA7721C1C3D18FC7638CF3 /* ProfileView.swift */; };
+		36C253606CB5E7FD2CA2CDF1 /* AliceHomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E67F13E8F1812D6CF3A499AA /* AliceHomeView.swift */; };
+		406CA7D68584EC60BB2F3420 /* DecisionCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2ECA7D232466AB63156A0EEA /* DecisionCard.swift */; };
+		5E49FE6D62D969636DC53345 /* AliceMascot.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0827955EB677DBE1E55E3D8 /* AliceMascot.swift */; };
+		71F7F269A86649CA5863C877 /* AliceApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0FD3013AE4E8F5EC64F42AE /* AliceApp.swift */; };
+		82F3933A8B3F5D46C840613C /* MicrophoneRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32B8D3CB4EC4707119EC7567 /* MicrophoneRecorder.swift */; };
+		85D1CB6CFC5B77F2422EE86B /* OFL.txt in Resources */ = {isa = PBXBuildFile; fileRef = A4AC26CB2B2884700A90A478 /* OFL.txt */; };
+		8D361E7E543CAFF5986D42EE /* HTTPVoiceBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = C90998D3F8F7295A4E102D53 /* HTTPVoiceBackend.swift */; };
+		982183C3BA7BD94934BE23BB /* AliceRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 647C658900B7A445BFD18914 /* AliceRootView.swift */; };
+		9974D6939F7FC08E44D6BBFE /* AssemblyAITranscriber.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFE4C289351A498A97FCA645 /* AssemblyAITranscriber.swift */; };
+		A3AD16E5AA93E1BE1BEC2AC8 /* AliceSessionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F3A6236039A56421591F698 /* AliceSessionStore.swift */; };
+		AEF41089C76ABE45BC2C9D8C /* AliceTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4763682A47D40DD13619D41D /* AliceTheme.swift */; };
+		B996BFD76EC29D4DF3AFAA4D /* VoiceInputModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71708CEA3600B3F5257EDA3B /* VoiceInputModel.swift */; };
+		BA7829F14DF49C57F5F020D9 /* VoiceInputSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8540B1274D32441ACAF54B5 /* VoiceInputSheet.swift */; };
+		BE1AA518BD02F8F428DF5220 /* IBMPlexSans-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 9E9E3F09D695B9FD98C32E1C /* IBMPlexSans-Regular.ttf */; };
+		C83112D3BD6CAD420DB6ECD9 /* UsageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37A5590D29F5BAFD723A2981 /* UsageView.swift */; };
+		CE8C6D5122D50E90167377CA /* IBMPlexSans-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 56803416D2CDA31A4F0106DF /* IBMPlexSans-Medium.ttf */; };
+		D178C19505DC5614EFFFDB23 /* AliceFixtures.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B63C1FE33BDE31F8861F513 /* AliceFixtures.swift */; };
+		D8BCD7367FABDF05A56A0F2B /* VoiceContracts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82B6F7C6C9F3828179DDD7E0 /* VoiceContracts.swift */; };
+		DF32B62846D78EE5F09EB7B3 /* IBMPlexSans-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3B2553FB5CDC0991A3349DE0 /* IBMPlexSans-SemiBold.ttf */; };
+		F30DBC2822F12A709544F31F /* DecisionCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3267FF792EF2439C2E5226CD /* DecisionCardView.swift */; };
+		FAB22484AD79943F17594A56 /* UsageData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B7F0FEC96B33828909B6A20 /* UsageData.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		A920F5D6C73448A4B121C0A2 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		160EE4C147078DCE57F8920F /* UsageData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsageData.swift; sourceTree = "<group>"; };
-		2CBF15C45A4CF4DBB8E547A3 /* AliceMascot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AliceMascot.swift; sourceTree = "<group>"; };
-		35FBD4A5F481FB073EEB9B73 /* Alice.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Alice.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		40AC52BE2F481F55FBF85E2F /* AliceRootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AliceRootView.swift; sourceTree = "<group>"; };
-		4B90FFF90115B166325504B3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
-		4F3D17B7ADA287093D125710 /* AliceSessionStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AliceSessionStore.swift; sourceTree = "<group>"; };
-		5220CA1375087F22934E3298 /* OFL.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = OFL.txt; sourceTree = "<group>"; };
-		53B3A051B6EEC8C3BC845D1C /* DecisionDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecisionDetailView.swift; sourceTree = "<group>"; };
-		544F8937E8682A3F55EC3490 /* VoiceInputSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceInputSheet.swift; sourceTree = "<group>"; };
-		5FF3E61AF91772374C9DE7D9 /* UsageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsageView.swift; sourceTree = "<group>"; };
-		8744162F5F3F31FAABA4A270 /* AliceHomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AliceHomeView.swift; sourceTree = "<group>"; };
-		8CC405AA389BD4D8134DB22D /* AliceFixtures.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AliceFixtures.swift; sourceTree = "<group>"; };
-		8DCE268FF11DEE96AF5BAAA4 /* AliceTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AliceTheme.swift; sourceTree = "<group>"; };
-		8E024CC17E615E3FACF3F8D5 /* AliceApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AliceApp.swift; sourceTree = "<group>"; };
-		A066B476783C4C9EEB6B5094 /* IBMPlexSans-SemiBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "IBMPlexSans-SemiBold.ttf"; sourceTree = "<group>"; };
-		A1BAFE55DEA5C875CF10555B /* DecisionCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecisionCard.swift; sourceTree = "<group>"; };
-		C374917183ADBE8343CD6E62 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
-		D2C7C310916D8577061CD4CF /* DecisionCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecisionCardView.swift; sourceTree = "<group>"; };
-		DE4B56E1FD6C3335DF3FE530 /* IBMPlexSans-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "IBMPlexSans-Medium.ttf"; sourceTree = "<group>"; };
-		EEFDAAC1B5609B726B664C05 /* IBMPlexSans-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "IBMPlexSans-Regular.ttf"; sourceTree = "<group>"; };
+		0F4D8702308B44065E2EA7EA /* Alice.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Alice.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		1B63C1FE33BDE31F8861F513 /* AliceFixtures.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AliceFixtures.swift; sourceTree = "<group>"; };
+		2ECA7D232466AB63156A0EEA /* DecisionCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecisionCard.swift; sourceTree = "<group>"; };
+		3267FF792EF2439C2E5226CD /* DecisionCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecisionCardView.swift; sourceTree = "<group>"; };
+		32B8D3CB4EC4707119EC7567 /* MicrophoneRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MicrophoneRecorder.swift; sourceTree = "<group>"; };
+		37A5590D29F5BAFD723A2981 /* UsageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsageView.swift; sourceTree = "<group>"; };
+		3A78F53A53A915C52AD21FAE /* DecisionDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecisionDetailView.swift; sourceTree = "<group>"; };
+		3B2553FB5CDC0991A3349DE0 /* IBMPlexSans-SemiBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "IBMPlexSans-SemiBold.ttf"; sourceTree = "<group>"; };
+		4763682A47D40DD13619D41D /* AliceTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AliceTheme.swift; sourceTree = "<group>"; };
+		56803416D2CDA31A4F0106DF /* IBMPlexSans-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "IBMPlexSans-Medium.ttf"; sourceTree = "<group>"; };
+		5F3A6236039A56421591F698 /* AliceSessionStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AliceSessionStore.swift; sourceTree = "<group>"; };
+		647C658900B7A445BFD18914 /* AliceRootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AliceRootView.swift; sourceTree = "<group>"; };
+		71708CEA3600B3F5257EDA3B /* VoiceInputModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceInputModel.swift; sourceTree = "<group>"; };
+		82B6F7C6C9F3828179DDD7E0 /* VoiceContracts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceContracts.swift; sourceTree = "<group>"; };
+		93AA7721C1C3D18FC7638CF3 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
+		9B7F0FEC96B33828909B6A20 /* UsageData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsageData.swift; sourceTree = "<group>"; };
+		9E9E3F09D695B9FD98C32E1C /* IBMPlexSans-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "IBMPlexSans-Regular.ttf"; sourceTree = "<group>"; };
+		A0827955EB677DBE1E55E3D8 /* AliceMascot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AliceMascot.swift; sourceTree = "<group>"; };
+		A4AC26CB2B2884700A90A478 /* OFL.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = OFL.txt; sourceTree = "<group>"; };
+		A6F110E5004E03DEF531A3C6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		C90998D3F8F7295A4E102D53 /* HTTPVoiceBackend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPVoiceBackend.swift; sourceTree = "<group>"; };
+		D0FD3013AE4E8F5EC64F42AE /* AliceApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AliceApp.swift; sourceTree = "<group>"; };
+		D8540B1274D32441ACAF54B5 /* VoiceInputSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceInputSheet.swift; sourceTree = "<group>"; };
+		E67F13E8F1812D6CF3A499AA /* AliceHomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AliceHomeView.swift; sourceTree = "<group>"; };
+		F24E3CE7C53F96207E36E0E3 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		FFE4C289351A498A97FCA645 /* AssemblyAITranscriber.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssemblyAITranscriber.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
-		033391AE5932F91E41A3B943 /* Products */ = {
+		1302B58E9A74C34BF11C97CE /* App */ = {
 			isa = PBXGroup;
 			children = (
-				35FBD4A5F481FB073EEB9B73 /* Alice.app */,
+				D0FD3013AE4E8F5EC64F42AE /* AliceApp.swift */,
+				4763682A47D40DD13619D41D /* AliceTheme.swift */,
 			);
-			name = Products;
+			path = App;
 			sourceTree = "<group>";
 		};
-		15A150BA7DFA9077D80703EE /* Views */ = {
+		15934239AEDFC7D44F7494D2 /* Voice */ = {
 			isa = PBXGroup;
 			children = (
-				8744162F5F3F31FAABA4A270 /* AliceHomeView.swift */,
-				D2C7C310916D8577061CD4CF /* DecisionCardView.swift */,
-				53B3A051B6EEC8C3BC845D1C /* DecisionDetailView.swift */,
-				544F8937E8682A3F55EC3490 /* VoiceInputSheet.swift */,
-				C374917183ADBE8343CD6E62 /* ProfileView.swift */,
-				40AC52BE2F481F55FBF85E2F /* AliceRootView.swift */,
-				5FF3E61AF91772374C9DE7D9 /* UsageView.swift */,
-				49EFBCEAF58473A659A87082 /* Components */,
+				FFE4C289351A498A97FCA645 /* AssemblyAITranscriber.swift */,
+				C90998D3F8F7295A4E102D53 /* HTTPVoiceBackend.swift */,
+				32B8D3CB4EC4707119EC7567 /* MicrophoneRecorder.swift */,
+				82B6F7C6C9F3828179DDD7E0 /* VoiceContracts.swift */,
+				71708CEA3600B3F5257EDA3B /* VoiceInputModel.swift */,
+			);
+			path = Voice;
+			sourceTree = "<group>";
+		};
+		17B463BDB53A166AF78B7CB9 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				E67F13E8F1812D6CF3A499AA /* AliceHomeView.swift */,
+				647C658900B7A445BFD18914 /* AliceRootView.swift */,
+				3267FF792EF2439C2E5226CD /* DecisionCardView.swift */,
+				3A78F53A53A915C52AD21FAE /* DecisionDetailView.swift */,
+				93AA7721C1C3D18FC7638CF3 /* ProfileView.swift */,
+				37A5590D29F5BAFD723A2981 /* UsageView.swift */,
+				D8540B1274D32441ACAF54B5 /* VoiceInputSheet.swift */,
+				B4C5D9394F4605C7943C26C0 /* Components */,
 			);
 			path = Views;
 			sourceTree = "<group>";
 		};
-		26B638FB01AC3A1FACBF8B25 /* Model */ = {
+		8CBDA7A3573EE3B763A4C2F1 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				A1BAFE55DEA5C875CF10555B /* DecisionCard.swift */,
-				4F3D17B7ADA287093D125710 /* AliceSessionStore.swift */,
+				0F4D8702308B44065E2EA7EA /* Alice.app */,
 			);
-			path = Model;
+			name = Products;
 			sourceTree = "<group>";
 		};
-		49EFBCEAF58473A659A87082 /* Components */ = {
+		97A05B03B221DC19FF3E5D73 /* Alice */ = {
 			isa = PBXGroup;
 			children = (
-				2CBF15C45A4CF4DBB8E547A3 /* AliceMascot.swift */,
-			);
-			path = Components;
-			sourceTree = "<group>";
-		};
-		5904061AFC387F8642DDC9BB /* Fonts */ = {
-			isa = PBXGroup;
-			children = (
-				DE4B56E1FD6C3335DF3FE530 /* IBMPlexSans-Medium.ttf */,
-				EEFDAAC1B5609B726B664C05 /* IBMPlexSans-Regular.ttf */,
-				A066B476783C4C9EEB6B5094 /* IBMPlexSans-SemiBold.ttf */,
-				5220CA1375087F22934E3298 /* OFL.txt */,
-			);
-			path = Fonts;
-			sourceTree = "<group>";
-		};
-		9788F218CE49DA5BE6B8F60D = {
-			isa = PBXGroup;
-			children = (
-				A93895219D1674BD79B53582 /* Alice */,
-				033391AE5932F91E41A3B943 /* Products */,
-			);
-			sourceTree = "<group>";
-		};
-		A2507DE1FCB92D99EB13D7FD /* Fixtures */ = {
-			isa = PBXGroup;
-			children = (
-				8CC405AA389BD4D8134DB22D /* AliceFixtures.swift */,
-				160EE4C147078DCE57F8920F /* UsageData.swift */,
-			);
-			path = Fixtures;
-			sourceTree = "<group>";
-		};
-		A93895219D1674BD79B53582 /* Alice */ = {
-			isa = PBXGroup;
-			children = (
-				4B90FFF90115B166325504B3 /* Info.plist */,
-				EE4A0009AF0ABB94525F3812 /* App */,
-				A2507DE1FCB92D99EB13D7FD /* Fixtures */,
-				26B638FB01AC3A1FACBF8B25 /* Model */,
-				ED1A5D8366E02F93E83EC6A3 /* Resources */,
-				15A150BA7DFA9077D80703EE /* Views */,
+				A6F110E5004E03DEF531A3C6 /* Info.plist */,
+				1302B58E9A74C34BF11C97CE /* App */,
+				9869DF2964134D350756EA5E /* Fixtures */,
+				A6028C95000FA2F440ACB21A /* Model */,
+				9ADDEC074D07608B4AA639EF /* Resources */,
+				17B463BDB53A166AF78B7CB9 /* Views */,
+				15934239AEDFC7D44F7494D2 /* Voice */,
 			);
 			path = Alice;
 			sourceTree = "<group>";
 		};
-		ED1A5D8366E02F93E83EC6A3 /* Resources */ = {
+		9869DF2964134D350756EA5E /* Fixtures */ = {
 			isa = PBXGroup;
 			children = (
-				A920F5D6C73448A4B121C0A2 /* Assets.xcassets */,
-				5904061AFC387F8642DDC9BB /* Fonts */,
+				1B63C1FE33BDE31F8861F513 /* AliceFixtures.swift */,
+				9B7F0FEC96B33828909B6A20 /* UsageData.swift */,
+			);
+			path = Fixtures;
+			sourceTree = "<group>";
+		};
+		9ADDEC074D07608B4AA639EF /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				F24E3CE7C53F96207E36E0E3 /* Assets.xcassets */,
+				CE1422E445193CD329EE9E7D /* Fonts */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
 		};
-		EE4A0009AF0ABB94525F3812 /* App */ = {
+		A6028C95000FA2F440ACB21A /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				8E024CC17E615E3FACF3F8D5 /* AliceApp.swift */,
-				8DCE268FF11DEE96AF5BAAA4 /* AliceTheme.swift */,
+				5F3A6236039A56421591F698 /* AliceSessionStore.swift */,
+				2ECA7D232466AB63156A0EEA /* DecisionCard.swift */,
 			);
-			path = App;
+			path = Model;
+			sourceTree = "<group>";
+		};
+		B4C5D9394F4605C7943C26C0 /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				A0827955EB677DBE1E55E3D8 /* AliceMascot.swift */,
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
+		CE1422E445193CD329EE9E7D /* Fonts */ = {
+			isa = PBXGroup;
+			children = (
+				56803416D2CDA31A4F0106DF /* IBMPlexSans-Medium.ttf */,
+				9E9E3F09D695B9FD98C32E1C /* IBMPlexSans-Regular.ttf */,
+				3B2553FB5CDC0991A3349DE0 /* IBMPlexSans-SemiBold.ttf */,
+				A4AC26CB2B2884700A90A478 /* OFL.txt */,
+			);
+			path = Fonts;
+			sourceTree = "<group>";
+		};
+		D5875F0C6F7B9577914A9A3E = {
+			isa = PBXGroup;
+			children = (
+				97A05B03B221DC19FF3E5D73 /* Alice */,
+				8CBDA7A3573EE3B763A4C2F1 /* Products */,
+			);
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		B93FAE3E4424BB1198EA5D18 /* Alice */ = {
+		EAE872DEA3ADE2A268BF5615 /* Alice */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 31E83345C3FAF46D7847A9A5 /* Build configuration list for PBXNativeTarget "Alice" */;
+			buildConfigurationList = 5A3590F73AEF14DC30EFAEAA /* Build configuration list for PBXNativeTarget "Alice" */;
 			buildPhases = (
-				9A8CFA836EF150B3C639C38D /* Sources */,
-				503D2B19D148E03CD0360035 /* Resources */,
+				AC7B137B0378E15175525861 /* Sources */,
+				79A8A5EB9842515A091AA0BA /* Resources */,
 			);
 			buildRules = (
 			);
@@ -170,96 +193,88 @@
 			packageProductDependencies = (
 			);
 			productName = Alice;
-			productReference = 35FBD4A5F481FB073EEB9B73 /* Alice.app */;
+			productReference = 0F4D8702308B44065E2EA7EA /* Alice.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		3C8CC54CB38ECEF4E532A5F8 /* Project object */ = {
+		19701A1C1A3AE07EFB0D8E2D /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					EAE872DEA3ADE2A268BF5615 = {
+						DevelopmentTeam = R3Q58R4888;
+					};
+				};
 			};
-			buildConfigurationList = A1FA718A1C0858FFE8C663B9 /* Build configuration list for PBXProject "Alice" */;
+			buildConfigurationList = 2033B79AF7502BEA40E8FFB4 /* Build configuration list for PBXProject "Alice" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				Base,
 				en,
 			);
-			mainGroup = 9788F218CE49DA5BE6B8F60D;
+			mainGroup = D5875F0C6F7B9577914A9A3E;
 			minimizedProjectReferenceProxies = 1;
 			preferredProjectObjectVersion = 77;
-			productRefGroup = 033391AE5932F91E41A3B943 /* Products */;
+			productRefGroup = 8CBDA7A3573EE3B763A4C2F1 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				B93FAE3E4424BB1198EA5D18 /* Alice */,
+				EAE872DEA3ADE2A268BF5615 /* Alice */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		503D2B19D148E03CD0360035 /* Resources */ = {
+		79A8A5EB9842515A091AA0BA /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A920F5D6C73448A4B121C0A1 /* Assets.xcassets in Resources */,
-				EAB2464C07EC34A915E57072 /* IBMPlexSans-Medium.ttf in Resources */,
-				EA60268733FACDFA4E1428EE /* IBMPlexSans-Regular.ttf in Resources */,
-				47936944068868C2C342149A /* IBMPlexSans-SemiBold.ttf in Resources */,
-				97F3B63ACB10402B2FFE39A5 /* OFL.txt in Resources */,
+				24A022AE3E7E1EF67BC8F0A0 /* Assets.xcassets in Resources */,
+				CE8C6D5122D50E90167377CA /* IBMPlexSans-Medium.ttf in Resources */,
+				BE1AA518BD02F8F428DF5220 /* IBMPlexSans-Regular.ttf in Resources */,
+				DF32B62846D78EE5F09EB7B3 /* IBMPlexSans-SemiBold.ttf in Resources */,
+				85D1CB6CFC5B77F2422EE86B /* OFL.txt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		9A8CFA836EF150B3C639C38D /* Sources */ = {
+		AC7B137B0378E15175525861 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				488E407FFA03CFB5B0188669 /* AliceApp.swift in Sources */,
-				94718C854D636542ADE8A5CD /* AliceMascot.swift in Sources */,
-				1711747389CAB432FB4A8391 /* AliceHomeView.swift in Sources */,
-				F9BEFA8BC1C3AC6B897D02C2 /* DecisionCard.swift in Sources */,
-				2999EAF16F5161F643CACEB7 /* DecisionCardView.swift in Sources */,
-				AF31559BDC237ECB462AF484 /* DecisionDetailView.swift in Sources */,
-				121848D3062C838F9F1B3A56 /* AliceTheme.swift in Sources */,
-				32EEEED35492CC8522B7B639 /* VoiceInputSheet.swift in Sources */,
-				0A291272F260D80070FE1830 /* AliceFixtures.swift in Sources */,
-				576C08851A3943B05FAC562A /* ProfileView.swift in Sources */,
-				061206A901073BAE1242A464 /* AliceRootView.swift in Sources */,
-				0D34238B588B1AE8DF982754 /* AliceSessionStore.swift in Sources */,
-				8032CD7E0E403F05CAAA6589 /* UsageData.swift in Sources */,
-				E1606EBC95991216380E0299 /* UsageView.swift in Sources */,
+				71F7F269A86649CA5863C877 /* AliceApp.swift in Sources */,
+				D178C19505DC5614EFFFDB23 /* AliceFixtures.swift in Sources */,
+				36C253606CB5E7FD2CA2CDF1 /* AliceHomeView.swift in Sources */,
+				5E49FE6D62D969636DC53345 /* AliceMascot.swift in Sources */,
+				982183C3BA7BD94934BE23BB /* AliceRootView.swift in Sources */,
+				A3AD16E5AA93E1BE1BEC2AC8 /* AliceSessionStore.swift in Sources */,
+				AEF41089C76ABE45BC2C9D8C /* AliceTheme.swift in Sources */,
+				9974D6939F7FC08E44D6BBFE /* AssemblyAITranscriber.swift in Sources */,
+				406CA7D68584EC60BB2F3420 /* DecisionCard.swift in Sources */,
+				F30DBC2822F12A709544F31F /* DecisionCardView.swift in Sources */,
+				342ADE3909B06D28CDAB79D0 /* DecisionDetailView.swift in Sources */,
+				8D361E7E543CAFF5986D42EE /* HTTPVoiceBackend.swift in Sources */,
+				82F3933A8B3F5D46C840613C /* MicrophoneRecorder.swift in Sources */,
+				344C0C222DE099DC9236CAFD /* ProfileView.swift in Sources */,
+				FAB22484AD79943F17594A56 /* UsageData.swift in Sources */,
+				C83112D3BD6CAD420DB6ECD9 /* UsageView.swift in Sources */,
+				D8BCD7367FABDF05A56A0F2B /* VoiceContracts.swift in Sources */,
+				B996BFD76EC29D4DF3AFAA4D /* VoiceInputModel.swift in Sources */,
+				BA7829F14DF49C57F5F020D9 /* VoiceInputSheet.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		2D910964FDF620FA39B45571 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				DEVELOPMENT_TEAM = R3Q58R4888;
-				INFOPLIST_FILE = Alice/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.bobcompanion.app;
-				SDKROOT = iphoneos;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 1;
-			};
-			name = Release;
-		};
-		737F3BE7003AC99D9D78C55B /* Release */ = {
+		2033CB2A157965EC35B3049D /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -315,7 +330,25 @@
 			};
 			name = Release;
 		};
-		7556D4F204577A8D307D214C /* Debug */ = {
+		295262CFD013B6F1C337C101 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				DEVELOPMENT_TEAM = R3Q58R4888;
+				INFOPLIST_FILE = Alice/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.bobcompanion.app;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		735EE18AA9E4EE6A6D0964CB /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -378,7 +411,7 @@
 			};
 			name = Debug;
 		};
-		E4042B78BEE2BCA35131390F /* Debug */ = {
+		EA6392AED62467D7EA3DFF66 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -399,25 +432,25 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		31E83345C3FAF46D7847A9A5 /* Build configuration list for PBXNativeTarget "Alice" */ = {
+		2033B79AF7502BEA40E8FFB4 /* Build configuration list for PBXProject "Alice" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				E4042B78BEE2BCA35131390F /* Debug */,
-				2D910964FDF620FA39B45571 /* Release */,
+				735EE18AA9E4EE6A6D0964CB /* Debug */,
+				2033CB2A157965EC35B3049D /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
 		};
-		A1FA718A1C0858FFE8C663B9 /* Build configuration list for PBXProject "Alice" */ = {
+		5A3590F73AEF14DC30EFAEAA /* Build configuration list for PBXNativeTarget "Alice" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				7556D4F204577A8D307D214C /* Debug */,
-				737F3BE7003AC99D9D78C55B /* Release */,
+				EA6392AED62467D7EA3DFF66 /* Debug */,
+				295262CFD013B6F1C337C101 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
 		};
 /* End XCConfigurationList section */
 	};
-	rootObject = 3C8CC54CB38ECEF4E532A5F8 /* Project object */;
+	rootObject = 19701A1C1A3AE07EFB0D8E2D /* Project object */;
 }

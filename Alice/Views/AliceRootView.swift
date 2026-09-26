@@ -19,7 +19,7 @@ struct AliceRootView: View {
         .foregroundStyle(Color.alicePrimary)
         .safeAreaInset(edge: .bottom, spacing: 0) { AliceNavigation() }
         .sheet(isPresented: $store.showsVoiceInput) {
-            VoiceInputSheet()
+            VoiceInputSheet(model: store.makeVoiceInput())
                 .presentationDetents([.large])
                 .presentationDragIndicator(.visible)
                 .presentationCornerRadius(32)

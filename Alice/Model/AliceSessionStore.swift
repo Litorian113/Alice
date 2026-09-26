@@ -28,7 +28,25 @@ final class AliceSessionStore: ObservableObject {
     @Published private(set) var lastChoice: DecisionOption?
     @Published var showsVoiceInput = false
 
-    init() { loadNextRequest() }
+    private let voiceServices: VoiceServices?
+    private var voiceContext: VoiceContext?
+
+    // The relay will supply services and real routing IDs after pairing.
+    // Local decision fixtures must never be used as backend routing IDs.
+    init(voiceServices: VoiceServices? = nil, voiceContext: VoiceContext? = nil) {
+        self.voiceServices = voiceServices
+        self.voiceContext = voiceContext
+        loadNextRequest()
+    }
+
+    func makeVoiceInput() -> VoiceInputModel {
+        VoiceInputModel(services: voiceServices, context: isConnected ? voiceContext : nil)
+    }
+
+    func updateVoiceContext(_ context: VoiceContext?) {
+        if context != voiceContext { showsVoiceInput = false }
+        voiceContext = context
+    }
 
     func selectTab(_ tab: AliceTab) {
         guard selectedTab != tab else { return }
@@ -64,6 +82,7 @@ final class AliceSessionStore: ObservableObject {
     }
 
     func disconnect() {
+        voiceContext = nil
         isConnected = false
         phase = .disconnected
         currentDecision = nil

@@ -40,7 +40,9 @@ The bottom navigation provides:
 
 This repository contains a native SwiftUI prototype. Requests, connection state, approvals and usage figures are local fixtures. **No shell command is executed and no real task permission is granted by the app yet.** Prototype labels are intentionally absent from the product UI.
 
-The microphone opens a voice input placeholder. Recording, transcription, IBM account sign-in, QR pairing, relay communication and push notifications still need to be connected.
+Voice input is prepared with native microphone capture, AssemblyAI streaming transcription, transcript review and a replaceable backend delivery adapter. It remains unavailable until backend services and a real paired session are injected. No API key is stored in the app and no live voice/backend connection is configured. IBM account sign-in, QR pairing, relay communication and push notifications still need to be connected.
+
+See [Voice & backend integration](docs/VOICE_INTEGRATION.md) for the Swift interfaces, proposed token/input endpoints, JSON examples, authentication, delivery acknowledgements and the wiring steps for Christopher.
 
 Returning to Alice or choosing **Next request** loads a fresh local approval. Disconnecting keeps the session disconnected until it is explicitly reconnected.
 
@@ -86,10 +88,11 @@ Alice/
 │   ├── AliceHomeView.swift         # Companion and current request
 │   ├── DecisionCardView.swift      # Command and approval bubbles
 │   ├── DecisionDetailView.swift    # Command explanation
-│   ├── VoiceInputSheet.swift       # Voice input placeholder
+│   ├── VoiceInputSheet.swift       # Record, review and send voice input
 │   ├── UsageView.swift
 │   ├── ProfileView.swift
 │   └── Components/AliceMascot.swift
+├── Voice/                         # Recording, AssemblyAI, backend contracts and adapters
 └── Resources/
     ├── Assets.xcassets/            # App icon
     └── Fonts/                     # IBM Plex Sans and its license
@@ -173,7 +176,7 @@ Risk remains part of the model, although the main UI has no risk badge. High-ris
 
 ## Scope
 
-Next steps are real pairing, receiving Bob's approval requests, returning decisions, voice input and usage integration. Companion customization can follow later.
+Next steps are real pairing, receiving Bob's approval requests, returning decisions, connecting the prepared voice services and usage integration. Companion customization can follow later.
 
 Alice is not a remote IDE or a full coding chat. The focus is a small, understandable decision at the moment Bob needs you.
 

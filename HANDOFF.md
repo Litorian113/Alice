@@ -2,6 +2,16 @@
 
 Stand: 26. September 2026. Diese Datei wurde auf ausdrücklichen Wunsch von Franz erstellt, weil der Projektordner umbenannt wurde und er ein neues Codex-Fenster öffnen muss. Sie ist der Arbeitskontext für den nächsten Agenten. Die öffentliche Produktbeschreibung steht in [README.md](README.md).
 
+## Nachtrag: vorbereitete Spracheingabe (26. September 2026)
+
+Dieser Nachtrag ersetzt die älteren Aussagen unten zum reinen Voice-Platzhalter. `Alice/Voice/` enthält jetzt Mikrofonaufnahme, AssemblyAI-Streaming mit kurzlebigen Tokens, Transkriptprüfung und einen austauschbaren HTTP-Adapter für die Übermittlung an Bob. `VoiceInputSheet` bietet den zugehörigen Ablauf ohne Texteingabefeld oder Chat. Der API-Key wird nicht in der App gespeichert.
+
+**Noch nicht angeschlossen:** Der Standard-Store hat keine Voice-Services und keinen echten Session-Kontext. Deshalb bleibt der Sprachdialog ehrlich nicht verfügbar; es gibt keinen Live-Aufruf oder behaupteten Versand. Backend-Endpoints, Authentifizierung, Token-Ausgabe und Bob-Zustellung müssen später verbunden werden. Die Verträge und Anschlussanleitung stehen in [docs/VOICE_INTEGRATION.md](docs/VOICE_INTEGRATION.md). Services im Store injizieren und echte Relay-IDs mit `updateVoiceContext(_:)` setzen; keine Fixture-IDs verwenden.
+
+Xcode-Dateiverweise wurden mit XcodeGen regeneriert; App-ID und Signing-Team bleiben erhalten. Den tatsächlichen Git-Stand prüfen: Die älteren Angaben zu uncommitted Umbenennungen sind historisch.
+
+Gezielt geprüft: Swift-Typcheck aller App-Dateien gegen das iOS-SDK, Plists und sämtliche Xcode-Quellverweise. Ein temporärer lokaler Check mit Test-Doubles prüfte den Voice-Ablauf, Finalisierungsgrenzen, Transkript-Ersetzung, Wiederholung mit derselben Input-ID und Unterbrechungen. Kein neuer Test-Target, kein Simulatorlauf und kein echter AssemblyAI-/Backend-Aufruf. Mikrofon und Live-Verbindung auf dem iPhone erst nach dem Backend-Anschluss prüfen.
+
 ## 1. Sofort wissen
 
 - **Produkt:** Alice, der mobile Partner für IBM Bob.
@@ -89,9 +99,9 @@ Franz weiß, dass die Daten lokal sind. Diese Tatsache wird in Entwicklerdokumen
 
 ### Sprache
 
-Das Mikro öffnet `VoiceInputSheet`, mit Alice, „I'm all ears.“ und einem Mikrofonmotiv. **Keine Aufnahme oder Transkription implementiert.** Es gibt dort derzeit den ehrlichen Text „Voice input isn't connected yet.“ und eine Rückkehraktion.
+Das Mikro öffnet `VoiceInputSheet`, mit Alice, „I'm all ears.“ und einem Mikrofonmotiv. Aufnahme, AssemblyAI-Transkription, Transkriptprüfung und Versand sind inzwischen implementiert, aber noch nicht konfiguriert. Ohne injizierte Services und echten Session-Kontext gibt es weiterhin den ehrlichen Text „Voice input isn't connected yet.“ und eine Rückkehraktion. Siehe Voice-Nachtrag oben.
 
-Früher gab es eine editierbare Beispielphrase. Diese wurde zusammen mit dem Textfeld entfernt. Kein simuliertes „Listening“, keine erfundenen Transkripte und keine Mikrofonberechtigungen als bereits erledigt darstellen.
+Früher gab es eine editierbare Beispielphrase. Diese wurde zusammen mit dem Textfeld entfernt. Das neue Transkript ist ebenfalls nicht editierbar; alternativ kann neu aufgenommen werden. „I'm listening“ erscheint erst nach erfolgreichem Verbindungs- und Mikrofonstart. Mikrofonfreigabe wird erst beim ausdrücklichen Start angefragt.
 
 ### Usage
 
@@ -137,7 +147,8 @@ Designsystem: `Alice/App/AliceTheme.swift`. Helle Flächen, IBM-Blau, Violett un
 | `Alice/Views/AliceHomeView.swift` | Figur, aktuelle Anfrage, Ergebnis und getrennte Ansicht. |
 | `Alice/Views/DecisionCardView.swift` | Befehls-Bubble, CommandSnippet, drei Approval-Bubbles, Bestätigungsdialog. |
 | `Alice/Views/DecisionDetailView.swift` | Erklärung des Befehls und der Freigabeumfänge. |
-| `Alice/Views/VoiceInputSheet.swift` | Sprach-Platzhalter ohne Texteingabe. |
+| `Alice/Views/VoiceInputSheet.swift` | Sprachaufnahme, Transkriptprüfung und Versand ohne Texteingabefeld. |
+| `Alice/Voice/` | Austauschbare Voice-Verträge, Mikrofonaufnahme, AssemblyAI, HTTP-Backend und Zustandsmodell. |
 | `Alice/Views/UsageView.swift` | Charts und Bobcoins. |
 | `Alice/Views/ProfileView.swift` | Einstellungen und Session-Aktionen. |
 | `Alice/Views/Components/AliceMascot.swift` | Vollständige Vektorfigur und Face-Variante. |
@@ -258,7 +269,7 @@ TestFlight wurde nur theoretisch besprochen: Tester können die App über einen 
 
 ## 12. Was als Nächstes zu tun ist
 
-Der unmittelbare Auftrag dieser Session war nur, den Kontext für das neue Fenster zu sichern. Es gibt **keinen Auftrag, jetzt automatisch Backend, Voice, TestFlight, Customizer oder weitere UI-Features fertigzustellen**.
+Der ursprüngliche Übergabeauftrag war nur, den Kontext für das neue Fenster zu sichern. Inzwischen wurde die Voice-Vorbereitung ausdrücklich beauftragt und umgesetzt (siehe Nachtrag). Es gibt weiterhin **keinen Auftrag, automatisch ein Backend zu deployen, TestFlight einzurichten oder den Customizer zu bauen**.
 
 Nach Lesen der Übergabe ist der nächste konkrete Wunsch von Franz maßgeblich. Sinnvolle spätere Themen sind:
 

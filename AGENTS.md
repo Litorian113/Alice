@@ -9,7 +9,7 @@ Lies zu Beginn einer neuen Session [HANDOFF.md](HANDOFF.md) und danach [README.m
 - Franz möchte selbst auf seinem iPhone testen. Keine umfangreichen Testserien, wiederholten Simulator-Builds oder UI-Test-Targets für einfache Änderungen anlegen. Prüfe gezielt nur das Nötige.
 - Baue entfernte UI-Elemente nicht ohne neuen Auftrag wieder ein: kein Chatverlauf, kein Texteingabefeld, keine Risk-Badges, keine Demo-Labels, kein Session-Balken auf der Hauptseite und keine sichtbare Beschriftung unter dem Mikrofon.
 - Alice ist der mobile Partner für IBM Bob. Bob bleibt der Entwickler in der IDE. Benenne fachliche Bob-Bezüge wie Bobcoins nicht pauschal um.
-- Die aktuelle App nutzt lokale Fixtures. Behaupte keine echte IDE-Verbindung, Aufnahme, Befehlsausführung oder serverseitige Freigabe.
+- Die aktuelle App nutzt lokale Fixtures. Voice-Aufnahme und AssemblyAI-Adapter sind vorbereitet, aber standardmäßig nicht angeschlossen; siehe `docs/VOICE_INTEGRATION.md`. Behaupte keine Live-Verbindung, tatsächliche Aufnahme, Befehlsausführung oder serverseitige Freigabe ohne entsprechenden Nachweis.
 - Behalte die bestehende App-ID und Signing-Einstellungen bei, sofern keine bewusste Migration beauftragt wird.
 - Halte Xcode-Dateiverweise, `project.yml` und Dokumentation bei Dateiänderungen konsistent.
 
