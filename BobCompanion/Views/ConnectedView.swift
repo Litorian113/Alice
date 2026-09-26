@@ -65,7 +65,7 @@ struct ConnectedView: View {
                     .font(.system(size: 11))
                     .foregroundStyle(Color(hex: "C9B7F5"))
                     .offset(x: 76, y: 19)
-                BobMascot(happy: store.phase == .completed || store.phase == .reverted)
+                AliceMascot(happy: store.phase == .completed || store.phase == .reverted)
                     .frame(width: 106, height: 126)
                     .rotationEffect(.degrees(store.phase == .needsDecision ? -4 : 0))
             }
@@ -104,7 +104,7 @@ struct ConnectedView: View {
 
     private var conversation: some View {
         VStack(spacing: 12) {
-            // The decision card itself is Bob's first reply. Show the whole thread after a response.
+            // The decision card is the first update Alice brings from Bob. Show the whole thread after a response.
             ForEach(store.currentDecision != nil ? Array(store.messages.filter { $0.sender == .you }) : store.messages) { message in
                 ConversationBubble(message: message)
             }
@@ -146,7 +146,7 @@ struct ConnectedView: View {
         VStack(alignment: .leading, spacing: 16) {
             Eyebrow(text: "Let's reconnect")
             Text("Your desk can wait.").font(.plex(23, weight: .semibold))
-            Text("Try a session with Bob: make a decision, send an instruction, and see him get back to work.")
+            Text("Meet Alice, your companion for Bob. Make a decision, pass on an instruction, and let Bob get back to work.")
                 .font(.plex(15)).foregroundStyle(Color.bcSecondary)
             PrimaryButton(title: "Start demo session") { store.connectDemo() }
             Text("IDE pairing will arrive with the backend connection.")
@@ -162,7 +162,7 @@ struct ConversationBubble: View {
         HStack(alignment: .bottom, spacing: 8) {
             if isYou { Spacer(minLength: 36) }
             else {
-                BobMascot(faceOnly: true, animated: false)
+                AliceMascot(faceOnly: true, animated: false)
                     .frame(width: 27, height: 24)
                     .padding(.bottom, 4)
             }
@@ -176,6 +176,6 @@ struct ConversationBubble: View {
             if !isYou { Spacer(minLength: 22) }
         }
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel("\(isYou ? "You" : "Bob"): \(message.text)")
+        .accessibilityLabel("\(isYou ? "You" : "Alice"): \(message.text)")
     }
 }

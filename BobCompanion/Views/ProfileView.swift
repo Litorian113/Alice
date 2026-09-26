@@ -46,11 +46,11 @@ struct ProfileView: View {
                     }.tint(.bcAccent)
                     Divider().overlay(Color.bcBorder)
                     Toggle(isOn: $companionMotion) {
-                        settingsRow("Companion motion", subtitle: "Let Bob bounce and blink", icon: "sparkles", chevron: false)
+                        settingsRow("Companion motion", subtitle: "Let Alice bounce and blink", icon: "sparkles", chevron: false)
                     }.tint(.bcAccent)
                     Divider().overlay(Color.bcBorder)
                     Button { showsAbout = true } label: {
-                        settingsRow("About Bob Companion", subtitle: "Made for a little more freedom", icon: "info.circle")
+                        settingsRow("About Alice", subtitle: "Made for a little more freedom", icon: "info.circle")
                     }.buttonStyle(.plain)
                 }.padding(20).companionSurface()
                 HStack(spacing: 7) {
@@ -70,9 +70,9 @@ struct ProfileView: View {
         }
         .sheet(isPresented: $showsAbout) {
             VStack(spacing: 18) {
-                BobMascot(happy: true).frame(width: 116, height: 139)
-                Text("Bob Companion").font(.plex(28, weight: .semibold))
-                Text("Let Bob work. Step in when it matters.")
+                AliceMascot(happy: true).frame(width: 116, height: 139)
+                Text("Alice").font(.plex(28, weight: .semibold))
+                Text("Your companion for Bob.")
                     .font(.plex(15)).multilineTextAlignment(.center)
                 Text("IBM Bob 2.0 Hackathon · September 2026\nFranz Anhäupl & Christopher Pietsch\nApp prototype · Version 1.0")
                     .font(.plex(12)).foregroundStyle(Color.bcSecondary).multilineTextAlignment(.center).lineSpacing(5)

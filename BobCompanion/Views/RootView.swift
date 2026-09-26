@@ -8,7 +8,7 @@ struct RootView: View {
             Color.bcBackground.ignoresSafeArea()
             Group {
                 switch store.selectedTab {
-                case .bob: ConnectedView()
+                case .alice: ConnectedView()
                 case .usage: UsageView()
                 case .profile: ProfileView()
                 }
@@ -31,7 +31,7 @@ struct RootView: View {
 struct CompanionNavigation: View {
     @EnvironmentObject var store: SessionStore
     @AppStorage("hapticsEnabled") private var hapticsEnabled = true
-    private var onBob: Bool { store.selectedTab == .bob }
+    private var onAlice: Bool { store.selectedTab == .alice }
 
     var body: some View {
         ZStack(alignment: .top) {
@@ -44,19 +44,19 @@ struct CompanionNavigation: View {
                 VStack(spacing: 8) {
                     Button {
                         if hapticsEnabled { UIImpactFeedbackGenerator(style: .soft).impactOccurred() }
-                        if onBob {
+                        if onAlice {
                             if store.isDemoConnected { store.openInstruction(voice: true) }
                             else { store.connectDemo() }
-                        } else { store.selectTab(.bob) }
+                        } else { store.selectTab(.alice) }
                     } label: {
                         ZStack {
                             Circle().fill(LinearGradient(colors: [.bcAccent, Color(hex: "7160E8")], startPoint: .topLeading, endPoint: .bottomTrailing))
-                            if onBob {
+                            if onAlice {
                                 Image(systemName: store.isDemoConnected ? "mic.fill" : "plus")
                                     .font(.system(size: 27, weight: .medium))
                                     .foregroundStyle(.white)
                             } else {
-                                BobMascot(faceOnly: true, animated: false)
+                                AliceMascot(faceOnly: true, animated: false)
                                     .frame(width: 49, height: 43)
                             }
                         }
@@ -65,11 +65,11 @@ struct CompanionNavigation: View {
                         .shadow(color: Color.bcAccent.opacity(0.26), radius: 12, y: 6)
                     }
                     .buttonStyle(.plain)
-                    .accessibilityLabel(onBob ? (store.isDemoConnected ? "Talk to Bob" : "Start demo session") : "Bob")
-                    .accessibilityIdentifier("nav.bob")
-                    Text(onBob ? (store.isDemoConnected ? "Talk to Bob" : "Meet Bob") : "Bob")
+                    .accessibilityLabel(onAlice ? (store.isDemoConnected ? "Talk to Alice" : "Start demo session") : "Alice")
+                    .accessibilityIdentifier("nav.alice")
+                    Text(onAlice ? (store.isDemoConnected ? "Talk to Alice" : "Meet Alice") : "Alice")
                         .font(.plex(11, weight: .medium, relativeTo: .caption))
-                        .foregroundStyle(onBob ? Color.bcAccent : .bcSecondary)
+                        .foregroundStyle(onAlice ? Color.bcAccent : .bcSecondary)
                 }
                 .frame(width: 120)
                 tab(.profile, icon: "person.crop.circle")
@@ -119,8 +119,7 @@ private struct NavigationNotch: Shape {
 struct AppHeader: View {
     var body: some View {
         HStack(alignment: .firstTextBaseline, spacing: 5) {
-            Text("bob").font(.plex(25, weight: .semibold, relativeTo: .title2))
-            Text("companion").font(.plex(19)).foregroundStyle(Color.bcSecondary)
+            Text("Alice").font(.plex(25, weight: .semibold, relativeTo: .title2))
             Spacer()
             HStack(spacing: 5) {
                 Circle().fill(Color.bcAccent).frame(width: 5, height: 5)

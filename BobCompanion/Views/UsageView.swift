@@ -20,9 +20,9 @@ struct UsageView: View {
                 tokenChart
                 bobcoins
                 HStack(spacing: 16) {
-                    BobMascot(faceOnly: true, animated: false).frame(width: 53, height: 48)
+                    AliceMascot(faceOnly: true, animated: false).frame(width: 53, height: 48)
                     VStack(alignment: .leading, spacing: 5) {
-                        Text("A Bob that's so you.").font(.plex(17, weight: .semibold))
+                        Text("An Alice that's so you.").font(.plex(17, weight: .semibold))
                         Text("Colors, outfits, a little personality.\nCompanion customization is coming later.")
                             .font(.plex(12)).foregroundStyle(Color.bcSecondary)
                     }

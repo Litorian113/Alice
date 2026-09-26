@@ -1,16 +1,16 @@
-# Bob Companion
+# Alice
 
 > **Let Bob work. Step in when it matters.**
 
-A mobile decision layer for IBM Bob — IBM Bob 2.0 Hackathon · September 2026
+A companion for IBM Bob — IBM Bob 2.0 Hackathon · September 2026
 
 **Team:** Franz Anhäupl · Christopher Pietsch
 
 ---
 
-## What is Bob Companion?
+## What is Alice?
 
-Bob Companion is a lightweight mobile interface that lets developers step away from their computer while IBM Bob continues working autonomously. When Bob reaches a point where human judgment is genuinely needed, it sends a compact decision request to the developer's phone.
+Alice is a lightweight mobile companion that lets developers step away from their computer while IBM Bob continues working autonomously. Alice brings Bob's decision requests to the phone and passes the developer's instructions back. Alice and Bob are two distinct characters: Bob works in the IDE; Alice keeps the developer in the loop.
 
 The developer receives:
 
@@ -27,7 +27,7 @@ One tap. Bob continues.
 
 Autonomous coding agents can work for extended periods without supervision — until suddenly they can't.
 
-Bob Companion solves the gap between *agent running* and *agent waiting for you*:
+Alice bridges the gap between *agent running* and *agent waiting for you*:
 
 ```
 Today:        Developer watches → waits → responds → watches again
@@ -131,17 +131,19 @@ Everything else is a bonus.
 
 ## Mobile App
 
-The app opens directly on **Bob**, with a local authentication-refactor demo. A curved bottom bar keeps **Usage** on the left and **Profile** on the right. The raised center button shows Bob on the other tabs and becomes a microphone on the Bob screen.
+The app opens directly on **Alice**, with a local authentication-refactor demo. A curved bottom bar keeps **Usage** on the left and **Profile** on the right. The raised center button shows Alice on the other tabs and becomes a microphone on the Alice screen.
 
-- **Bob:** animated vector companion, decision bubbles, recommendation, context sheet, working/completed/reverted/paused states, and typed instructions.
+- **Alice:** animated vector companion, decision bubbles, Bob's recommendation, context sheet, working/completed/reverted/paused states, and typed instructions.
 - **Usage:** interactive stacked token chart for today/week/month, input/output totals, and an illustrative Bobcoin allowance. Companion customization is a future feature.
 - **Profile:** editable local display name, demo disconnect/reconnect, persistent haptic and animation preferences, and app information.
 
-The visual system uses light surfaces, IBM blue, and bundled [IBM Plex Sans](https://github.com/IBM/plex). The font license is included in `BobCompanion/Resources/Fonts/OFL.txt`. Bob is drawn natively in SwiftUI, with blinking and floating motion that respects Reduce Motion and the profile preference.
+The visual system uses light surfaces, IBM blue, and bundled [IBM Plex Sans](https://github.com/IBM/plex). The font license is included in `BobCompanion/Resources/Fonts/OFL.txt`. Alice shares Bob's bold robot outlines and friendly face, with a violet bob-shaped shell, mint `//` hair clip, headset, and an A badge. She is drawn natively in SwiftUI, with blinking and floating motion that respects Reduce Motion and the profile preference. The app icon is rendered from the same artwork with `scripts/render-app-icon.swift`.
+
+The installed app is named **Alice**. The existing Xcode project path, target and bundle identifier are retained so the app continues updating the same installation.
 
 ### Demo behavior
 
-Every return from Usage or Profile to Bob starts a fresh demo, while a disconnected session stays disconnected until explicitly reconnected.
+Every return from Usage or Profile to Alice starts a fresh demo, while a disconnected session stays disconnected until explicitly reconnected.
 
 1. Bob has refactored the authentication module. Three tests fail because of outdated mocks.
 2. **Fix tests** updates the mocks and finishes with 48/48 passing tests.

@@ -1,7 +1,8 @@
 import SwiftUI
 
-/// Native vector artwork: face, helmet and body remain crisp at every size.
-struct BobMascot: View {
+/// Alice shares Bob's robot design language, with a swept violet shell and a headset.
+/// Native vector artwork stays crisp in the conversation, navigation and app icon.
+struct AliceMascot: View {
     var faceOnly = false
     var happy = false
     var animated = true
@@ -20,18 +21,20 @@ struct BobMascot: View {
                 context.translateBy(x: (size.width - base.width * scale) / 2,
                                     y: (size.height - base.height * scale) / 2)
                 context.scaleBy(x: scale, y: scale)
-                drawBob(context: context, blink: blink)
+                drawAlice(context: context, blink: blink)
             }
             .offset(y: shouldAnimate && !faceOnly ? sin(time * 1.8) * 3 : 0)
         }
-        .accessibilityLabel(happy ? "Bob is happy" : "Bob, your coding companion")
+        .accessibilityLabel(happy ? "Alice is happy" : "Alice, your companion for Bob")
         .accessibilityAddTraits(.isImage)
     }
 
-    private func drawBob(context: GraphicsContext, blink: Bool) {
+    private func drawAlice(context: GraphicsContext, blink: Bool) {
         let ink = Color(hex: "182544")
         let white = Color(hex: "F8FAFF")
         let shade = Color(hex: "D8E2F0")
+        let violet = Color(hex: "7860E8")
+        let mint = Color(hex: "85E3DB")
         let line = StrokeStyle(lineWidth: 6, lineCap: .round, lineJoin: .round)
 
         func shape(_ path: Path, _ color: Color) {
@@ -49,8 +52,8 @@ struct BobMascot: View {
 
         if !faceOnly {
             // Arms and little boots.
-            round(47, 198, 26, 57, 13, shade)
-            round(168, 198, 26, 57, 13, shade)
+            round(47, 198, 26, 57, 13, violet)
+            round(168, 198, 26, 57, 13, violet)
             var leftHand = Path()
             leftHand.move(to: CGPoint(x: 33, y: 257))
             leftHand.addQuadCurve(to: CGPoint(x: 81, y: 257), control: CGPoint(x: 54, y: 211))
@@ -68,47 +71,66 @@ struct BobMascot: View {
             body.addCurve(to: CGPoint(x: 84, y: 228), control1: CGPoint(x: 153, y: 266), control2: CGPoint(x: 88, y: 266))
             body.closeSubpath()
             shape(body, white)
-            stroke([CGPoint(x: 105,y: 216), CGPoint(x: 96,y: 225), CGPoint(x: 105,y: 233)], color: .bcAccent, width: 4)
-            stroke([CGPoint(x: 126,y: 212), CGPoint(x: 115,y: 237)], color: .bcAccent, width: 4)
-            stroke([CGPoint(x: 136,y: 216), CGPoint(x: 145,y: 225), CGPoint(x: 136,y: 233)], color: .bcAccent, width: 4)
+            // A small geometric A badge, so her full-body silhouette has its own identity.
+            stroke([CGPoint(x: 107,y: 235), CGPoint(x: 120,y: 211), CGPoint(x: 133,y: 235)], color: violet, width: 5)
+            stroke([CGPoint(x: 112,y: 227), CGPoint(x: 128,y: 227)], color: violet, width: 4)
             for x: CGFloat in [54, 131] {
                 var foot = Path()
                 foot.move(to: CGPoint(x: x, y: 282))
                 foot.addCurve(to: CGPoint(x: x + 56, y: 282), control1: CGPoint(x: x + 4, y: 242), control2: CGPoint(x: x + 51, y: 242))
                 foot.closeSubpath()
-                shape(foot, .bcAccent)
+                shape(foot, violet)
             }
         }
 
-        round(25, 113, 18, 34, 6, shade)
-        round(196, 113, 18, 34, 6, shade)
+        // The rounded shell forms a bob haircut behind the face.
+        var shell = Path()
+        shell.move(to: CGPoint(x: 32, y: 145))
+        shell.addLine(to: CGPoint(x: 31, y: 80))
+        shell.addCurve(to: CGPoint(x: 117, y: 9), control1: CGPoint(x: 30, y: 29), control2: CGPoint(x: 64, y: 5))
+        shell.addCurve(to: CGPoint(x: 208, y: 80), control1: CGPoint(x: 173, y: 2), control2: CGPoint(x: 209, y: 31))
+        shell.addLine(to: CGPoint(x: 210, y: 151))
+        shell.addQuadCurve(to: CGPoint(x: 180, y: 169), control: CGPoint(x: 211, y: 174))
+        shell.addLine(to: CGPoint(x: 62, y: 169))
+        shell.addQuadCurve(to: CGPoint(x: 32, y: 145), control: CGPoint(x: 29, y: 173))
+        shape(shell, Color(hex: "6652C8"))
+
         round(39, 80, 161, 102, 32, shade)
         context.fill(Path(roundedRect: CGRect(x: 50, y: 86, width: 141, height: 92), cornerRadius: 27), with: .color(white))
 
-        // The blue-to-violet hard hat from Bob's reference artwork.
-        var hat = Path()
-        hat.move(to: CGPoint(x: 21, y: 99))
-        hat.addQuadCurve(to: CGPoint(x: 36, y: 88), control: CGPoint(x: 18, y: 92))
-        hat.addCurve(to: CGPoint(x: 203, y: 88), control1: CGPoint(x: 40, y: -9), control2: CGPoint(x: 192, y: -9))
-        hat.addQuadCurve(to: CGPoint(x: 221, y: 99), control: CGPoint(x: 222, y: 93))
-        hat.addQuadCurve(to: CGPoint(x: 213, y: 107), control: CGPoint(x: 224, y: 107))
-        hat.addLine(to: CGPoint(x: 28, y: 107))
-        hat.addQuadCurve(to: CGPoint(x: 21, y: 99), control: CGPoint(x: 20, y: 106))
-        context.fill(hat, with: .linearGradient(Gradient(colors: [.bcAccent, Color(hex: "8052F3")]), startPoint: .zero, endPoint: CGPoint(x: 220, y: 95)))
-        context.stroke(hat, with: .color(ink), style: line)
-        var ridge = Path()
-        ridge.move(to: CGPoint(x: 97, y: 59))
-        ridge.addLine(to: CGPoint(x: 97, y: 13))
-        ridge.addQuadCurve(to: CGPoint(x: 105, y: 6), control: CGPoint(x: 97, y: 6))
-        ridge.addLine(to: CGPoint(x: 134, y: 6))
-        ridge.addQuadCurve(to: CGPoint(x: 142, y: 13), control: CGPoint(x: 142, y: 6))
-        ridge.addLine(to: CGPoint(x: 142, y: 59))
-        context.fill(ridge, with: .color(Color(hex: "367BFF")))
-        context.stroke(ridge, with: .color(ink), style: line)
-        var brim = Path()
-        brim.move(to: CGPoint(x: 58, y: 85))
-        brim.addQuadCurve(to: CGPoint(x: 182, y: 85), control: CGPoint(x: 120, y: 74))
-        context.stroke(brim, with: .color(ink), style: line)
+        // Swept fringe: a different silhouette from Bob's hard hat, using the same bold outlines.
+        var fringe = Path()
+        fringe.move(to: CGPoint(x: 31, y: 110))
+        fringe.addLine(to: CGPoint(x: 31, y: 79))
+        fringe.addCurve(to: CGPoint(x: 114, y: 9), control1: CGPoint(x: 30, y: 28), control2: CGPoint(x: 66, y: 5))
+        fringe.addCurve(to: CGPoint(x: 207, y: 77), control1: CGPoint(x: 170, y: 1), control2: CGPoint(x: 205, y: 30))
+        fringe.addLine(to: CGPoint(x: 209, y: 113))
+        fringe.addQuadCurve(to: CGPoint(x: 170, y: 64), control: CGPoint(x: 179, y: 102))
+        fringe.addCurve(to: CGPoint(x: 31, y: 110), control1: CGPoint(x: 140, y: 98), control2: CGPoint(x: 78, y: 113))
+        fringe.closeSubpath()
+        context.fill(fringe, with: .linearGradient(
+            Gradient(colors: [Color(hex: "536EF0"), Color(hex: "AA74F0")]),
+            startPoint: CGPoint(x: 38, y: 18), endPoint: CGPoint(x: 207, y: 120)))
+        context.stroke(fringe, with: .color(ink), style: line)
+
+        var sweep = Path()
+        sweep.move(to: CGPoint(x: 56, y: 80))
+        sweep.addQuadCurve(to: CGPoint(x: 147, y: 43), control: CGPoint(x: 112, y: 78))
+        context.stroke(sweep, with: .color(Color(hex: "C4C3FF")),
+                       style: StrokeStyle(lineWidth: 5, lineCap: .round))
+
+        // A // hair clip nods to code; the headset makes her role as the companion visible.
+        for x: CGFloat in [170, 183] {
+            stroke([CGPoint(x: x, y: 42), CGPoint(x: x - 7, y: 57)], color: ink, width: 10)
+            stroke([CGPoint(x: x, y: 42), CGPoint(x: x - 7, y: 57)], color: mint, width: 5)
+        }
+        round(23, 118, 22, 32, 9, mint)
+        round(195, 118, 22, 32, 9, mint)
+        var microphone = Path()
+        microphone.move(to: CGPoint(x: 208, y: 148))
+        microphone.addQuadCurve(to: CGPoint(x: 177, y: 164), control: CGPoint(x: 208, y: 166))
+        context.stroke(microphone, with: .color(ink), style: line)
+        round(166, 159, 17, 10, 5, mint)
 
         for x: CGFloat in [83, 157] {
             if blink || happy {

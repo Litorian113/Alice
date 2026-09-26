@@ -2,7 +2,7 @@ import Foundation
 import Combine
 
 enum CompanionTab: String, CaseIterable {
-    case usage = "Usage", bob = "Bob", profile = "Profile"
+    case usage = "Usage", alice = "Alice", profile = "Profile"
 }
 
 enum CompanionPhase: Equatable {
@@ -22,11 +22,11 @@ enum CompanionPhase: Equatable {
     var subtitle: String {
         switch self {
         case .needsDecision: return "One quick decision. Then I'll take it from here."
-        case .working: return "I'll handle the code. You enjoy the coffee."
+        case .working: return "Bob handles the code. I'll keep you in the loop."
         case .completed: return "A little teamwork goes a long way."
         case .reverted: return "Your last green state is restored."
         case .paused: return "I'll be right here when you're ready."
-        case .disconnected: return "Your coding companion, wherever you are."
+        case .disconnected: return "Your companion for Bob, wherever you are."
         }
     }
 
@@ -43,7 +43,7 @@ enum CompanionPhase: Equatable {
 }
 
 struct ConversationMessage: Identifiable {
-    enum Sender { case bob, you }
+    enum Sender { case alice, you }
     let id = UUID()
     let sender: Sender
     let text: String
@@ -51,7 +51,7 @@ struct ConversationMessage: Identifiable {
 
 @MainActor
 final class SessionStore: ObservableObject {
-    @Published private(set) var selectedTab: CompanionTab = .bob
+    @Published private(set) var selectedTab: CompanionTab = .alice
     @Published private(set) var phase: CompanionPhase = .needsDecision
     @Published private(set) var isDemoConnected = true
     @Published private(set) var messages: [ConversationMessage] = []
@@ -67,7 +67,7 @@ final class SessionStore: ObservableObject {
     func selectTab(_ tab: CompanionTab) {
         guard selectedTab != tab else { return }
         selectedTab = tab
-        if tab == .bob && isDemoConnected { restartDemo() }
+        if tab == .alice && isDemoConnected { restartDemo() }
     }
 
     func restartDemo() {
@@ -79,7 +79,7 @@ final class SessionStore: ObservableObject {
         instructions = []
         messages = [
             ConversationMessage(sender: .you, text: "Refactor the auth module and run the tests."),
-            ConversationMessage(sender: .bob, text: "Refactor's done! The test run caught something I need your call on.")
+            ConversationMessage(sender: .alice, text: "Bob's finished the refactor! His test run caught something that needs your call.")
         ]
     }
 
@@ -95,22 +95,22 @@ final class SessionStore: ObservableObject {
         }
         if option.id == "c" {
             phase = .paused
-            messages.append(ConversationMessage(sender: .bob, text: "Paused. I'll wait until you're back before making any more changes."))
+            messages.append(ConversationMessage(sender: .alice, text: "Bob's paused. I'll be here when you're ready to pick things up."))
             return
         }
         phase = .working
         let isRevert = option.id == "b"
-        messages.append(ConversationMessage(sender: .bob, text: isRevert
-            ? "Got it. I'll restore the previous version and check the tests."
-            : "Good call. I'll update the outdated mocks and rerun the suite."))
+        messages.append(ConversationMessage(sender: .alice, text: isRevert
+            ? "Got it. I've asked Bob to restore the previous version and check the tests."
+            : "Good call. I've asked Bob to update the outdated mocks and rerun the suite."))
         demoTask = Task { [weak self] in
             do { try await Task.sleep(for: .seconds(2.2)) }
             catch { return }
             guard let self, !Task.isCancelled, self.isDemoConnected else { return }
             self.phase = isRevert ? .reverted : .completed
-            self.messages.append(ConversationMessage(sender: .bob, text: isRevert
-                ? "Previous version restored. All 48 tests pass again."
-                : "All 48 tests passed. Authentication refactor complete. Go enjoy your day!"))
+            self.messages.append(ConversationMessage(sender: .alice, text: isRevert
+                ? "Bob's restored the previous version. All 48 tests pass again."
+                : "Good news from Bob: all 48 tests passed. Refactor complete. Go enjoy your day!"))
         }
     }
 
@@ -125,7 +125,7 @@ final class SessionStore: ObservableObject {
         guard isDemoConnected, !trimmed.isEmpty else { return }
         instructions.append(trimmed)
         messages.append(ConversationMessage(sender: .you, text: trimmed))
-        messages.append(ConversationMessage(sender: .bob, text: "Added to this demo session. When your IDE is connected, Bob will pick up your instruction there."))
+        messages.append(ConversationMessage(sender: .alice, text: "Added to this demo session. When your IDE is connected, Bob will pick up your instruction there."))
         showsInstruction = false
     }
 
@@ -142,7 +142,7 @@ final class SessionStore: ObservableObject {
 
     func connectDemo() {
         isDemoConnected = true
-        selectedTab = .bob
+        selectedTab = .alice
         restartDemo()
     }
 }

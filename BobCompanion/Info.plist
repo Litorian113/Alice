@@ -11,7 +11,9 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>Bob Companion</string>
+	<string>Alice</string>
+	<key>CFBundleDisplayName</key>
+	<string>Alice</string>
 	<key>CFBundlePackageType</key>
 	<string>$(PRODUCT_BUNDLE_PACKAGE_TYPE)</string>
 	<key>CFBundleShortVersionString</key>
@@ -42,6 +44,6 @@
 		<string>UIInterfaceOrientationPortrait</string>
 	</array>
 	<key>NSMotionUsageDescription</key>
-	<string>Bob Companion uses motion to detect shake gestures for quick decisions.</string>
+	<string>Alice uses motion to detect shake gestures for quick decisions.</string>
 </dict>
 </plist>

@@ -12,14 +12,14 @@ struct InstructionSheet: View {
         ScrollView {
             VStack(spacing: 24) {
                 HStack {
-                    Eyebrow(text: "A word with Bob")
+                    Eyebrow(text: "A word with Alice")
                     Spacer()
                     Button { dismiss() } label: {
                         Image(systemName: "xmark").font(.system(size: 14, weight: .medium))
                             .padding(12).background(Color.bcSurfaceRaised, in: Circle())
                     }.accessibilityLabel("Close instruction")
                 }
-                BobMascot(faceOnly: true).frame(width: 91, height: 75)
+                AliceMascot(faceOnly: true).frame(width: 91, height: 75)
                 VStack(spacing: 7) {
                     Text(voiceMode ? "I'm all ears." : "What's on your mind?")
                         .font(.plex(29, weight: .semibold))
@@ -51,7 +51,7 @@ struct InstructionSheet: View {
                 }
                 VStack(alignment: .leading, spacing: 10) {
                     Eyebrow(text: voiceMode ? "Review your message" : "Your instruction")
-                    TextField("Tell Bob what to do…", text: $text, axis: .vertical)
+                    TextField("What should I pass on to Bob?", text: $text, axis: .vertical)
                         .font(.plex(17)).lineLimit(3...6)
                         .focused($textFocused)
                         .padding(18).companionSurface(radius: 18)
