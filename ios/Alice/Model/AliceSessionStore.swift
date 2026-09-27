@@ -18,6 +18,14 @@ enum AlicePhase: Equatable {
     }
 }
 
+struct DecisionFeedback: Identifiable {
+    let id: String
+    let phase: AlicePhase
+    let appearedAt = Date()
+
+    var canDismiss: Bool { Date().timeIntervalSince(appearedAt) >= 2 }
+}
+
 @MainActor
 final class AliceSessionStore: ObservableObject {
     @Published private(set) var selectedTab: AliceTab = .alice
@@ -26,6 +34,7 @@ final class AliceSessionStore: ObservableObject {
     @Published private(set) var currentDecision: DecisionCard?
     @Published private(set) var lastResponse: DecisionResponse?
     @Published private(set) var lastChoice: DecisionOption?
+    @Published private(set) var decisionFeedback: DecisionFeedback?
     @Published private(set) var pairing: Pairing?
     @Published private(set) var isSending = false
     @Published private(set) var connectionText = "Not connected"
@@ -43,6 +52,7 @@ final class AliceSessionStore: ObservableObject {
     private var cards: [DecisionCard] = []
     private var sendingTimeout: Task<Void, Never>?
     private var expiryTimer: Task<Void, Never>?
+    private var feedbackTimer: Task<Void, Never>?
     private var active = false
     var hasPendingResponse: Bool { lastResponse?.id == currentDecision?.id && lastResponse != nil }
 
@@ -146,10 +156,27 @@ final class AliceSessionStore: ObservableObject {
     }
 
     func selectTab(_ tab: AliceTab) { selectedTab = tab }
-    func loadNextRequest() {
-        lastResponse = nil; lastChoice = nil
+    func dismissDecisionFeedback(id: String) {
+        guard let feedback = decisionFeedback, feedback.id == id, feedback.canDismiss else { return }
+        clearDecisionFeedback()
+        if lastResponse?.id == id { lastResponse = nil; lastChoice = nil }
         phase = .waiting
         showNextCard()
+    }
+
+    private func showDecisionFeedback(id: String) {
+        feedbackTimer?.cancel()
+        decisionFeedback = DecisionFeedback(id: id, phase: phase)
+        feedbackTimer = Task { [weak self] in
+            do { try await Task.sleep(for: .seconds(5)) } catch { return }
+            self?.dismissDecisionFeedback(id: id)
+        }
+    }
+
+    private func clearDecisionFeedback() {
+        feedbackTimer?.cancel()
+        feedbackTimer = nil
+        decisionFeedback = nil
     }
 
     func submitDecision(card: DecisionCard, option: DecisionOption) {
@@ -195,12 +222,16 @@ final class AliceSessionStore: ObservableObject {
     private func connectionChanged(_ state: RelayClient.State) {
         switch state {
         case .connecting:
+            clearDecisionFeedback()
+            phase = .waiting
             isConnected = false
             connectionText = "Connecting…"
             cards = []; currentDecision = nil
         case .connected:
             connectionText = "Waiting for Bob"
         case .offline:
+            clearDecisionFeedback()
+            phase = pairing == nil ? .disconnected : .waiting
             isConnected = false
             connectionText = pairing == nil ? "Not connected" : "Bob offline · reconnecting"
             showsVoiceInput = false
@@ -220,8 +251,12 @@ final class AliceSessionStore: ObservableObject {
             isConnected = message.bobOnline ?? message.online ?? false
             voiceAvailable = message.voiceAvailable ?? voiceAvailable
             connectionText = isConnected ? "Connected to Bob" : "Waiting for Bob"
-            if isConnected && currentDecision == nil { phase = .waiting }
-            if !isConnected { showsVoiceInput = false; voiceBridge.reset() }
+            if isConnected && currentDecision == nil && decisionFeedback == nil { phase = .waiting }
+            if !isConnected {
+                clearDecisionFeedback()
+                phase = .waiting
+                showsVoiceInput = false; voiceBridge.reset()
+            }
         case "sync":
             let open = message.decisions ?? []
             cards = open.filter { $0.expiresAt.map { $0 > Date() } ?? true }
@@ -251,7 +286,7 @@ final class AliceSessionStore: ObservableObject {
                     case nil: phase = .answered
                     }
                 } else { phase = .answered }
-                if !cards.isEmpty { showNextCard() }
+                showDecisionFeedback(id: id)
             }
         case "decision_expired":
             guard let id = message.id else { return }
@@ -271,6 +306,8 @@ final class AliceSessionStore: ObservableObject {
     }
 
     private func showNextCard() {
+        // Keep incoming cards queued while the acknowledged answer is celebrated.
+        guard decisionFeedback == nil else { return }
         let next = cards.first
         if currentDecision?.id != next?.id { showsVoiceInput = false }
         currentDecision = next
@@ -290,6 +327,7 @@ final class AliceSessionStore: ObservableObject {
         }
     }
     private func resetRequests() {
+        clearDecisionFeedback()
         cards = []; currentDecision = nil; lastResponse = nil; lastChoice = nil
         sendingTimeout?.cancel(); isSending = false
     }

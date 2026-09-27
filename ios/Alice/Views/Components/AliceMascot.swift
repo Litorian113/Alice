@@ -3,35 +3,43 @@ import SwiftUI
 /// Alice shares Bob's robot design language, with a swept violet shell and a headset.
 /// Native vector artwork stays crisp in the conversation, navigation and app icon.
 struct AliceMascot: View {
+    enum Reaction { case delighted, confident, wink, rejected }
+
     var faceOnly = false
     var happy = false
     var animated = true
     var greeting = false
+    var peeking = false
+    var reaction: Reaction?
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @AppStorage("companionMotion") private var companionMotion = true
     @State private var animationStart = Date()
 
     private var shouldAnimate: Bool { animated && !reduceMotion && companionMotion }
+    private var smilingEyes: Bool { happy || reaction == .delighted }
 
     var body: some View {
-        TimelineView(.animation(minimumInterval: greeting ? 1.0 / 30 : 0.08, paused: !shouldAnimate)) { timeline in
+        TimelineView(.animation(minimumInterval: greeting || peeking ? 1.0 / 30 : 0.08, paused: !shouldAnimate)) { timeline in
             let time = timeline.date.timeIntervalSinceReferenceDate
             let elapsed = max(0, timeline.date.timeIntervalSince(animationStart))
             let blink = shouldAnimate && !greeting && time.truncatingRemainder(dividingBy: 5.4) < 0.16
-            let wink = shouldAnimate && greeting && (0.9...1.18).contains(elapsed)
-            let wave = shouldAnimate && greeting ? waveAngle(at: elapsed) : 0
+            let wink = reaction == .wink || (shouldAnimate && greeting && (0.9...1.18).contains(elapsed))
+            let wave = peeking && reaction != .rejected
+                ? -132 + (shouldAnimate ? sin(elapsed * 5) * 9 : 0)
+                : (shouldAnimate && greeting ? waveAngle(at: elapsed) : 0)
             Canvas { context, size in
-                let base = CGSize(width: 240, height: faceOnly ? 184 : 286)
+                let base = CGSize(width: peeking ? 260 : 240, height: peeking ? 218 : (faceOnly ? 184 : 286))
                 let scale = min(size.width / base.width, size.height / base.height)
                 context.translateBy(x: (size.width - base.width * scale) / 2,
                                     y: (size.height - base.height * scale) / 2)
                 context.scaleBy(x: scale, y: scale)
+                if peeking { context.translateBy(x: 10, y: 0) }
                 drawAlice(context: context, blink: blink, wink: wink, wave: wave)
             }
-            .offset(y: shouldAnimate && !faceOnly ? sin((greeting ? elapsed : time) * 1.8) * 3 : 0)
+            .offset(y: shouldAnimate && !faceOnly && !peeking ? sin((greeting ? elapsed : time) * 1.8) * 3 : 0)
         }
         .onAppear { animationStart = Date() }
-        .accessibilityLabel(happy ? "Alice is happy" : "Alice, your companion for Bob")
+        .accessibilityLabel(reaction == .rejected ? "Alice acknowledges your rejection" : (smilingEyes ? "Alice is happy" : "Alice, your companion for Bob"))
         .accessibilityAddTraits(.isImage)
     }
 
@@ -146,10 +154,13 @@ struct AliceMascot: View {
         round(166, 159, 17, 10, 5, mint)
 
         for x: CGFloat in [83, 157] {
-            if blink || happy || (wink && x == 157) {
+            if reaction == .rejected {
+                stroke([CGPoint(x: x - 9, y: 125), CGPoint(x: x + 9, y: 143)], width: 5)
+                stroke([CGPoint(x: x + 9, y: 125), CGPoint(x: x - 9, y: 143)], width: 5)
+            } else if blink || smilingEyes || (wink && x == 157) {
                 var eye = Path()
                 eye.move(to: CGPoint(x: x - 11, y: 137))
-                eye.addQuadCurve(to: CGPoint(x: x + 11, y: 137), control: CGPoint(x: x, y: happy || wink ? 119 : 137))
+                eye.addQuadCurve(to: CGPoint(x: x + 11, y: 137), control: CGPoint(x: x, y: smilingEyes || wink ? 119 : 137))
                 context.stroke(eye, with: .color(ink), style: line)
             } else {
                 context.fill(Path(ellipseIn: CGRect(x: x - 15, y: 119, width: 30, height: 33)), with: .color(ink))
@@ -158,7 +169,7 @@ struct AliceMascot: View {
         }
         var smile = Path()
         smile.move(to: CGPoint(x: 102, y: 161))
-        smile.addQuadCurve(to: CGPoint(x: 137, y: 161), control: CGPoint(x: 120, y: happy ? 177 : 170))
+        smile.addQuadCurve(to: CGPoint(x: 137, y: 161), control: CGPoint(x: 120, y: reaction == .rejected ? 151 : (smilingEyes || reaction == .confident ? 177 : 170)))
         context.stroke(smile, with: .color(ink), style: line)
         for x: CGFloat in [58, 171] {
             context.fill(Path(ellipseIn: CGRect(x: x, y: 150, width: 14, height: 7)), with: .color(Color(hex: "D5C8FA")))
@@ -167,6 +178,7 @@ struct AliceMascot: View {
         if !faceOnly && wave != 0 {
             // Keep the raised hand in front of the shell, hinged at the shoulder.
             var arm = context
+            if peeking { arm.translateBy(x: 5, y: -18) }
             arm.translateBy(x: 181, y: 204)
             arm.rotate(by: .degrees(wave))
             arm.translateBy(x: -181, y: -204)

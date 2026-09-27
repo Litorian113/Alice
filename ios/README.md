@@ -28,7 +28,7 @@ Alice opens on a single decision, with the exact command and an explanation of w
 | **Approve for task** | Allow this command again during the current task. |
 | **Reject** | Do not allow the command; Bob needs another approach. |
 
-An info button explains the command's individual arguments. A short confirmation replaces the request after a choice. There is no chat history or text composer.
+An info button explains the command's individual arguments. After Bob acknowledges a choice, Alice peeks over a feedback card with a different expression for each result, including X eyes for rejection. Feedback returns to the waiting screen (or the next queued request) automatically after five seconds. After two seconds, tapping anywhere in the main content dismisses it early. There is no extra heading or back button, chat history or text composer.
 
 The bottom navigation provides:
 

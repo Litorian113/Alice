@@ -6,6 +6,7 @@ Stand: 26. September 2026. Diese Datei wurde auf ausdrücklichen Wunsch von Fran
 
 ## Aktueller Nachtrag: Design (27. September 2026)
 
+- Bestätigungsfeedback nach Relay-`ack`: Alice schaut hinter der Karte hervor, bei Zustimmung mit erhobener Hand, bei Auswahl zwinkernd und bei Ablehnung mit X-Augen/traurigem Mund. Kein zusätzlicher Hero-Titel („All set“) und kein Zurück-Button. Nach fünf Sekunden automatisch weiter, ab zwei Sekunden durch Tap auf den Hauptinhalt schließbar (auch Accessibility-Aktion). `decisionFeedback` hält ID/Phase/Zeitpunkt; neue Karten bleiben währenddessen in der Queue. Trennen/Sessionwechsel räumt den Timer auf, veraltete Dismiss-Aufrufe dürfen neue Karten nicht beeinflussen.
 - Alice-Hauptseite: Figur und Inhalt als Gruppe vertikal im verfügbaren Bereich über der Navigation zentriert. Längere Anfragen und große Schrift bleiben scrollbar; kurze Inhalte nutzen die Höhe ohne unnötiges Scroll-Bouncing. Gilt für Pairing, Warten, Entscheidungen und Ergebnis.
 - Mittlerer Navigationsbutton immer ohne sichtbares Label, auch mit Alice-Gesicht. VoiceOver-Beschriftung bleibt.
 - `AliceSplashView`: dauerhaft heller, ruhiger Hintergrund, Figur und „Alice“ vertikal zentriert, kleiner Untertitel unten. Raster, Kreis, Glow, Streifen und „A little closer to Bob“ entfernt. Auch `LaunchBackground` ist hell.
@@ -124,7 +125,7 @@ Der neueste Stand ersetzt das ursprüngliche Chat-Konzept. Alte Beschreibungstex
 - Darunter eine hellrote **Reject**-Bubble und eine violette **Approve for task**-Bubble.
 - Große Touch-Flächen, kurze Texte, weiche asymmetrische Rundungen, leichter Druckeffekt und optionale Haptik.
 - Bei Accessibility-Schriftgrößen werden die alternativen Aktionen vertikal angeordnet.
-- Nach einer Wahl wird die Anfrage durch eine knappe Bestätigung ersetzt. **Next request** lädt die nächste lokale Anfrage.
+- Nach bestätigter Wahl zeigt Alice kurz das Feedback und kehrt automatisch zum Warten bzw. zur nächsten echten Anfrage zurück (Timing siehe Nachtrag oben).
 
 Explizit entfernt und nicht ungefragt wieder einführen:
 
