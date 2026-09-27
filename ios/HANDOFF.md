@@ -6,6 +6,7 @@ Stand: 26. September 2026. Diese Datei wurde auf ausdrücklichen Wunsch von Fran
 
 ## Aktueller Nachtrag: Design (27. September 2026)
 
+- Alice-Hauptseite: Figur und Inhalt als Gruppe vertikal im verfügbaren Bereich über der Navigation zentriert. Längere Anfragen und große Schrift bleiben scrollbar; kurze Inhalte nutzen die Höhe ohne unnötiges Scroll-Bouncing. Gilt für Pairing, Warten, Entscheidungen und Ergebnis.
 - Mittlerer Navigationsbutton immer ohne sichtbares Label, auch mit Alice-Gesicht. VoiceOver-Beschriftung bleibt.
 - `AliceSplashView`: dauerhaft heller, ruhiger Hintergrund, Figur und „Alice“ vertikal zentriert, kleiner Untertitel unten. Raster, Kreis, Glow, Streifen und „A little closer to Bob“ entfernt. Auch `LaunchBackground` ist hell.
 - Normaler Kaltstart: 2,6 Sekunden Splash plus kurze Ausblendung; URL-Aufrufe überspringen ihn weiterhin. Einmalige Wink-/Zwinkeranimation in der bestehenden Canvas-Figur (`greeting`), mit Rücksicht auf Reduce Motion und `companionMotion`. Sonstige Figuren und App-Icon behalten ihre Darstellung.

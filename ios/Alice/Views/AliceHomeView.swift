@@ -4,34 +4,38 @@ struct AliceHomeView: View {
     @EnvironmentObject var store: AliceSessionStore
 
     var body: some View {
-        ScrollView {
-            VStack(spacing: 22) {
-                hero
-                if store.isConnected {
-                    if let card = store.currentDecision {
-                        DecisionCardView(card: card)
-                    } else if store.phase == .waiting {
-                        VStack(spacing: 14) {
-                            Image(systemName: "sparkles").font(.system(size: 25)).foregroundStyle(Color.aliceRecommended)
-                            Text("Bob's on it.").font(.plex(23, weight: .semibold))
-                            Text(store.latestStatus).font(.plex(15)).foregroundStyle(Color.aliceSecondary)
-                                .multilineTextAlignment(.center)
-                            if !store.notificationsEnabled {
-                                Button("Set up notifications") { store.showsNotifications = true }.frame(minHeight: 44)
-                            }
-                        }.padding(26).frame(maxWidth: .infinity).aliceSurface(radius: 30)
+        GeometryReader { geometry in
+            ScrollView {
+                VStack(spacing: 22) {
+                    hero
+                    if store.isConnected {
+                        if let card = store.currentDecision {
+                            DecisionCardView(card: card)
+                        } else if store.phase == .waiting {
+                            VStack(spacing: 14) {
+                                Image(systemName: "sparkles").font(.system(size: 25)).foregroundStyle(Color.aliceRecommended)
+                                Text("Bob's on it.").font(.plex(23, weight: .semibold))
+                                Text(store.latestStatus).font(.plex(15)).foregroundStyle(Color.aliceSecondary)
+                                    .multilineTextAlignment(.center)
+                                if !store.notificationsEnabled {
+                                    Button("Set up notifications") { store.showsNotifications = true }.frame(minHeight: 44)
+                                }
+                            }.padding(26).frame(maxWidth: .infinity).aliceSurface(radius: 30)
+                        } else {
+                            outcome
+                        }
                     } else {
-                        outcome
+                        disconnected
                     }
-                } else {
-                    disconnected
                 }
+                .padding(.horizontal, 24)
+                .padding(.top, 12)
+                .padding(.bottom, 20)
+                .frame(minHeight: geometry.size.height, alignment: .center)
             }
-            .padding(.horizontal, 24)
-            .padding(.top, 12)
-            .padding(.bottom, 20)
+            .scrollIndicators(.hidden)
+            .scrollBounceBehavior(.basedOnSize)
         }
-        .scrollIndicators(.hidden)
     }
 
     private var hero: some View {

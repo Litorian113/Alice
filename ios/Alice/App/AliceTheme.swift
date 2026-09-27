@@ -16,6 +16,7 @@ extension Color {
     static let aliceVioletSurface = adaptive(light: "EDE8FC", dark: "302845")
     static let aliceRedSurface = adaptive(light: "FBECEE", dark: "3A2530")
     // These panels always carry light text, independently of the app theme.
+    //test
     static let aliceInk = Color(hex: "15233F")
     static let aliceSuccess = aliceRiskLow
     static let aliceError = aliceRiskHigh
