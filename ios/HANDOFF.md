@@ -6,6 +6,8 @@ Stand: 26. September 2026. Diese Datei wurde auf ausdrücklichen Wunsch von Fran
 
 ## Aktueller Nachtrag: Design (27. September 2026)
 
+- Splash-Anordnung geändert: eigene private `SplashPartners`-Komposition in `AliceSplashView.swift`, Alice links größer und vor Bob, Bob rechts leicht nach hinten versetzt, Namen jeweils unter der Figur. Bob nach Feedback nochmals ca. 7 % verkleinert (152×182) und weiter nach rechts gerückt, mehr Luft zwischen beiden. Kabel auf dem Splash entfernt. Personalisierung, heller Hintergrund, Begrüßungsanimation und kleiner Untertitel bleiben. `AliceBobScene` bei „Bob needs your call“ unverändert. Gezielter iOS-Typcheck bestanden und Splash als lokale SwiftUI-Vorschau geprüft.
+
 - Personalisierung von Usage ins Profil verschoben: „An Alice that suits you“ öffnet `AliceCustomizerView` als große Seite mit Live-Vorschau, sechs Paletten, Gradient/Solid und Reset. `AlicePalette` hält abgestimmte Farben; `alicePalette` und `aliceUsesGradient` werden per AppStorage lokal gespeichert. Jede AliceMascot-Instanz liest dieselben Werte (inkl. Splash, Duo, Navigation, Voice und Feedback); Duo-Kabel/Handy folgen der Palette. Bob und das gebündelte App-Icon bleiben unverändert. Neue Dateien über XcodeGen registriert; Icon-Renderer-Befehl um Palette-Abhängigkeit ergänzt. iOS-Typcheck bestanden; Customizer und alle sechs Paletten in beiden Varianten lokal gerendert, Kopf/Ganzkörper-Farbübernahme geprüft. Bedienung auf dem iPhone testet Franz.
 
 - Usage-Korrektur: Hackathon-Verbrauch ausschließlich am 25., 26. und 27. September. 21.–24. haben Input/Output 0; die 7-Tage-Ansicht bleibt erhalten und hat dieselbe Summe wie 3 Tage (249k Tokens). Bobcoins bleiben 26/40.

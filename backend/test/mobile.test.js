@@ -88,6 +88,9 @@ test('native phone: token only to requester, deduplicated push opens Alice, unre
     assert.equal(pushes.length, 1);
     assert.equal(pushes[0].click, 'bobcompanion://open');
     assert.equal(pushes[0].actions, undefined);
+    assert.equal(pushes[0].title, 'Alice · Bob needs you');
+    assert.equal(pushes[0].message, 'Take action');
+    assert.deepEqual(pushes[0].tags, []);
     phone.send({ type: 'push_unregister', topic: 'alice-test-topic' });
     phone.send({ type: 'instruction', id: 'ordered-marker', text: 'marker' });
     await bob.next('instruction');

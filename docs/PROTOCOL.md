@@ -210,7 +210,14 @@ For every `notify` and `decision_request` the relay pushes to each `pushTopic` o
 whether or not the app is connected. If the app is in the foreground it will get both,
 so dedupe or suppress in-app as you prefer.
 
-**ntfy** (`pushTopic` = topic name): title = card title (or "Bob" / "Bob: done" /
+**ntfy for native Alice** (`pushClick: "bobcompanion://open"`): all choices and approvals
+use title "Alice · Bob needs you" and body "Take action". This is independent of
+the workflow, ACP source or `PUSH_DETAILS`; question titles, commands and
+recommendations stay inside Alice. Status titles are "Alice · Task complete", "Alice · Bob needs a hand"
+or "Alice · Update from Bob" according to level. Normal alerts have no emoji
+tags; high-risk requests retain the warning tag and urgent priority.
+
+**ntfy for web pairing** (`pushTopic` = topic name): title = card title (or "Bob" / "Bob: done" /
 "Bob: failed"), message = `$ command` (if any) + context + "Recommended: …". Priority is 4,
 or 5 for high risk. If the relay has `PUBLIC_URL` set, cards get up to 3 **action buttons**
 (recommended first, marked ★; approval cards: Approve once / Approve for task / Reject).

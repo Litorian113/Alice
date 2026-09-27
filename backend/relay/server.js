@@ -180,7 +180,20 @@ export function createRelay({
     }
   }
 
-  function pushText(msg) {
+  function pushText(msg, nativeAlice = false) {
+    if (nativeAlice) {
+      if (msg.type === 'notify') {
+        const title = { success: 'Alice · Task complete', error: 'Alice · Bob needs a hand' }[msg.level] || 'Alice · Update from Bob';
+        return { title, body: pushDetails ? String(msg.message) : 'Open Alice to see the latest update.', tags: [] };
+      }
+      // Every workflow uses the same short alert; the actual request stays in Alice.
+      return {
+        title: 'Alice · Bob needs you',
+        body: 'Take action',
+        tags: msg.risk === 'high' ? ['warning'] : [],
+        priority: msg.risk === 'high' ? 5 : 4,
+      };
+    }
     if (msg.type === 'notify') {
       const title = { success: 'Bob: done', error: 'Bob: failed' }[msg.level] || 'Bob';
       return { title, body: pushDetails ? String(msg.message) : 'New status update', tags: [{ success: 'white_check_mark', error: 'x' }[msg.level] || 'robot'] };
@@ -199,10 +212,10 @@ export function createRelay({
   }
 
   async function pushNtfy(room, topic, msg) {
-    const t = pushText(msg);
+    const nativeClick = room.pushClicks.get(topic);
+    const t = pushText(msg, nativeClick === 'bobcompanion://open');
     const body = { topic, title: t.title, message: t.body, tags: t.tags, priority: t.priority ?? 3 };
     if (publicUrl) body.click = publicUrl.replace(/\/$/, '') + '/';
-    const nativeClick = room.pushClicks.get(topic);
     if (nativeClick) body.click = nativeClick;
     // High-risk cards get no lock-screen buttons: answering needs the app's confirmation step.
     if (msg.type === 'decision_request' && publicUrl && msg.risk !== 'high' && !nativeClick) {

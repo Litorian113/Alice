@@ -65,6 +65,10 @@ If Alice says **Waiting for Bob**, check the running relay terminal and that `bo
 
 The popup is delivered by **ntfy**, not a native Alice APNs notification. It includes an Alice link; if your ntfy/iOS version opens its own detail page, open Alice manually. Alice reconnects and shows Bob's still-pending card. Native Apple Push directly for Alice remains a separate paid-Developer-Program integration; no push entitlement was added, so Personal Team signing remains usable.
 
+All Alice choice and approval notifications use **Alice · Bob needs you**
+with **Take action** underneath. Open Alice for the actual question or command. The app icon on iOS remains ntfy's: its custom notification-icon option is
+[Android-only](https://docs.ntfy.sh/publish/#icons).
+
 Native Alice topics have no lock-screen approval buttons. Decisions are made in Alice, including confirmation for high-risk actions. Disabling notifications or forgetting a session attempts to unregister the topic while connected. If the phone was offline, unsubscribe from the old topic in ntfy as well. `PUSH_DETAILS=0` on the relay uses generic notification text.
 
 ## 5. Round trip from the Bob chat

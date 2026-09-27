@@ -104,6 +104,12 @@ you're away.
 
 ### Relay
 
+Alice phone subscriptions use **Alice · Bob needs you** with **Take action**
+for every choice and approval, regardless of workflow. Request details stay in
+Alice; status updates retain their own short titles. The iOS notification icon still belongs to
+ntfy; ntfy custom message icons are Android-only. Restart the relay after changing
+notification formatting; no iOS rebuild is needed.
+
 | Var | Default | |
 | --- | --- | --- |
 | `PORT` | `8787` | Always binds `0.0.0.0` |
