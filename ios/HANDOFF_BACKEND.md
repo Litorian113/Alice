@@ -4,6 +4,8 @@
 
 Stand: 26. September 2026, von Christopher. Ergänzt [HANDOFF.md](HANDOFF.md); diese Datei beschreibt nur, **was das Backend jetzt kann und was in der App noch fehlt**, damit Alice mit dem echten Bob spricht.
 
+> **Stand 27. September:** Die App-Punkte 1–9 unten sind umgesetzt (Model mit `kind`/`explanations`, Decoding, Antworten für beide Kartentypen, Darstellung, Relay-Client, Pairing mit Kamera und URL-Schema, Push über ntfy, Voice über das Relay). APNs bleibt offen. Das Produktions-Relay ist live. Aktueller Test-Ablauf: [../docs/IPHONE_TEST.md](../docs/IPHONE_TEST.md). Der Rest dieser Datei beschreibt den Stand vom 26. September.
+
 ## Kurzfassung
 
 - Das Repo ist jetzt ein **Monorepo**: die App liegt unverändert unter `ios/`, das Backend (MCP-Server + Relay) unter `backend/`, der gemeinsame Vertrag unter [`docs/PROTOCOL.md`](../docs/PROTOCOL.md). Am App-Code wurde **nichts** geändert, nur Pfadhinweise in README/HANDOFF.
@@ -11,7 +13,7 @@ Stand: 26. September 2026, von Christopher. Ergänzt [HANDOFF.md](HANDOFF.md); d
 - Es gibt jetzt **zwei Kartentypen in einer Form**: `kind: "choice"` (nächster Schritt, Optionen `a`–`d`) und `kind: "approval"` (Befehl freigeben, Optionen `approve_once` / `approve_for_task` / `reject`, genau wie in deinen Fixtures).
 - Die Karten sind so gebaut, dass dein aktuelles `DecisionCard`-Codable sie **ohne Absturz decodieren** kann (alle Keys immer vorhanden, Datum ohne Millisekunden).
 - Damit Alice live funktioniert, fehlen in der App: Relay-Verbindung, Pairing, Antworten für Choice-Karten und die Darstellung nach `kind`. Details und Code-Skizzen unten.
-- **Entwickeln geht komplett lokal:** `cd backend && npm install && npm run dev` startet Relay + Fake-Bob auf deinem Mac, mit QR-Links auf die LAN-Adresse des Macs, damit das iPhone im selben WLAN verbinden kann. Siehe [Lokal entwickeln](#lokal-entwickeln-ohne-bob). Das Produktions-Relay `wss://bob-relay.zeigma.com` kommt am 27. September dazu; am App-Code ändert sich dadurch nichts, nur die URL im QR-Link.
+- **Entwickeln geht komplett lokal:** `cd backend && npm install && npm run dev` startet Relay + Fake-Bob auf deinem Mac, mit QR-Links auf die LAN-Adresse des Macs, damit das iPhone im selben WLAN verbinden kann. Siehe [Lokal entwickeln](#lokal-entwickeln-ohne-bob). Das Produktions-Relay `wss://bob-relay.zeigma.com` ist seit 27. September live und geprüft; am App-Code ändert sich dadurch nichts, nur die URL im QR-Link. Voice braucht dort noch `ASSEMBLYAI_API_KEY` in Coolify.
 
 ## So hängt alles zusammen
 
@@ -38,7 +40,7 @@ bobcompanion://pair?s=<sessionId>&k=<secret>&r=<relayUrl, URL-encoded>
 https://bob-relay.zeigma.com/#s=<sessionId>&k=<secret>          (Relay = gleicher Host, wss://)
 ```
 
-`secret` ist ein Passwort (43 Zeichen) und gehört in die **Keychain**, nie ins Log. Derzeit steht in `.bob/mcp.json` `COMPANION_QR=web`: Der QR enthält den `https://…`-Link, damit ihn jede Handykamera öffnen kann (dann öffnet sich die Web-Version). Sobald Alice das URL-Schema `bobcompanion` registriert hat, stellen wir auf `app` um.
+`secret` ist ein Passwort (43 Zeichen) und gehört in die **Keychain**, nie ins Log. In `.bob/mcp.json` steht inzwischen `COMPANION_QR=app`: Der QR enthält den `bobcompanion://`-Link und öffnet Alice direkt. Mit `web` enthält er den `https://…`-Link zur Web-Version (zum Testen ohne App).
 
 ### Verbindung
 
@@ -293,7 +295,7 @@ Bob zeigt den QR über `pair_phone` bzw. in `~/alice-demo/.bob/companion-session
 
 | Punkt | Wer |
 | --- | --- |
-| Produktions-Relay auf Coolify (`/backend/relay`, `bob-relay.zeigma.com`), geplant 27. September; danach `COMPANION_QR` ggf. auf `app` | Christopher |
+| ~~Produktions-Relay auf Coolify~~ erledigt 27. September, `COMPANION_QR=app` gesetzt; offen: `ASSEMBLYAI_API_KEY` in Coolify für Voice | Christopher |
 | Design der Choice-Karte in Alice | Franz |
 | Punkte 1–7 oben (Model, Decoding, Antworten, Darstellung, Relay-Client, Pairing) | Franz |
 | APNs statt ntfy? | beide entscheiden, dann Christopher (Relay) + Franz (Token) |

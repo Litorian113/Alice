@@ -66,7 +66,7 @@ Voice nutzt jetzt `RelayVoiceBridge`: Token vom authentifizierten Relay, Audio d
 
 Backend erweitert: `sync`-Snapshot, eindeutige IDs über Prozessstarts hinweg, In-Memory-Deduplizierung für Antworten/Anweisungen, Ablaufprüfung beim Empfang, Push-Deduplizierung und Token-Ausgabe. Dockerfile enthält das neue Environment-Modul. Alle 40 Backend-Tests bestanden; Swift-Typcheck bestanden. Kein Simulator und keine echte Audio-/iPhone-Zustellung im automatischen Test.
 
-**Testanleitung:** [../docs/IPHONE_TEST.md](../docs/IPHONE_TEST.md). Das öffentliche Relay lieferte HTTP 503. Für diesen Mac wurde das lokale Relay auf `ws://192.168.2.228:8788` gestartet (8787 war schon belegt); `.bob/local-relay.json` enthält den ignorierten lokalen Override. Prozess/LAN-IP bei Fortsetzung neu prüfen. `npm run pair:show` erzeugt `.bob/pairing.html` mit denselben Zugangsdaten wie Bob. Nicht committen/teilen. Bob IDE ist installiert; ein `bob`-Shell-Befehl war nicht im PATH. Der eigentliche Chat-Test erfolgt durch Franz im Modus 📱 Companion.
+**Testanleitung:** [../docs/IPHONE_TEST.md](../docs/IPHONE_TEST.md). Das öffentliche Relay lieferte am 26. September HTTP 503; seit 27. September ist es live (`https://bob-relay.zeigma.com`). Für diesen Mac wurde das lokale Relay auf `ws://192.168.2.228:8788` gestartet (8787 war schon belegt); `.bob/local-relay.json` enthält den ignorierten lokalen Override. Prozess/LAN-IP bei Fortsetzung neu prüfen. `npm run pair:show` erzeugt `.bob/pairing.html` mit denselben Zugangsdaten wie Bob. Nicht committen/teilen. Bob IDE ist installiert; ein `bob`-Shell-Befehl war nicht im PATH. Der eigentliche Chat-Test erfolgt durch Franz im Modus 📱 Companion.
 
 ## Historischer Nachtrag: vorbereitete Spracheingabe (26. September 2026)
 

@@ -41,7 +41,7 @@ cat > "$target/.bob/mcp.json" <<EOF
       "env": {
         "RELAY_URL": "$relay",
         "COMPANION_SESSION_FILE": ".bob/companion-session.json",
-        "COMPANION_QR": "web",
+        "COMPANION_QR": "app",
         "DECISION_TIMEOUT_S": "120",
         "MAX_DECISION_TIMEOUT_S": "540"
       },

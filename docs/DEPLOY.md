@@ -1,13 +1,17 @@
 # Deploying the relay on Coolify (bob-relay.zeigma.com)
 
+**Status:** live since 27 September 2026 and verified with `backend/tools/check-relay.js --hold 130`:
+health check, web page, pairing over `wss://`, forwarding both ways, wrong-secret rejection, and
+WebSockets idle for 130 s through Cloudflare. Voice is off until `ASSEMBLYAI_API_KEY` is set (below).
+
 The relay is one small Node container. Coolify builds it from `backend/relay/Dockerfile`, and
 its Traefik proxy terminates TLS. Cloudflare sits in front (the DNS record is already
 proxied and reaches Coolify's Traefik).
 
 ## 1. Create the resource
 
-Coolify → Project → **+ New** → **Private Repository (GitHub App)** or **Public Repository**
-→ pick this repo / branch, then:
+Coolify → Project → **+ New** → **Public Repository** (the repo is public; use **Private Repository
+(GitHub App)** otherwise) → repository URL + branch `main`, then:
 
 | Setting | Value |
 | --- | --- |
@@ -24,6 +28,8 @@ Coolify → Project → **+ New** → **Private Repository (GitHub App)** or **P
 | --- | --- | --- |
 | `PUBLIC_URL` | `https://bob-relay.zeigma.com` | Enables ntfy answer buttons + click-to-open |
 | `PUSH_DETAILS` | `1` (or `0`) | `0` keeps card text off ntfy.sh |
+| `ASSEMBLYAI_API_KEY` | your AssemblyAI key | Enables voice: the relay issues short-lived transcription tokens to Alice. Without it, the phone reports voice as unavailable |
+| `ASSEMBLYAI_REGION` | `eu` (default) | Optional |
 | `ROOM_GRACE_S` | `30` | Optional |
 
 Don't set `PORT`. The container listens on 8787, which is what "Ports exposes" points Traefik at.
@@ -59,12 +65,12 @@ should load and show "Pair".
 
 ```json
 "RELAY_URL": "wss://bob-relay.zeigma.com",
-"COMPANION_QR": "web"
+"COMPANION_QR": "app"
 ```
 
-`COMPANION_QR=web` makes the QR code open `https://bob-relay.zeigma.com/#s=…&k=…`, the
-dev phone page. Any phone camera can scan it before Alice (the iOS app) handles pairing. Switch to
-`app` once Alice registers the `bobcompanion://` URL scheme.
+`COMPANION_QR=app` puts a `bobcompanion://pair?…` link in the QR code, which opens Alice directly.
+With `web` the QR opens `https://bob-relay.zeigma.com/#s=…&k=…`, the browser phone page, which is
+useful for testing without the app.
 
 For local development against a local relay, set `RELAY_URL` to `ws://localhost:8787`
 (tests and `fake-bob` default to local, or use their `RELAY_URL` env).
