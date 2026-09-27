@@ -29,7 +29,7 @@ struct UsageView: View {
                     Spacer(minLength: 0)
                 }
                 .padding(19)
-                .background(Color(hex: "EEEAFB"), in: RoundedRectangle(cornerRadius: 22))
+                .background(Color.aliceVioletSurface, in: RoundedRectangle(cornerRadius: 22))
                 Color.clear.frame(height: 8)
             }.padding(.horizontal, 24)
         }.scrollIndicators(.hidden)
@@ -45,7 +45,7 @@ struct UsageView: View {
                     Text(item.rawValue).font(.plex(14, weight: .medium))
                         .foregroundStyle(period == item ? Color.alicePrimary : .aliceSecondary)
                         .frame(maxWidth: .infinity).padding(.vertical, 11)
-                        .background(period == item ? Color.white : .clear, in: RoundedRectangle(cornerRadius: 12))
+                        .background(period == item ? Color.aliceSurface : .clear, in: RoundedRectangle(cornerRadius: 12))
                 }
                 .buttonStyle(.plain)
                 .accessibilityIdentifier("usage.\(item.rawValue.lowercased())")
@@ -153,7 +153,7 @@ struct UsageView: View {
         }
         .foregroundStyle(.white)
         .padding(22)
-        .background(Color.alicePrimary, in: RoundedRectangle(cornerRadius: 24))
+        .background(Color.aliceInk, in: RoundedRectangle(cornerRadius: 24))
         .accessibilityElement(children: .combine)
     }
 }

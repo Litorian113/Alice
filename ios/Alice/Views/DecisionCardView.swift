@@ -38,7 +38,7 @@ struct DecisionCardView: View {
                         }
                         .foregroundStyle(option.recommended ? .white : Color.alicePrimary)
                         .padding(20).frame(maxWidth: .infinity, minHeight: 72, alignment: .leading)
-                        .background(option.recommended ? Color.aliceAccent : .white,
+                        .background(option.recommended ? Color.aliceAccent : .aliceSurface,
                                     in: RoundedRectangle(cornerRadius: 24))
                     }.buttonStyle(ApprovalPressStyle())
                     .accessibilityHint(option.recommended ? "Bob's recommendation" : "")
@@ -97,9 +97,9 @@ struct DecisionCardView: View {
         }
         .padding(18)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(.white, in: RoundedRectangle(cornerRadius: 30))
+        .background(Color.aliceSurface, in: RoundedRectangle(cornerRadius: 30))
         .overlay(alignment: .top) {
-            RequestPointer().fill(.white).frame(width: 25, height: 12).offset(y: -10)
+            RequestPointer().fill(Color.aliceSurface).frame(width: 25, height: 12).offset(y: -10)
         }
     }
 
@@ -145,7 +145,7 @@ struct CommandSnippet: View {
         }
         .font(.system(.footnote, design: .monospaced))
         .padding(16)
-        .background(Color.alicePrimary, in: RoundedRectangle(cornerRadius: 17))
+        .background(Color.aliceInk, in: RoundedRectangle(cornerRadius: 17))
         .accessibilityElement(children: .ignore)
         .accessibilityLabel("Command: \(command)")
     }
@@ -157,7 +157,7 @@ private struct ApprovalBubble: View {
     var action: () -> Void
     private var rejected: Bool { option.approvalChoice == .reject }
     private var tint: Color { prominent ? .white : (rejected ? .aliceError : .aliceRecommended) }
-    private var fill: Color { prominent ? .aliceAccent : (rejected ? Color(hex: "FBECEE") : Color(hex: "EDE8FC")) }
+    private var fill: Color { prominent ? .aliceAccent : (rejected ? .aliceRedSurface : .aliceVioletSurface) }
     private var icon: String { prominent ? "checkmark" : (rejected ? "xmark" : "checkmark.seal") }
 
     var body: some View {

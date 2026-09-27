@@ -6,30 +6,43 @@ struct AliceMascot: View {
     var faceOnly = false
     var happy = false
     var animated = true
+    var greeting = false
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @AppStorage("companionMotion") private var companionMotion = true
+    @State private var animationStart = Date()
 
     private var shouldAnimate: Bool { animated && !reduceMotion && companionMotion }
 
     var body: some View {
-        TimelineView(.animation(minimumInterval: 0.08, paused: !shouldAnimate)) { timeline in
+        TimelineView(.animation(minimumInterval: greeting ? 1.0 / 30 : 0.08, paused: !shouldAnimate)) { timeline in
             let time = timeline.date.timeIntervalSinceReferenceDate
-            let blink = shouldAnimate && time.truncatingRemainder(dividingBy: 5.4) < 0.16
+            let elapsed = max(0, timeline.date.timeIntervalSince(animationStart))
+            let blink = shouldAnimate && !greeting && time.truncatingRemainder(dividingBy: 5.4) < 0.16
+            let wink = shouldAnimate && greeting && (0.9...1.18).contains(elapsed)
+            let wave = shouldAnimate && greeting ? waveAngle(at: elapsed) : 0
             Canvas { context, size in
                 let base = CGSize(width: 240, height: faceOnly ? 184 : 286)
                 let scale = min(size.width / base.width, size.height / base.height)
                 context.translateBy(x: (size.width - base.width * scale) / 2,
                                     y: (size.height - base.height * scale) / 2)
                 context.scaleBy(x: scale, y: scale)
-                drawAlice(context: context, blink: blink)
+                drawAlice(context: context, blink: blink, wink: wink, wave: wave)
             }
-            .offset(y: shouldAnimate && !faceOnly ? sin(time * 1.8) * 3 : 0)
+            .offset(y: shouldAnimate && !faceOnly ? sin((greeting ? elapsed : time) * 1.8) * 3 : 0)
         }
+        .onAppear { animationStart = Date() }
         .accessibilityLabel(happy ? "Alice is happy" : "Alice, your companion for Bob")
         .accessibilityAddTraits(.isImage)
     }
 
-    private func drawAlice(context: GraphicsContext, blink: Bool) {
+    private func waveAngle(at time: TimeInterval) -> Double {
+        // Raise, wave twice, then settle before the splash fades away.
+        let progress = max(0, min(1, min((time - 0.2) / 0.4, (2.2 - time) / 0.4)))
+        let lift = progress * progress * (3 - 2 * progress)
+        return lift * (-125 + sin((time - 0.6) * .pi * 4) * 14)
+    }
+
+    private func drawAlice(context: GraphicsContext, blink: Bool, wink: Bool, wave: Double) {
         let ink = Color(hex: "182544")
         let white = Color(hex: "F8FAFF")
         let shade = Color(hex: "D8E2F0")
@@ -53,7 +66,7 @@ struct AliceMascot: View {
         if !faceOnly {
             // Arms and little boots.
             round(47, 198, 26, 57, 13, violet)
-            round(168, 198, 26, 57, 13, violet)
+            if wave == 0 { round(168, 198, 26, 57, 13, violet) }
             var leftHand = Path()
             leftHand.move(to: CGPoint(x: 33, y: 257))
             leftHand.addQuadCurve(to: CGPoint(x: 81, y: 257), control: CGPoint(x: 54, y: 211))
@@ -63,7 +76,7 @@ struct AliceMascot: View {
             rightHand.move(to: CGPoint(x: 158, y: 257))
             rightHand.addQuadCurve(to: CGPoint(x: 208, y: 257), control: CGPoint(x: 183, y: 211))
             rightHand.closeSubpath()
-            shape(rightHand, white)
+            if wave == 0 { shape(rightHand, white) }
             var body = Path()
             body.move(to: CGPoint(x: 84, y: 199))
             body.addLine(to: CGPoint(x: 156, y: 199))
@@ -133,10 +146,10 @@ struct AliceMascot: View {
         round(166, 159, 17, 10, 5, mint)
 
         for x: CGFloat in [83, 157] {
-            if blink || happy {
+            if blink || happy || (wink && x == 157) {
                 var eye = Path()
                 eye.move(to: CGPoint(x: x - 11, y: 137))
-                eye.addQuadCurve(to: CGPoint(x: x + 11, y: 137), control: CGPoint(x: x, y: happy ? 119 : 137))
+                eye.addQuadCurve(to: CGPoint(x: x + 11, y: 137), control: CGPoint(x: x, y: happy || wink ? 119 : 137))
                 context.stroke(eye, with: .color(ink), style: line)
             } else {
                 context.fill(Path(ellipseIn: CGRect(x: x - 15, y: 119, width: 30, height: 33)), with: .color(ink))
@@ -149,6 +162,23 @@ struct AliceMascot: View {
         context.stroke(smile, with: .color(ink), style: line)
         for x: CGFloat in [58, 171] {
             context.fill(Path(ellipseIn: CGRect(x: x, y: 150, width: 14, height: 7)), with: .color(Color(hex: "D5C8FA")))
+        }
+
+        if !faceOnly && wave != 0 {
+            // Keep the raised hand in front of the shell, hinged at the shoulder.
+            var arm = context
+            arm.translateBy(x: 181, y: 204)
+            arm.rotate(by: .degrees(wave))
+            arm.translateBy(x: -181, y: -204)
+            let sleeve = Path(roundedRect: CGRect(x: 168, y: 198, width: 26, height: 57), cornerRadius: 13)
+            arm.fill(sleeve, with: .color(violet))
+            arm.stroke(sleeve, with: .color(ink), style: line)
+            var hand = Path()
+            hand.move(to: CGPoint(x: 158, y: 257))
+            hand.addQuadCurve(to: CGPoint(x: 208, y: 257), control: CGPoint(x: 183, y: 211))
+            hand.closeSubpath()
+            arm.fill(hand, with: .color(white))
+            arm.stroke(hand, with: .color(ink), style: line)
         }
     }
 }

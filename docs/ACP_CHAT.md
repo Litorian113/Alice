@@ -75,9 +75,13 @@ the production default. The existing AssemblyAI configuration is unchanged.
 | `.bob/acp-session.json` | Persistent ACP relay credentials; ignored and created with mode 0600 |
 | `.bob/acp-desktop-url` | Private current browser launch URL; ignored and created with mode 0600 |
 
-The adapter owns the ACP session's relay connection. Bob starts with MCP disabled
-so the repository's companion MCP config cannot start a competing Bob peer or
-duplicate this approval path. The IDE's original companion session is untouched.
+The adapter owns the ACP session's relay connection and launches Bob with
+`--disable-mcp`. **Observed on 27 September 2026:** the installed Bob Shell 2.0.5
+nevertheless spawned the repository's companion MCP server. That child used the
+IDE pairing and repeatedly displaced the IDE's own MCP connection (`4000 replaced`).
+Until this is resolved, stop the browser chat and its child processes before
+testing IDE MCP questions. The ACP adapter's own pairing remains separate;
+scan the IDE QR from `npm run pair:show` when switching back.
 
 ACP `allow_once` and `reject_once` map to Alice's `approve_once` and `reject`.
 The original ACP option IDs are returned verbatim. **Always allow is omitted**:

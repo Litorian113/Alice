@@ -42,8 +42,8 @@ struct AliceNavigation: View {
     var body: some View {
         ZStack(alignment: .top) {
             NavigationNotch()
-                .fill(.white)
-                .shadow(color: Color.alicePrimary.opacity(0.06), radius: 18, y: -4)
+                .fill(Color.aliceSurface)
+                .shadow(color: Color.black.opacity(0.06), radius: 18, y: -4)
                 .ignoresSafeArea(edges: .bottom)
             HStack(alignment: .top, spacing: 0) {
                 tab(.usage, icon: "chart.bar.xaxis")
@@ -73,11 +73,6 @@ struct AliceNavigation: View {
                     .buttonStyle(.plain)
                     .accessibilityLabel(onAlice ? (store.isConnected ? "Talk to Alice" : "Connect to Bob") : "Alice")
                     .accessibilityIdentifier("nav.alice")
-                    if !onAlice {
-                        Text("Alice")
-                            .font(.plex(11, weight: .medium, relativeTo: .caption))
-                            .foregroundStyle(Color.aliceSecondary)
-                    }
                 }
                 .frame(width: 120)
                 tab(.profile, icon: "person.crop.circle")

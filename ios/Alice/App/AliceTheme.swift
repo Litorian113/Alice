@@ -1,20 +1,35 @@
 import SwiftUI
 
 extension Color {
-    static let aliceBackground = Color(hex: "F5F7FC")
-    static let aliceSurface = Color.white
-    static let aliceSurfaceRaised = Color(hex: "EDF1FA")
-    static let alicePrimary = Color(hex: "15233F")
-    static let aliceSecondary = Color(hex: "65718A")
-    static let aliceMuted = Color(hex: "768197")
+    static let aliceBackground = adaptive(light: "F5F7FC", dark: "101521")
+    static let aliceSurface = adaptive(light: "FFFFFF", dark: "1B2333")
+    static let aliceSurfaceRaised = adaptive(light: "EDF1FA", dark: "252F43")
+    static let alicePrimary = adaptive(light: "15233F", dark: "F0F3FB")
+    static let aliceSecondary = adaptive(light: "65718A", dark: "B1BCD1")
+    static let aliceMuted = adaptive(light: "768197", dark: "98A6BF")
     static let aliceAccent = Color(hex: "0F62FE")
-    static let aliceRecommended = Color(hex: "7154D8")
-    static let aliceBorder = Color(hex: "E3E8F2")
-    static let aliceRiskLow = Color(hex: "198061")
-    static let aliceRiskMedium = Color(hex: "AD6800")
-    static let aliceRiskHigh = Color(hex: "C13C4B")
+    static let aliceRecommended = adaptive(light: "7154D8", dark: "BAA4FF")
+    static let aliceBorder = adaptive(light: "E3E8F2", dark: "344057")
+    static let aliceRiskLow = adaptive(light: "198061", dark: "6AD8B1")
+    static let aliceRiskMedium = adaptive(light: "AD6800", dark: "F2BE67")
+    static let aliceRiskHigh = adaptive(light: "C13C4B", dark: "FF96A3")
+    static let aliceVioletSurface = adaptive(light: "EDE8FC", dark: "302845")
+    static let aliceRedSurface = adaptive(light: "FBECEE", dark: "3A2530")
+    // These panels always carry light text, independently of the app theme.
+    static let aliceInk = Color(hex: "15233F")
     static let aliceSuccess = aliceRiskLow
     static let aliceError = aliceRiskHigh
+
+    private static func adaptive(light: String, dark: String) -> Color {
+        #if canImport(UIKit)
+        Color(uiColor: UIColor { traits in
+            UIColor(Color(hex: traits.userInterfaceStyle == .dark ? dark : light))
+        })
+        #else
+        // The macOS app-icon renderer always exports the light artwork.
+        Color(hex: light)
+        #endif
+    }
 
     init(hex: String) {
         let hex = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)

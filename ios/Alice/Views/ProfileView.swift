@@ -4,6 +4,7 @@ struct ProfileView: View {
     @EnvironmentObject var store: AliceSessionStore
     @AppStorage("hapticsEnabled") private var hapticsEnabled = true
     @AppStorage("companionMotion") private var companionMotion = true
+    @AppStorage("darkModeEnabled") private var darkModeEnabled = false
     @AppStorage("displayName") private var displayName = "Franz Anhäupl"
     @State private var showsAccount = false
     @State private var showsAbout = false
@@ -26,7 +27,7 @@ struct ProfileView: View {
                     Text(initials).font(.plex(22, weight: .medium))
                         .foregroundStyle(Color.aliceRecommended)
                         .frame(width: 62, height: 62)
-                        .background(Color(hex: "EEE8FC"), in: RoundedRectangle(cornerRadius: 22))
+                        .background(Color.aliceVioletSurface, in: RoundedRectangle(cornerRadius: 22))
                     VStack(alignment: .leading, spacing: 4) {
                         Text(displayName).font(.plex(19, weight: .semibold))
                         Text("Builder & Bob's teammate").font(.plex(12)).foregroundStyle(Color.aliceSecondary)
@@ -44,6 +45,10 @@ struct ProfileView: View {
                     Button { showsAccount = true } label: {
                         settingsRow("Account settings", subtitle: "Your name and profile", icon: "person.crop.circle")
                     }.buttonStyle(.plain).accessibilityIdentifier("profile.account")
+                    Divider().overlay(Color.aliceBorder)
+                    Toggle(isOn: $darkModeEnabled) {
+                        settingsRow("Dark mode", subtitle: "A softer glow after hours", icon: "moon", chevron: false)
+                    }.tint(.aliceAccent).accessibilityIdentifier("profile.darkMode")
                     Divider().overlay(Color.aliceBorder)
                     Toggle(isOn: $hapticsEnabled) {
                         settingsRow("Haptic feedback", subtitle: "A little tap for your decisions", icon: "hand.tap", chevron: false)

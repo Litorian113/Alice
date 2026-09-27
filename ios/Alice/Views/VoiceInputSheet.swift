@@ -30,7 +30,7 @@ struct VoiceInputSheet: View {
                         .font(.system(size: 31))
                         .foregroundStyle(Color.aliceRecommended)
                         .frame(width: 90, height: 90)
-                        .background(Color(hex: "EDE8FC"), in: Circle())
+                        .background(Color.aliceVioletSurface, in: Circle())
                         .accessibilityHidden(true)
                     Text(detail)
                         .font(.plex(14)).foregroundStyle(Color.aliceSecondary)

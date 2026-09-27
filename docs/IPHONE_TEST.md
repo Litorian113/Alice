@@ -22,7 +22,11 @@ On 26 September, the public relay's `/healthz` returned HTTP 503 during integrat
 
 Open the **repository root**, `/Users/franzos/Desktop/Alice`, in IBM Bob (not just `ios/`). Select **📱 Companion** mode. The repository's `.bob/mcp.json` registers `bob-companion`; restart this MCP server after changing local relay configuration. If Bob reports a missing Node command, ensure Node 22+ is installed and visible to Bob.
 
-Keep `"cwd": "."` in the MCP server configuration. Bob IDE resolves this against the workspace root; without it, the server can start in `/` and fail with `Cannot find module '/backend/companion-mcp/index.js'`. This was corrected and the real IDE logged both `Session connected` and `phone paired (1 connected)` on 26 September 2026. The phone decision round trip still needs the chat test below.
+Keep `"cwd": "."` in the MCP server configuration. Bob IDE resolves this against the workspace root; without it, the server can start in `/` and fail with `Cannot find module '/backend/companion-mcp/index.js'`. This was corrected and the real IDE logged both `Session connected` and `phone paired (1 connected)` on 26 September 2026.
+
+**Verified on 27 September 2026:** the existing IBM Bob IDE chat called `ask_decision` with the button-color question below. Franz selected **Blau** on his physical iPhone; the MCP log recorded that choice and Bob confirmed it in the same IDE chat. The IDE required **Approve once** for this MCP call despite the configured `alwaysAllow` list. This test validates explicit MCP questions; native IDE command approvals remain separate.
+
+Stop the ACP browser chat before this IDE test. In the installed Bob Shell 2.0.5, its child process started the repository MCP server despite `--disable-mcp`. Both MCP instances used the IDE session and repeatedly displaced each other (`4000 replaced`). Stopping the browser chat and its children resolved this conflict. Use `pair:show` below to switch Alice back to the IDE pairing.
 
 First chat prompt:
 

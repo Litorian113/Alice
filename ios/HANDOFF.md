@@ -4,7 +4,15 @@
 
 Stand: 26. September 2026. Diese Datei wurde auf ausdrücklichen Wunsch von Franz erstellt, weil der Projektordner umbenannt wurde und er ein neues Codex-Fenster öffnen muss. Sie ist der Arbeitskontext für den nächsten Agenten. Die öffentliche Produktbeschreibung steht in [README.md](README.md).
 
-## Aktueller Nachtrag: Live-Anbindung (26. September 2026)
+## Aktueller Nachtrag: Design (27. September 2026)
+
+- Mittlerer Navigationsbutton immer ohne sichtbares Label, auch mit Alice-Gesicht. VoiceOver-Beschriftung bleibt.
+- `AliceSplashView`: dauerhaft heller, ruhiger Hintergrund, Figur und „Alice“ vertikal zentriert, kleiner Untertitel unten. Raster, Kreis, Glow, Streifen und „A little closer to Bob“ entfernt. Auch `LaunchBackground` ist hell.
+- Normaler Kaltstart: 2,6 Sekunden Splash plus kurze Ausblendung; URL-Aufrufe überspringen ihn weiterhin. Einmalige Wink-/Zwinkeranimation in der bestehenden Canvas-Figur (`greeting`), mit Rücksicht auf Reduce Motion und `companionMotion`. Sonstige Figuren und App-Icon behalten ihre Darstellung.
+- Profile → **Dark mode** speichert `darkModeEnabled`, standardmäßig aus. Adaptive Farben für Hintergründe, Navigation, Karten und Text. Command-/Bobcoin-Flächen bleiben dunkel mit heller Schrift. Splash bleibt unabhängig vom gewählten Modus hell.
+- Geprüft: Swift-Typcheck aller App-Dateien gegen iOS-SDK; Splash und Winkpose als lokale SwiftUI-Bilder angesehen. Kein Simulator-/Gerätebuild. Franz testet die Bewegung und den Toggle auf dem iPhone.
+
+## Live-Anbindung (26. September 2026)
 
 **Neuer Weg für native Freigaben:** Franz hat einen separaten lokalen Bob-Chat über
 ACP beauftragt. Implementierung in `../backend/acp/`, Start mit `npm run chat`
@@ -24,7 +32,7 @@ ACP-Phone-Count war noch 0. Echte Handy-Auswahl/Rückgabe noch nicht bestätigt.
 
 **Dieser Abschnitt hat Vorrang vor den historischen Beschreibungen unten.** Alice startet jetzt ungepaart und lädt keine automatischen Entscheidungs-Fixtures mehr. `Connection/Pairing.swift` liest App-/Web-QR-Links und speichert Zugangsdaten in der Keychain; `RelayClient` verbindet mit Backoff und reagiert auf Hintergrund/Vordergrund. `AliceSessionStore` verarbeitet echte Karten, Auswahlfragen, Status, Ablauf und Bestätigungen. Karten bleiben bis `ack`/Ablauf offen; Wiederholungen senden dieselbe Auswahl. Command-Erklärungen kommen aus Backend-Daten.
 
-Neue UI: `PairingSheet`, `NotificationSetupSheet`, `AliceSplashView`. Splash nutzt die bestehende Vektorfigur, IBM-Blau und Raster. URL-Schema `bobcompanion`, Kamera-/LAN-Berechtigung und auf private IPv4-Netze beschränkte ATS-Ausnahmen ergänzt. Signing/App-ID unverändert; keine APNs-Entitlements.
+Neue UI: `PairingSheet`, `NotificationSetupSheet`, `AliceSplashView` (aktuelles Design siehe Nachtrag oben). URL-Schema `bobcompanion`, Kamera-/LAN-Berechtigung und auf private IPv4-Netze beschränkte ATS-Ausnahmen ergänzt. Signing/App-ID unverändert; keine APNs-Entitlements.
 
 Für den Test ohne bezahlten Apple-Account: ntfy installieren, Topic aus Profile → Notifications abonnieren, dann aktivieren. Mitteilungen kommen von ntfy, Entscheidungen werden in Alice getroffen. Native Alice-APNs ist nicht implementiert. `bobcompanion://open` öffnet Alice; nötigenfalls App manuell öffnen.
 
@@ -100,7 +108,7 @@ Der neueste Stand ersetzt das ursprüngliche Chat-Konzept. Alte Beschreibungstex
 - Links **Usage**.
 - Rechts **Profile**.
 - In der Mitte ein schwebender runder Button in einer geschwungenen Aussparung.
-- Auf anderen Seiten zeigt der Button Alices Gesicht und darunter **Alice**; ein Tap führt zur Hauptseite.
+- Auf anderen Seiten zeigt der Button Alices Gesicht **ohne sichtbaren Titel**; ein Tap führt zur Hauptseite.
 - Auf der Alice-Hauptseite ist der Button ein **Mikrofon ohne sichtbaren Titel darunter**. Insbesondere „Talk to Alice“ nicht wieder als sichtbares Label einführen. Der VoiceOver-Text darf bestehen bleiben.
 - Im getrennten Zustand ist die mittlere Aktion derzeit ein Plus zum Verbinden.
 
@@ -169,7 +177,7 @@ Designsystem: `Alice/App/AliceTheme.swift`. Helle Flächen, IBM-Blau, Violett un
 
 | Datei | Aufgabe |
 | --- | --- |
-| `Alice/App/AliceApp.swift` | `@main`, erzeugt `AliceSessionStore`, setzt Environment und helles Farbschema. |
+| `Alice/App/AliceApp.swift` | `@main`, erzeugt `AliceSessionStore`, setzt Environment, Splash und gespeicherten Hell-/Dunkelmodus. |
 | `Alice/App/AliceTheme.swift` | Farben, Typografie und gemeinsame UI-Bausteine. |
 | `Alice/Model/AliceSessionStore.swift` | Tabs, aktive Anfrage, Antwort und lokaler Verbindungszustand. |
 | `Alice/Model/DecisionCard.swift` | Codable-Anfrage/Antwort, Optionen, ApprovalChoice, weitere Statusmodelle. |

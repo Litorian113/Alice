@@ -33,8 +33,8 @@ An info button explains the command's individual arguments. A short confirmation
 The bottom navigation provides:
 
 - **Usage** — token charts for today, week and month, input/output totals and Bobcoins.
-- **Alice** — the current decision and the companion. The center button becomes a microphone here.
-- **Profile** — session controls, a local display name, haptic feedback and companion motion settings.
+- **Alice** — the current decision and the companion. The center button becomes a microphone here; neither the face nor microphone has a visible label.
+- **Profile** — session controls, a local display name, dark mode, haptic feedback and companion motion settings. Dark mode is saved on the phone; light mode is the default.
 
 ## Current status
 
@@ -42,7 +42,7 @@ Alice connects to the monorepo's MCP/relay backend. It starts unpaired, scans Bo
 
 Voice uses native microphone capture, AssemblyAI streaming and transcript review. The authenticated relay issues temporary tokens and forwards reviewed text to Bob. Without a server-side API key it stays unavailable. Notifications use the free ntfy iOS app, configured under Profile. Native Alice APNs and IBM account sign-in are not implemented.
 
-See [the iPhone/Bob test guide](../docs/IPHONE_TEST.md), [the shared protocol](../docs/PROTOCOL.md) and [Voice integration](docs/VOICE_INTEGRATION.md). The start screen uses Alice's existing vector artwork and IBM-inspired blue/grid styling.
+See [the iPhone/Bob test guide](../docs/IPHONE_TEST.md), [the shared protocol](../docs/PROTOCOL.md) and [Voice integration](docs/VOICE_INTEGRATION.md). The launch screen and splash always stay light. A centered Alice waves and winks above her name, with “The mobile partner for IBM Bob” at the bottom. Normal launches show the splash for 2.6 seconds before fading out; incoming pairing/notification links skip it. Reduce Motion and the companion-motion preference disable the greeting animation. There is no grid, glow, ring or extra slogan.
 
 Local secrets go in the ignored repository-root `.env` (`ASSEMBLYAI_API_KEY`); copy [.env.example](../.env.example) on a fresh checkout. The local relay/dev runner loads it. Restart the relay after setting the key, then reconnect Alice.
 
