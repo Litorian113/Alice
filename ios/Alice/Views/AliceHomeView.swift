@@ -19,15 +19,7 @@ struct AliceHomeView: View {
                             if let card = store.currentDecision {
                                 DecisionCardView(card: card)
                             } else if store.phase == .waiting {
-                                VStack(spacing: 14) {
-                                    Image(systemName: "sparkles").font(.system(size: 25)).foregroundStyle(Color.aliceRecommended)
-                                    Text("Bob's on it.").font(.plex(23, weight: .semibold))
-                                    Text(store.latestStatus).font(.plex(15)).foregroundStyle(Color.aliceSecondary)
-                                        .multilineTextAlignment(.center)
-                                    if !store.notificationsEnabled {
-                                        Button("Set up notifications") { store.showsNotifications = true }.frame(minHeight: 44)
-                                    }
-                                }.padding(26).frame(maxWidth: .infinity).aliceSurface(radius: 30)
+                                statusFeedback
                             }
                         } else {
                             disconnected
@@ -77,6 +69,43 @@ struct AliceHomeView: View {
                 .accessibilityAddTraits(.isHeader)
         }
         .frame(maxWidth: .infinity)
+    }
+
+    private var statusTint: Color {
+        switch store.latestStatusLevel {
+        case .success: return .aliceSuccess
+        case .error: return .aliceError
+        case .info: return .aliceRecommended
+        }
+    }
+
+    private var statusIcon: String {
+        switch store.latestStatusLevel {
+        case .success: return "checkmark"
+        case .error: return "exclamationmark"
+        case .info: return "text.bubble"
+        }
+    }
+
+    private var statusFeedback: some View {
+        HStack(alignment: .top, spacing: 13) {
+            Image(systemName: statusIcon)
+                .font(.system(size: 15, weight: .semibold))
+                .foregroundStyle(statusTint)
+                .frame(width: 34, height: 34)
+                .background(statusTint.opacity(0.1), in: RoundedRectangle(cornerRadius: 12))
+                .accessibilityHidden(true)
+            Text(store.latestStatus)
+                .font(.plex(15, weight: .medium))
+                .foregroundStyle(Color.alicePrimary)
+                .lineSpacing(3)
+                .fixedSize(horizontal: false, vertical: true)
+                .frame(maxWidth: .infinity, minHeight: 34, alignment: .leading)
+        }
+        .padding(18)
+        .aliceSurface(radius: 24)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("Bob: \(store.latestStatus)")
     }
 
     private var disconnected: some View {

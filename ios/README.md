@@ -32,13 +32,13 @@ An info button explains the command's individual arguments. After Bob acknowledg
 
 The bottom navigation provides:
 
-- **Usage** — token charts for today, week and month, input/output totals and Bobcoins.
+- **Usage** — a three-day token graph with input/output curves, an hourly Today view and Bobcoins.
 - **Alice** — the current decision and the companion. The center button becomes a microphone here; neither the face nor microphone has a visible label.
 - **Profile** — session controls, a local display name, dark mode, haptic feedback and companion motion settings. Dark mode is saved on the phone; light mode is the default.
 
 ## Current status
 
-Alice connects to the monorepo's MCP/relay backend. It starts unpaired, scans Bob's QR, stores credentials in Keychain and receives live choice/approval cards. Responses wait for Bob's acknowledgement; reconnect and expiry are handled. **The app does not execute commands itself.** Bob receives the decision and follows Companion mode's tool rules. Usage figures remain local fixtures.
+Alice connects to the monorepo's MCP/relay backend. It starts unpaired, scans Bob's QR, stores credentials in Keychain and receives live choice/approval cards. Responses wait for Bob's acknowledgement; reconnect and expiry are handled. **The app does not execute commands itself.** Bob receives the decision and follows Companion mode's tool rules. Usage remains local: the Bobcoin snapshot (40 limit, 14 used, 26 remaining) comes from Franz's screenshot; the token graph for 25–27 September 2026 uses invented prototype data. Tokens are not calculated from Bobcoins, and there is no live Bobalytics connection.
 
 Voice uses native microphone capture, AssemblyAI streaming and transcript review. The authenticated relay issues temporary tokens and forwards reviewed text to Bob. Without a server-side API key it stays unavailable. Notifications use the free ntfy iOS app, configured under Profile. Native Alice APNs and IBM account sign-in are not implemented.
 

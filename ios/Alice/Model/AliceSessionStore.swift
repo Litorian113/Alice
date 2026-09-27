@@ -39,6 +39,7 @@ final class AliceSessionStore: ObservableObject {
     @Published private(set) var isSending = false
     @Published private(set) var connectionText = "Not connected"
     @Published private(set) var latestStatus = "Bob's next question will appear here."
+    @Published private(set) var latestStatusLevel: StatusNotification.NotificationLevel = .info
     @Published var errorMessage: String?
     @Published var showsVoiceInput = false
     @Published var showsPairing = false
@@ -300,6 +301,7 @@ final class AliceSessionStore: ObservableObject {
         case "notify":
             if let status = try? JSONDecoder().decode(StatusNotification.self, from: data) {
                 latestStatus = status.message
+                latestStatusLevel = status.level
             }
         default: break
         }
@@ -323,10 +325,13 @@ final class AliceSessionStore: ObservableObject {
             if lastResponse?.id == id { lastResponse = nil; lastChoice = nil }
             sendingTimeout?.cancel(); isSending = false
             latestStatus = "That request is no longer open. Waiting for Bob's next step."
+            latestStatusLevel = .info
             showNextCard()
         }
     }
     private func resetRequests() {
+        latestStatus = "Bob's next question will appear here."
+        latestStatusLevel = .info
         clearDecisionFeedback()
         cards = []; currentDecision = nil; lastResponse = nil; lastChoice = nil
         sendingTimeout?.cancel(); isSending = false

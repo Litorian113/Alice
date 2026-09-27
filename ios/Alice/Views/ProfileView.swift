@@ -35,16 +35,16 @@ struct ProfileView: View {
                     Spacer(minLength: 0)
                 }.padding(20).aliceSurface()
                 connection
-                if store.pairing != nil {
-                    Button { store.showsNotifications = true } label: {
-                        settingsRow("Notifications", subtitle: "Get a heads-up through ntfy", icon: "bell")
-                    }.buttonStyle(.plain).padding(.horizontal, 20).aliceSurface()
-                }
                 VStack(alignment: .leading, spacing: 0) {
                     Eyebrow(text: "Make yourself at home").padding(.bottom, 13)
                     Button { showsAccount = true } label: {
                         settingsRow("Account settings", subtitle: "Your name and profile", icon: "person.crop.circle")
                     }.buttonStyle(.plain).accessibilityIdentifier("profile.account")
+                    Divider().overlay(Color.aliceBorder)
+                    Button { store.showsNotifications = true } label: {
+                        settingsRow("Notifications", subtitle: store.pairing != nil && store.notificationsEnabled
+                                    ? "Manage your ntfy notifications" : "Set up notifications with ntfy", icon: "bell")
+                    }.buttonStyle(.plain).accessibilityIdentifier("profile.notifications")
                     Divider().overlay(Color.aliceBorder)
                     Toggle(isOn: $darkModeEnabled) {
                         settingsRow("Dark mode", subtitle: "A softer glow after hours", icon: "moon", chevron: false)

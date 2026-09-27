@@ -2,7 +2,7 @@ import SwiftUI
 import Charts
 
 struct UsageView: View {
-    @State private var period: UsagePeriod = .today
+    @State private var period: UsagePeriod = .threeDays
     @State private var selectedIndex: Int?
     private var selectedSample: UsageSample? { period.samples.first { $0.id == selectedIndex } }
 
@@ -66,7 +66,8 @@ struct UsageView: View {
                             .font(.plex(43, weight: .semibold, relativeTo: .largeTitle)).tracking(-1.5).contentTransition(.numericText())
                         Text("tokens").font(.plex(13)).foregroundStyle(Color.aliceSecondary)
                     }
-                    Text(period.caption).font(.plex(12)).foregroundStyle(Color.aliceSecondary)
+                    Text(selectedSample.map { period == .today ? "27 Sep · \($0.label):00" : "\($0.label) 2026" } ?? period.caption)
+                        .font(.plex(12)).foregroundStyle(Color.aliceSecondary)
                 }
                 Spacer()
                 Image(systemName: "chart.xyaxis.line")
@@ -76,10 +77,22 @@ struct UsageView: View {
             }
             Chart {
                 ForEach(period.samples) { sample in
-                    BarMark(x: .value("Interval", sample.id), y: .value("Tokens", sample.input), width: .ratio(0.52))
+                    AreaMark(x: .value("Interval", sample.id), y: .value("Tokens", sample.input), stacking: .unstacked)
                         .foregroundStyle(by: .value("Type", "Input"))
-                    BarMark(x: .value("Interval", sample.id), y: .value("Tokens", sample.output), width: .ratio(0.52))
+                        .interpolationMethod(.monotone).opacity(0.1)
+                    AreaMark(x: .value("Interval", sample.id), y: .value("Tokens", sample.output), stacking: .unstacked)
                         .foregroundStyle(by: .value("Type", "Output"))
+                        .interpolationMethod(.monotone).opacity(0.1)
+                    LineMark(x: .value("Interval", sample.id), y: .value("Tokens", sample.input))
+                        .foregroundStyle(by: .value("Type", "Input"))
+                        .interpolationMethod(.monotone)
+                        .lineStyle(StrokeStyle(lineWidth: 3, lineCap: .round))
+                        .symbol(Circle()).symbolSize(selectedIndex == sample.id ? 65 : 28)
+                    LineMark(x: .value("Interval", sample.id), y: .value("Tokens", sample.output))
+                        .foregroundStyle(by: .value("Type", "Output"))
+                        .interpolationMethod(.monotone)
+                        .lineStyle(StrokeStyle(lineWidth: 3, lineCap: .round))
+                        .symbol(Circle()).symbolSize(selectedIndex == sample.id ? 65 : 28)
                     if selectedIndex == sample.id {
                         RuleMark(x: .value("Selected", sample.id))
                             .foregroundStyle(Color.alicePrimary.opacity(0.3))
@@ -89,12 +102,14 @@ struct UsageView: View {
             }
             .chartForegroundStyleScale(["Input": Color.aliceAccent, "Output": Color(hex: "B9A4EE")])
             .chartLegend(.hidden)
+            .chartXScale(domain: -0.15...Double(period.samples.count - 1) + 0.15)
             .chartXSelection(value: $selectedIndex)
             .chartXAxis {
                 AxisMarks(values: period.samples.map(\.id)) { value in
-                    AxisValueLabel {
+                    AxisValueLabel(anchor: .top) {
                         if let index = value.as(Int.self), period.samples.indices.contains(index) {
                             Text(period.samples[index].label).font(.plex(10)).foregroundStyle(Color.aliceSecondary)
+                                .fixedSize()
                         }
                     }
                 }
@@ -109,18 +124,18 @@ struct UsageView: View {
                     }
                 }
             }
-            .frame(height: 170)
+            .frame(height: 190)
             .accessibilityLabel("\(period.rawValue) token usage, \(period.total.tokenLabel) total")
             HStack(spacing: 8) {
                 Circle().fill(Color.aliceAccent).frame(width: 7, height: 7)
                 Text("Input").font(.plex(12)).foregroundStyle(Color.aliceSecondary)
                 Spacer()
-                Text((period.total * 0.78).tokenLabel).font(.plex(14, weight: .medium))
+                Text((selectedSample?.input ?? period.inputTotal).tokenLabel).font(.plex(14, weight: .medium))
                 Rectangle().fill(Color.aliceBorder).frame(width: 1, height: 24).padding(.horizontal, 10)
                 Circle().fill(Color(hex: "B9A4EE")).frame(width: 7, height: 7)
                 Text("Output").font(.plex(12)).foregroundStyle(Color.aliceSecondary)
                 Spacer()
-                Text((period.total * 0.22).tokenLabel).font(.plex(14, weight: .medium))
+                Text((selectedSample?.output ?? period.outputTotal).tokenLabel).font(.plex(14, weight: .medium))
             }
         }
         .padding(22).aliceSurface()
@@ -132,20 +147,20 @@ struct UsageView: View {
                 Label("Bobcoins", systemImage: "circle.hexagongrid")
                     .font(.plex(17, weight: .semibold))
                 Spacer()
-                Text("TEAM ALLOWANCE").font(.plex(8, weight: .medium)).tracking(1)
+                Text("SPENDING LIMIT").font(.plex(8, weight: .medium)).tracking(1)
                     .foregroundStyle(.white.opacity(0.6))
             }
             HStack(alignment: .firstTextBaseline, spacing: 5) {
-                Text("3.82").font(.plex(31, weight: .semibold)).tracking(-0.8)
-                Text("/ 40 used").font(.plex(13)).foregroundStyle(.white.opacity(0.65))
+                Text("\(UsageData.bobcoinsUsed)").font(.plex(31, weight: .semibold)).tracking(-0.8)
+                Text("/ \(UsageData.bobcoinLimit) used").font(.plex(13)).foregroundStyle(.white.opacity(0.65))
                 Spacer()
-                Text("36.18 left").font(.plex(12, weight: .medium)).foregroundStyle(Color(hex: "C7D7FF"))
+                Text("\(UsageData.bobcoinsRemaining) left").font(.plex(12, weight: .medium)).foregroundStyle(Color(hex: "C7D7FF"))
             }
             GeometryReader { geometry in
                 Capsule().fill(.white.opacity(0.12))
                     .overlay(alignment: .leading) {
                         Capsule().fill(Color(hex: "83A9FF"))
-                            .frame(width: max(8, geometry.size.width * 3.82 / 40))
+                            .frame(width: geometry.size.width * UsageData.bobcoinFraction)
                     }
             }.frame(height: 6)
             Text("ibm-hackathon-lablab")

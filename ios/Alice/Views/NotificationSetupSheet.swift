@@ -9,7 +9,7 @@ struct NotificationSetupSheet: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 22) {
                 HStack {
-                    Text("A little heads-up.").font(.plex(27, weight: .semibold))
+                    Text("Notifications").font(.plex(27, weight: .semibold))
                     Spacer()
                     Button("Done") { dismiss() }.frame(minHeight: 44)
                 }
@@ -22,19 +22,20 @@ struct NotificationSetupSheet: View {
                 if let pairing = store.pairing {
                     Text(pairing.pushTopic).font(.system(.footnote, design: .monospaced))
                         .textSelection(.enabled).padding(16).aliceSurface()
-                    Button(copied ? "Copied" : "Copy topic") {
+                    PrimaryButton(title: copied ? "Topic copied" : "Copy topic", icon: copied ? "checkmark" : "doc.on.doc") {
                         UIPasteboard.general.string = pairing.pushTopic
                         copied = true
-                    }.frame(minHeight: 44)
+                    }
                     Toggle("3. Send me notifications", isOn: Binding(
                         get: { store.notificationsEnabled }, set: { store.setNotificationsEnabled($0) }
                     )).font(.plex(16, weight: .medium)).tint(.aliceAccent)
                     Text("After subscribing, ask Bob to send a question. Your answer is always made inside Alice.")
                         .font(.plex(13)).foregroundStyle(Color.aliceSecondary)
                 } else {
-                    Text("Connect to Bob first to create your notification topic.").font(.plex(15))
+                    Text("Connect to Bob from Profile → Connect session first. Then come back here to copy your notification topic.").font(.plex(15))
                 }
             }.padding(24)
         }.background(Color.aliceBackground)
+        .onChange(of: store.pairing?.pushTopic) { _, _ in copied = false }
     }
 }
