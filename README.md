@@ -9,6 +9,12 @@ in the same session while you're away from your desk.
 IBM Bob 2.0 Hackathon · September 2026 · **Franz Anhäupl** (iOS app & interaction design) ·
 **Christopher Pietsch** (MCP server & relay)
 
+## App screenshots
+
+| Splash screen | Alice | Usage | Profile | App icon |
+| :---: | :---: | :---: | :---: | :---: |
+| <img src="docs/bob-sessions/Splashscreen.PNG" alt="Alice splash screen" width="150"> | <img src="docs/bob-sessions/Alice-Page.PNG" alt="Alice main page" width="150"> | <img src="docs/bob-sessions/Usage-Page.PNG" alt="Usage page" width="150"> | <img src="docs/bob-sessions/Settingspage.PNG" alt="Profile and settings page" width="150"> | <img src="docs/bob-sessions/Alice-App-Icon.PNG" alt="Alice app icon screenshot" width="150"> |
+
 ## How it works
 
 1. Switch Bob to the **📱 Companion** agent and start a task.
