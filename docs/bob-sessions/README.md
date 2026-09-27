@@ -19,7 +19,21 @@ Last 30 days, user scope, as of 27 September 2026.
 | **Today:** 12 tasks completed with Bob on the final hackathon day | ![Bobalytics today](Bildschirmfoto%202026-09-27%20um%2017.18.49.png) |
 | **Subscription:** team `ibm-hackathon-lablab`, 40 Bobcoin limit, 22 used | ![Bob subscription](Bildschirmfoto%202026-09-27%20um%2017.18.13.png) |
 
-## Bob IDE sessions
+## Christopher Pietsch: Bob CLI task summaries
+
+Christopher used the Bob CLI (Bob Shell 2.0.5, `bob run`) to build and test the Companion MCP server and
+relay: headless end-to-end runs of the Companion loop (Bob fixes a demo project, asks for approval before
+committing, offers next steps on a scripted phone), a timeout check, code reviews and documentation
+analysis. The images below show the **Task Summary** that Bob Shell prints at the end of every run,
+taken verbatim from the run logs (task ID, cost, duration, tool calls), one card per task.
+
+| | |
+| --- | --- |
+| **26 September:** 9 tasks, 2.11 Bobcoins. Building and end-to-end testing the MCP server and relay: first `notify` call, Companion runs with choice and approval cards, a 75 s blocking `ask_decision`. | <img src="christopher-bob-cli-task-summaries-2026-09-26.png" width="420" alt="Bob CLI task summaries, 26 September"> |
+| **27 September:** 11 tasks, 6.59 Bobcoins. Code reviews (backend, iOS, ACP), docs-vs-code check, technical references, threat model, test coverage analysis, and an end-to-end Companion run against the production relay `wss://bob-relay.zeigma.com` (approval before commit, next-step card, voice standby ended by a phone instruction). | <img src="christopher-bob-cli-task-summaries-2026-09-27.png" width="420" alt="Bob CLI task summaries, 27 September"> |
+| **Bobalytics (user scope):** Bobcoin spend and the repositories Bob worked in (`alice-demo`, `sample-app` demo workspaces). Bobalytics refreshes hourly, so the 27 September runs appear after these screenshots were taken. | <img src="christopher-bobalytics-bobcoin-spend.png" width="200" alt="Bobalytics Bobcoin spend"> <img src="christopher-bobalytics-today.png" width="200" alt="Bobalytics today"> |
+
+## Bob IDE sessions (Franz Anhäupl)
 
 | | |
 | --- | --- |
