@@ -3,8 +3,10 @@ import SwiftUI
 struct AliceSplashView: View {
     var body: some View {
         VStack(spacing: 18) {
-            AliceMascot(greeting: true)
-                .frame(width: 204, height: 244)
+            AliceBobScene(greeting: true)
+                .frame(maxWidth: 340)
+                .frame(height: 230)
+                .padding(.horizontal, 20)
                 .accessibilityHidden(true)
             Text("Alice")
                 .font(.plex(52, weight: .semibold)).tracking(-1.8)

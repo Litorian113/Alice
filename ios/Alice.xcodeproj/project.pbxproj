@@ -22,6 +22,7 @@
 		82F3933A8B3F5D46C840613C /* MicrophoneRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32B8D3CB4EC4707119EC7567 /* MicrophoneRecorder.swift */; };
 		85D1CB6CFC5B77F2422EE86B /* OFL.txt in Resources */ = {isa = PBXBuildFile; fileRef = A4AC26CB2B2884700A90A478 /* OFL.txt */; };
 		8D361E7E543CAFF5986D42EE /* HTTPVoiceBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = C90998D3F8F7295A4E102D53 /* HTTPVoiceBackend.swift */; };
+		95E7ADB8621F3AAD187034FB /* BobMascot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 224F18360481130D3110FE81 /* BobMascot.swift */; };
 		982183C3BA7BD94934BE23BB /* AliceRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 647C658900B7A445BFD18914 /* AliceRootView.swift */; };
 		9974D6939F7FC08E44D6BBFE /* AssemblyAITranscriber.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFE4C289351A498A97FCA645 /* AssemblyAITranscriber.swift */; };
 		A3AD16E5AA93E1BE1BEC2AC8 /* AliceSessionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F3A6236039A56421591F698 /* AliceSessionStore.swift */; };
@@ -44,6 +45,7 @@
 		1B63C1FE33BDE31F8861F513 /* AliceFixtures.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AliceFixtures.swift; sourceTree = "<group>"; };
 		1DAAB9DBEC42F7D3000EE732 /* RelayVoiceBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RelayVoiceBridge.swift; sourceTree = "<group>"; };
 		21C126ADAD013083B1FAEB19 /* RelayClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RelayClient.swift; sourceTree = "<group>"; };
+		224F18360481130D3110FE81 /* BobMascot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BobMascot.swift; sourceTree = "<group>"; };
 		2ECA7D232466AB63156A0EEA /* DecisionCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecisionCard.swift; sourceTree = "<group>"; };
 		3267FF792EF2439C2E5226CD /* DecisionCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecisionCardView.swift; sourceTree = "<group>"; };
 		32B8D3CB4EC4707119EC7567 /* MicrophoneRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MicrophoneRecorder.swift; sourceTree = "<group>"; };
@@ -169,6 +171,7 @@
 			isa = PBXGroup;
 			children = (
 				A0827955EB677DBE1E55E3D8 /* AliceMascot.swift */,
+				224F18360481130D3110FE81 /* BobMascot.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -284,6 +287,7 @@
 				7FA1B8D8B462EE1FDD3C24AE /* AliceSplashView.swift in Sources */,
 				AEF41089C76ABE45BC2C9D8C /* AliceTheme.swift in Sources */,
 				9974D6939F7FC08E44D6BBFE /* AssemblyAITranscriber.swift in Sources */,
+				95E7ADB8621F3AAD187034FB /* BobMascot.swift in Sources */,
 				406CA7D68584EC60BB2F3420 /* DecisionCard.swift in Sources */,
 				F30DBC2822F12A709544F31F /* DecisionCardView.swift in Sources */,
 				342ADE3909B06D28CDAB79D0 /* DecisionDetailView.swift in Sources */,

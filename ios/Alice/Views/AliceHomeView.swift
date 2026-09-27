@@ -49,23 +49,12 @@ struct AliceHomeView: View {
 
     private var hero: some View {
         VStack(spacing: 10) {
-            ZStack {
-                Ellipse()
-                    .fill(Color.aliceRecommended.opacity(0.09))
-                    .frame(width: 175, height: 94)
-                    .blur(radius: 20)
-                    .offset(y: 8)
-                Image(systemName: "sparkle")
-                    .font(.system(size: 18))
-                    .foregroundStyle(Color(hex: "B2C9FF"))
-                    .offset(x: -82, y: -22)
-                Image(systemName: "sparkle")
-                    .font(.system(size: 12))
-                    .foregroundStyle(Color(hex: "C9B7F5"))
-                    .offset(x: 82, y: 18)
-                AliceMascot(happy: store.phase == .approvedOnce || store.phase == .approvedForTask)
-                    .frame(width: 94, height: 112)
-                    .rotationEffect(.degrees(store.phase == .needsDecision ? -4 : 0))
+            if store.currentDecision != nil {
+                AliceBobScene(asking: true)
+                    .frame(width: 264, height: 176)
+                    .accessibilityHidden(true)
+            } else {
+                waitingMascot
             }
             Text(store.currentDecision?.kind == .approval ? "Can Bob run this?" :
                     (store.currentDecision?.reply != nil ? "Bob's reply" : store.phase.title))
@@ -75,6 +64,13 @@ struct AliceHomeView: View {
                 .accessibilityAddTraits(.isHeader)
         }
         .frame(maxWidth: .infinity)
+    }
+
+    private var waitingMascot: some View {
+        AliceMascot(faceOnly: true, playful: true)
+            .frame(width: 220, height: 174)
+            .padding(.bottom, 6)
+            .accessibilityHidden(true)
     }
 
     private var statusTint: Color {

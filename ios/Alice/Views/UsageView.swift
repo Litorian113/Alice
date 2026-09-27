@@ -2,9 +2,9 @@ import SwiftUI
 import Charts
 
 struct UsageView: View {
-    @State private var period: UsagePeriod = .threeDays
-    @State private var selectedIndex: Int?
-    private var selectedSample: UsageSample? { period.samples.first { $0.id == selectedIndex } }
+    @State private var period: UsagePeriod = .sevenDays
+    @State private var selectedInterval: String?
+    private var selectedSample: UsageSample? { period.samples.first { $0.label == selectedInterval } }
 
     var body: some View {
         ScrollView {
@@ -36,7 +36,7 @@ struct UsageView: View {
             ForEach(UsagePeriod.allCases) { item in
                 Button {
                     period = item
-                    selectedIndex = nil
+                    selectedInterval = nil
                 } label: {
                     Text(item.rawValue).font(.plex(14, weight: .medium))
                         .foregroundStyle(period == item ? Color.alicePrimary : .aliceSecondary)
@@ -52,6 +52,14 @@ struct UsageView: View {
         .background(Color.aliceSurfaceRaised, in: RoundedRectangle(cornerRadius: 16))
     }
 
+    private var selectedLabel: String {
+        guard let s = selectedSample else { return period.caption }
+        switch period {
+        case .today: return "27 Sep · \(s.label):00"
+        default: return "\(s.label) 2026"
+        }
+    }
+
     private var tokenChart: some View {
         VStack(alignment: .leading, spacing: 20) {
             HStack(alignment: .top) {
@@ -62,35 +70,29 @@ struct UsageView: View {
                             .font(.plex(43, weight: .semibold, relativeTo: .largeTitle)).tracking(-1.5).contentTransition(.numericText())
                         Text("tokens").font(.plex(13)).foregroundStyle(Color.aliceSecondary)
                     }
-                    Text(selectedSample.map { period == .today ? "27 Sep · \($0.label):00" : "\($0.label) 2026" } ?? period.caption)
+                    Text(selectedLabel)
                         .font(.plex(12)).foregroundStyle(Color.aliceSecondary)
                 }
                 Spacer()
-                Image(systemName: "chart.xyaxis.line")
+                Image(systemName: "chart.bar.fill")
                     .font(.system(size: 19))
                     .foregroundStyle(Color.aliceAccent)
                     .padding(11).background(Color.aliceAccent.opacity(0.07), in: RoundedRectangle(cornerRadius: 14))
             }
             Chart {
                 ForEach(period.samples) { sample in
-                    AreaMark(x: .value("Interval", sample.id), y: .value("Tokens", sample.input), stacking: .unstacked)
+                    BarMark(x: .value("Interval", sample.label),
+                            y: .value("Tokens", sample.input), width: .ratio(0.55))
                         .foregroundStyle(by: .value("Type", "Input"))
-                        .interpolationMethod(.monotone).opacity(0.1)
-                    AreaMark(x: .value("Interval", sample.id), y: .value("Tokens", sample.output), stacking: .unstacked)
+                        .cornerRadius(4)
+                        .opacity(selectedInterval == nil || selectedInterval == sample.label ? 1 : 0.35)
+                    BarMark(x: .value("Interval", sample.label),
+                            y: .value("Tokens", sample.output), width: .ratio(0.55))
                         .foregroundStyle(by: .value("Type", "Output"))
-                        .interpolationMethod(.monotone).opacity(0.1)
-                    LineMark(x: .value("Interval", sample.id), y: .value("Tokens", sample.input))
-                        .foregroundStyle(by: .value("Type", "Input"))
-                        .interpolationMethod(.monotone)
-                        .lineStyle(StrokeStyle(lineWidth: 3, lineCap: .round))
-                        .symbol(Circle()).symbolSize(selectedIndex == sample.id ? 65 : 28)
-                    LineMark(x: .value("Interval", sample.id), y: .value("Tokens", sample.output))
-                        .foregroundStyle(by: .value("Type", "Output"))
-                        .interpolationMethod(.monotone)
-                        .lineStyle(StrokeStyle(lineWidth: 3, lineCap: .round))
-                        .symbol(Circle()).symbolSize(selectedIndex == sample.id ? 65 : 28)
-                    if selectedIndex == sample.id {
-                        RuleMark(x: .value("Selected", sample.id))
+                        .cornerRadius(4)
+                        .opacity(selectedInterval == nil || selectedInterval == sample.label ? 1 : 0.35)
+                    if selectedInterval == sample.label {
+                        RuleMark(x: .value("Selected", sample.label))
                             .foregroundStyle(Color.alicePrimary.opacity(0.3))
                             .lineStyle(StrokeStyle(lineWidth: 1, dash: [4, 4]))
                     }
@@ -98,13 +100,13 @@ struct UsageView: View {
             }
             .chartForegroundStyleScale(["Input": Color.aliceAccent, "Output": Color(hex: "B9A4EE")])
             .chartLegend(.hidden)
-            .chartXScale(domain: -0.15...Double(period.samples.count - 1) + 0.15)
-            .chartXSelection(value: $selectedIndex)
+            .chartXScale(domain: period.samples.map(\.label))
+            .chartXSelection(value: $selectedInterval)
             .chartXAxis {
-                AxisMarks(values: period.samples.map(\.id)) { value in
+                AxisMarks(values: period.samples.map(\.label)) { value in
                     AxisValueLabel(anchor: .top) {
-                        if let index = value.as(Int.self), period.samples.indices.contains(index) {
-                            Text(period.samples[index].label).font(.plex(10)).foregroundStyle(Color.aliceSecondary)
+                        if let label = value.as(String.self) {
+                            Text(label).font(.plex(10)).foregroundStyle(Color.aliceSecondary)
                                 .fixedSize()
                         }
                     }

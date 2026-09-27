@@ -1,27 +1,33 @@
 import Foundation
 
-// Prototype only: Bobcoin values copied from Franz's Bobalytics screenshot.
+// Prototype only: Bobcoin values are illustrative.
 // Token samples are invented independently, not converted from Bobcoins.
 enum UsageData {
     static let bobcoinLimit = 40
-    static let bobcoinsUsed = 14
+    static let bobcoinsUsed = 26
     static var bobcoinsRemaining: Int { bobcoinLimit - bobcoinsUsed }
     static var bobcoinFraction: Double { Double(bobcoinsUsed) / Double(bobcoinLimit) }
 
-    static let days: [UsageSample] = [
-        UsageSample(id: 0, label: "25 Sep", input: 38_200, output: 9_800),
-        UsageSample(id: 1, label: "26 Sep", input: 67_400, output: 17_600),
-        UsageSample(id: 2, label: "27 Sep", input: 91_300, output: 24_700)
+    // The hackathon runs September 25–27; earlier days have no activity.
+    static let sevenDays: [UsageSample] = [
+        UsageSample(id: 0, label: "21 Sep", input: 0, output: 0),
+        UsageSample(id: 1, label: "22 Sep", input: 0, output: 0),
+        UsageSample(id: 2, label: "23 Sep", input: 0, output: 0),
+        UsageSample(id: 3, label: "24 Sep", input: 0, output: 0),
+        UsageSample(id: 4, label: "25 Sep", input: 38_200, output: 9_800),
+        UsageSample(id: 5, label: "26 Sep", input: 67_400, output: 17_600),
+        UsageSample(id: 6, label: "27 Sep", input: 91_300, output: 24_700)
     ]
 }
 
 enum UsagePeriod: String, CaseIterable, Identifiable {
-    case today = "Today", threeDays = "3 days"
+    case today = "Today", threeDays = "3 days", sevenDays = "7 days"
     var id: String { rawValue }
     var caption: String {
         switch self {
         case .today: return "27 September 2026"
         case .threeDays: return "25–27 September 2026"
+        case .sevenDays: return "21–27 September 2026"
         }
     }
     var samples: [UsageSample] {
@@ -32,7 +38,8 @@ enum UsagePeriod: String, CaseIterable, Identifiable {
             return input.indices.map {
                 UsageSample(id: $0, label: String(format: "%02d", $0 + 8), input: input[$0], output: output[$0])
             }
-        case .threeDays: return UsageData.days
+        case .threeDays: return Array(UsageData.sevenDays.suffix(3))
+        case .sevenDays: return UsageData.sevenDays
         }
     }
     var inputTotal: Double { samples.reduce(0) { $0 + $1.input } }

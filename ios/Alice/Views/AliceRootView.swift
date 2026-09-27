@@ -38,6 +38,19 @@ struct AliceNavigation: View {
     private var onAlice: Bool { store.selectedTab == .alice }
 
     var body: some View {
+        VStack(spacing: 12) {
+            if onAlice && store.isConnected && store.phase == .waiting
+                && store.currentDecision == nil && store.decisionFeedback == nil && store.voiceInput == nil {
+                Text("Hold to speak")
+                    .font(.plex(12, weight: .medium))
+                    .foregroundStyle(Color.aliceSecondary)
+                    .accessibilityHidden(true)
+            }
+            navigationBar
+        }
+    }
+
+    private var navigationBar: some View {
         ZStack(alignment: .top) {
             NavigationNotch()
                 .fill(Color.aliceSurface)

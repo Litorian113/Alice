@@ -9,8 +9,10 @@ struct AliceMascot: View {
     var happy = false
     var animated = true
     var greeting = false
+    var grounded = false
     var peeking = false
     var reaction: Reaction?
+    var playful = false
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @AppStorage("companionMotion") private var companionMotion = true
     @State private var animationStart = Date()
@@ -19,11 +21,17 @@ struct AliceMascot: View {
     private var smilingEyes: Bool { happy || reaction == .delighted }
 
     var body: some View {
-        TimelineView(.animation(minimumInterval: greeting || peeking ? 1.0 / 30 : 0.08, paused: !shouldAnimate)) { timeline in
+        TimelineView(.animation(minimumInterval: greeting || peeking || playful ? 1.0 / 30 : 0.08, paused: !shouldAnimate)) { timeline in
             let time = timeline.date.timeIntervalSinceReferenceDate
             let elapsed = max(0, timeline.date.timeIntervalSince(animationStart))
             let blink = shouldAnimate && !greeting && time.truncatingRemainder(dividingBy: 5.4) < 0.16
+            let idleTime = elapsed.truncatingRemainder(dividingBy: 18)
+            let idle = shouldAnimate && playful && faceOnly && reaction == nil
             let wink = reaction == .wink || (shouldAnimate && greeting && (0.9...1.18).contains(elapsed))
+                || (idle && (3.8...4.25).contains(idleTime))
+            let cheerful = smilingEyes || (idle && (10...11.6).contains(idleTime))
+            let tilt = idle ? idleMotion(at: idleTime, from: 3, through: 6) * -5 : 0
+            let gaze = idle ? idleMotion(at: idleTime, from: 13, through: 16) * 4 : 0
             let wave = peeking && reaction != .rejected
                 ? -132 + (shouldAnimate ? sin(elapsed * 5) * 9 : 0)
                 : (shouldAnimate && greeting ? waveAngle(at: elapsed) : 0)
@@ -34,13 +42,20 @@ struct AliceMascot: View {
                                     y: (size.height - base.height * scale) / 2)
                 context.scaleBy(x: scale, y: scale)
                 if peeking { context.translateBy(x: 10, y: 0) }
-                drawAlice(context: context, blink: blink, wink: wink, wave: wave)
+                drawAlice(context: context, blink: blink && !wink && !cheerful, wink: wink, wave: wave, smilingEyes: cheerful, gaze: gaze)
             }
-            .offset(y: shouldAnimate && !faceOnly && !peeking ? sin((greeting ? elapsed : time) * 1.8) * 3 : 0)
+            .rotationEffect(.degrees(tilt))
+            .offset(y: shouldAnimate && !grounded && !faceOnly && !peeking ? sin((greeting ? elapsed : time) * 1.8) * 3 : 0)
         }
         .onAppear { animationStart = Date() }
         .accessibilityLabel(reaction == .rejected ? "Alice acknowledges your rejection" : (smilingEyes ? "Alice is happy" : "Alice, your companion for Bob"))
         .accessibilityAddTraits(.isImage)
+    }
+
+    private func idleMotion(at time: Double, from start: Double, through end: Double) -> Double {
+        guard time > start, time < end else { return 0 }
+        let sine = sin((time - start) / (end - start) * .pi)
+        return sine * sine
     }
 
     private func waveAngle(at time: TimeInterval) -> Double {
@@ -50,7 +65,7 @@ struct AliceMascot: View {
         return lift * (-125 + sin((time - 0.6) * .pi * 4) * 14)
     }
 
-    private func drawAlice(context: GraphicsContext, blink: Bool, wink: Bool, wave: Double) {
+    private func drawAlice(context: GraphicsContext, blink: Bool, wink: Bool, wave: Double, smilingEyes: Bool, gaze: Double) {
         let ink = Color(hex: "182544")
         let white = Color(hex: "F8FAFF")
         let shade = Color(hex: "D8E2F0")
@@ -163,8 +178,8 @@ struct AliceMascot: View {
                 eye.addQuadCurve(to: CGPoint(x: x + 11, y: 137), control: CGPoint(x: x, y: smilingEyes || wink ? 119 : 137))
                 context.stroke(eye, with: .color(ink), style: line)
             } else {
-                context.fill(Path(ellipseIn: CGRect(x: x - 15, y: 119, width: 30, height: 33)), with: .color(ink))
-                context.fill(Path(ellipseIn: CGRect(x: x + 1, y: 124, width: 8, height: 8)), with: .color(.white))
+                context.fill(Path(ellipseIn: CGRect(x: x - 15 + gaze, y: 119, width: 30, height: 33)), with: .color(ink))
+                context.fill(Path(ellipseIn: CGRect(x: x + 1 + gaze, y: 124, width: 8, height: 8)), with: .color(.white))
             }
         }
         var smile = Path()

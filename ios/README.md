@@ -16,7 +16,7 @@ IBM Bob 2.0 Hackathon · September 2026
 
 Alice and Bob are partners. Bob writes code, runs tools and handles the development task. Alice shows what Bob wants to do, explains the command in plain language and brings your decision back to him.
 
-The name is a nod to the familiar Alice-and-Bob pair in computer science. Alice shares Bob's friendly robot style, with a violet shell, a turquoise `//` hair clip, a headset and an A badge.
+The name is a nod to the familiar Alice-and-Bob pair in computer science. Alice shares Bob's friendly robot style, with a violet shell, a turquoise `//` hair clip, a headset and an A badge. Bob appears beside her on choice and approval screens, wearing his blue-violet hard hat and holding a laptop. Alice holds a phone, connected to his laptop by a small cable; a question bubble illustrates his request. Both characters are native SwiftUI vector artwork.
 
 ## The experience
 
@@ -32,20 +32,22 @@ An info button explains the command's individual arguments. After Bob acknowledg
 
 The bottom navigation provides:
 
-- **Usage** — a three-day token graph with input/output curves, an hourly Today view and Bobcoins.
+- **Usage** — Today / 3 days / 7 days with stacked input/output bars and Bobcoins; the seven-day overview opens by default.
 - **Alice** — the current decision and the companion. The center button becomes a microphone here; neither the face nor microphone has a visible label.
 - **Profile** — session controls, a local display name, dark mode, haptic feedback and companion motion settings. Dark mode is saved on the phone; light mode is the default.
 
 ## Current status
 
-Alice connects to the monorepo's MCP/relay backend. It starts unpaired, scans Bob's QR, stores credentials in Keychain and receives live choice/approval cards. Responses wait for Bob's acknowledgement; reconnect and expiry are handled. **The app does not execute commands itself.** Bob receives the decision and follows Companion mode's tool rules. Usage remains local: the Bobcoin snapshot (40 limit, 14 used, 26 remaining) comes from Franz's screenshot; the token graph for 25–27 September 2026 uses invented prototype data. Tokens are not calculated from Bobcoins, and there is no live Bobalytics connection.
+Alice connects to the monorepo's MCP/relay backend. It starts unpaired, scans Bob's QR, stores credentials in Keychain and receives live choice/approval cards. Responses wait for Bob's acknowledgement; reconnect and expiry are handled. **The app does not execute commands itself.** Bob receives the decision and follows Companion mode's tool rules. Usage remains local: the Bobcoin snapshot (40 limit, 26 used, 14 remaining) is the requested prototype snapshot; the token bars use invented prototype data only for the hackathon on 25–27 September 2026. The seven-day view shows zero activity before September 25. Tokens are not calculated from Bobcoins, and there is no live Bobalytics connection.
+
+The waiting page shows Alice's larger head with occasional winks, smiles, sideways glances and a gentle tilt. Reduce Motion and the companion-motion setting disable these expressions. “Hold to speak” appears directly above the microphone only on the connected waiting page.
 
 Hold the microphone on the Alice page to speak: the button grows with haptic feedback, Alice listens and a live transcript appears inline. Release to review, then tap “Send to Bob”. A tap also opens accessible Start/Stop controls. After acknowledgement, Alice returns to updates and decision cards. Voice uses native microphone capture, AssemblyAI streaming and transcript review. The authenticated relay issues temporary tokens and forwards reviewed text to Bob. A voice-enabled choice can wait for that speech in the same active IDE conversation. Bob sends his next answer as reply text with fresh actions; the current card replaces the previous one. Command approvals still require an explicit choice. After Stop here, Bob can stay
 in quiet voice standby: Alice keeps the latest result and shows “Ready for your
 next voice request.” A new spoken request resumes the same active IDE conversation.
 QR pairing alone does not wake a stopped IDE task. See [the voice dialog walkthrough](../docs/VOICE_DIALOG.md). Without a server-side API key it stays unavailable. Notifications use the free ntfy iOS app, configured under Profile. Native Alice APNs and IBM account sign-in are not implemented.
 
-See [the iPhone/Bob test guide](../docs/IPHONE_TEST.md), [the shared protocol](../docs/PROTOCOL.md) and [Voice integration](docs/VOICE_INTEGRATION.md). The launch screen and splash always stay light. A centered Alice waves and winks above her name, with “The mobile partner for IBM Bob” at the bottom. Normal launches show the splash for 2.6 seconds before fading out; incoming pairing/notification links skip it. Reduce Motion and the companion-motion preference disable the greeting animation. There is no grid, glow, ring or extra slogan.
+See [the iPhone/Bob test guide](../docs/IPHONE_TEST.md), [the shared protocol](../docs/PROTOCOL.md) and [Voice integration](docs/VOICE_INTEGRATION.md). The launch screen and splash always stay light. Bob and Alice stand together, connected from laptop to phone by a cable with a moving signal. Alice waves and winks above her name, with “The mobile partner for IBM Bob” at the bottom. Normal launches show the splash for 2.6 seconds before fading out; incoming pairing/notification links skip it. Reduce Motion and the companion-motion preference disable the greeting animation. There is no grid, glow, ring or extra slogan.
 
 Local secrets go in the ignored repository-root `.env` (`ASSEMBLYAI_API_KEY`); copy [.env.example](../.env.example) on a fresh checkout. The local relay/dev runner loads it. Restart the relay after setting the key, then reconnect Alice.
 
