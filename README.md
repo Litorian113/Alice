@@ -9,6 +9,10 @@ in the same session while you're away from your desk.
 IBM Bob 2.0 Hackathon · September 2026 · **Franz Anhäupl** (iOS app & interaction design) ·
 **Christopher Pietsch** (MCP server & relay)
 
+| Bob asks what's next | Bob asks before running a command | You answer by voice |
+| --- | --- | --- |
+| <img src="docs/bob-sessions/IMG_8959.PNG" width="220" alt="Choice card"> | <img src="docs/bob-sessions/IMG_8919.PNG" width="220" alt="Approval card"> | <img src="docs/bob-sessions/IMG_8960.PNG" width="220" alt="Voice follow-up"> |
+
 ## App screenshots
 
 | Splash screen | Alice | Usage | Profile | App icon |
@@ -94,7 +98,10 @@ improved Alice. We used the Bob IDE to test, develop further and self-improve th
 CLI (Bob Shell) for automated end-to-end tests, alongside other coding tools. Everything uses Bob's
 documented extension points (custom mode + MCP server); Bob itself is not modified.
 
-**IBM Bob task session summaries** from each team member: [docs/bob-sessions/](docs/bob-sessions/).
+**IBM Bob task session summaries and screenshots:** [docs/bob-sessions/](docs/bob-sessions/). Bobalytics
+shows 15 Bob tasks, with **46 % of them in our own Companion mode**, and Bob-written Swift, Markdown and YAML
+committed to this repository. One of the screenshots is Bob asking on the phone *"What should we build
+next? Pick the next upgrade for our app."*: Alice steering Bob while Bob improves Alice.
 
 ## Repository layout
 
