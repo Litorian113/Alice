@@ -85,7 +85,7 @@ The local relay and dev runner load the repository-root `.env`. Set `ASSEMBLYAI_
 
 Alice learns whether voice is available from the relay. Tap the microphone → **Start speaking** → allow microphone access → speak → **Stop recording** → review → **Send to Bob**. The relay gives Alice a short-lived token; the permanent key never reaches the phone. Speech is sent to AssemblyAI only after starting recording. The reviewed text is queued for Bob's `get_instruction`, not interpreted as an approval.
 
-Try a short message (maximum 500 UTF-16 code units, matching the backend limit). Bob should call `get_instruction` between steps; for a direct check, ask him to retrieve and repeat the latest instruction. The queue is in memory and is lost when the MCP process exits. A receipt means the running MCP process accepted the input, not that Bob has acted on it.
+Try a short message (maximum 500 UTF-16 code units, matching the backend limit). Bob should call `get_instruction(wait_s: 0)` for immediate checks between steps; for a direct check, ask him to retrieve and repeat the latest instruction. The queue is in memory and is lost when the MCP process exits. A receipt means the running MCP process accepted the input, not that Bob has acted on it.
 
 ## Verification in this change
 

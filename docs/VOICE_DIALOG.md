@@ -71,12 +71,15 @@ the transport, waiting behavior and card rendering are implemented by Alice.
   progress keepalives. Default mode wait: five minutes; configured cap: nine.
 - Voice is an instruction, never approval. While `request_approval` is open,
   speech remains queued; approve/reject explicitly before proceeding.
-- Inputs received while Bob works can be read with `get_instruction` or consumed
+- Inputs received while Bob works can be read with `get_instruction(wait_s: 0)` or consumed
   by the next voice-enabled choice. They do not create a parallel agent turn.
 - Input: 500 UTF-16 code units. Reply: 4000, with paragraphs preserved. Bob should
   send a complete concise answer, not a large file dump. Files remain in the repo.
 - Retry IDs prevent double execution of the same queued input within the running
   MCP process. Reconnect restores open reply cards. Restart loses in-memory input.
+- Omitting `wait_s` now starts a real 540-second voice wait. An empty queue no
+  longer returns `none` unless Bob explicitly requests `wait_s: 0`. Standby must
+  remain a pending tool call; a final chat sentence does not activate a listener.
 - Stop here and declining follow-up work move into quiet standby using
   `get_instruction(wait_s: 540)`. The latest result stays visible. Ordinary
   standby timeout renews the wait without selecting actions or repeating messages.

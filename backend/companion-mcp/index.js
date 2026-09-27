@@ -67,7 +67,7 @@ const server = new McpServer(
   { name: 'bob-companion', version: '0.1.0' },
   {
     instructions:
-      'Write all phone-facing titles, replies, context, option labels/details and notifications in English. The developer may be away and steering you from their phone. Use ask_decision for next-step choices, request_approval before running state-changing commands, notify for one-line status, get_instruction between steps. For same-chat voice follow-ups call ask_decision with accept_voice=true, reply containing your answer, and relevant options including Stop here. Voice resumes that call without approving commands. After Stop here, declining a follow-up, or completing a task, send a final notify then call get_instruction(wait_s=540) to stay available for new voice requests without another card. Stop here ends the current work, not the phone session. Exit only on explicit stop-listening/disconnect or IDE cancellation.',
+      'Write all phone-facing titles, replies, context, option labels/details and notifications in English. The developer may be away and steering you from their phone. Use ask_decision for next-step choices, request_approval before running state-changing commands, notify for one-line status, get_instruction(wait_s=0) for immediate checks between steps. For same-chat voice follow-ups call ask_decision with accept_voice=true, reply containing your answer, and relevant options including Stop here. Voice resumes that call without approving commands. After Stop here, declining a follow-up, or completing a task, send a final notify then call get_instruction(wait_s=540) to stay available for new voice requests without another card. Stop here ends the current work, not the phone session. Exit only on explicit stop-listening/disconnect or IDE cancellation.',
   },
 );
 
@@ -272,12 +272,12 @@ server.registerTool(
   {
     title: 'Get instruction from phone',
     description:
-      'With no wait_s (or 0), pop the next queued instruction; returns "none" if empty. Set wait_s=540 after finishing work, Stop here, or declining a follow-up: quietly wait for a NEW voice request in this same IDE chat, without a choice card and without replacing the last phone result. On timeout, renew standby; on cancellation/disconnect, end. Never perform actions just because time passed. All responses and actions must be English.',
+      'With no arguments, wait up to 540 seconds for voice (also configurable with wait_s). Only explicit wait_s=0 performs an immediate queue check. After finishing work, Stop here, or declining a follow-up: quietly wait for a NEW voice request in this same IDE chat, without a choice card and without replacing the last phone result. On timeout, renew standby; on cancellation/disconnect, end. Never perform actions just because time passed. All responses and actions must be English.',
     inputSchema: {
-      wait_s: z.number().int().min(0).max(540).optional().describe('0: immediate queue check (default). 1–540: idle voice wait. Use 540 to keep the paired phone available after a task ends.'),
+      wait_s: z.number().int().min(0).max(540).optional().describe('Default 540: idle voice wait. Explicit 0: immediate queue check. 1–540: idle voice wait. Use 540 to keep the paired phone available after a task ends.'),
     },
   },
-  async ({ wait_s = 0 }, extra) => {
+  async ({ wait_s = 540 }, extra) => {
     if (wait_s > 0) {
       const result = await waitForPhoneVoice(Math.min(wait_s, MAX_TIMEOUT_S), extra);
       if (result.instruction) return text(`New voice request from the paired phone: ${JSON.stringify(result.instruction.text)}\nContinue in this SAME IDE conversation. This starts new work: previous task approvals were cleared. Use normal command approvals, answer in English in chat and on the phone, and return to get_instruction(wait_s=540) when the work ends. If asked to stop listening or disconnect, end instead.`);
@@ -291,7 +291,7 @@ server.registerTool(
     const more = companion.instructions.length;
     return text(
       `Instruction from the developer: "${next.text}"` +
-        (more ? `\n(${more} more queued — call get_instruction again after this one.)` : ''),
+        (more ? `\n(${more} more queued — call get_instruction(wait_s=0) again after this one.)` : ''),
     );
   },
 );

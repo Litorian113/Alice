@@ -271,9 +271,11 @@ whole open card, including reply text and voice capability.
 
 ### Quiet standby after a task
 
-`get_instruction` keeps its existing immediate queue-pop behavior with no arguments
-or `wait_s: 0`. A positive integer `wait_s` (1–540 seconds, also capped by
-`MAX_DECISION_TIMEOUT_S`) instead waits for a `source: "voice"` instruction without
+`get_instruction` with no arguments defaults to a 540-second voice wait. This
+prevents callers that omit the optional argument from checking once and falsely
+claiming standby. Only explicit `wait_s: 0` performs an immediate queue pop
+(use this between ongoing work steps). A positive integer `wait_s`
+(1–540 seconds, also capped by `MAX_DECISION_TIMEOUT_S`) waits for a `source: "voice"` instruction without
 a card. This requires a connected relay and an already paired phone session; the
 phone may be temporarily backgrounded. Only one wait may own the queue, and it
 cannot coexist with a pending decision. Normal queue polling refuses to steal

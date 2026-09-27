@@ -255,15 +255,15 @@ test('answering from a push notification action', async () => {
 });
 
 test('instructions queue and pop in order', async () => {
-  assert.equal(await call('get_instruction'), 'none');
+  assert.equal(await call('get_instruction', { wait_s: 0 }), 'none');
   p1.send({ type: 'instruction', id: 'i1', text: 'Also update the README' });
   p1.send({ type: 'instruction', id: 'i2', text: 'Then stop' });
   await p1.next('ack', (m) => m.id === 'i2');
-  const first = await call('get_instruction');
+  const first = await call('get_instruction', { wait_s: 0 });
   assert.match(first, /"Also update the README"/);
   assert.match(first, /1 more queued/);
-  assert.match(await call('get_instruction'), /"Then stop"$/);
-  assert.equal(await call('get_instruction'), 'none');
+  assert.match(await call('get_instruction', { wait_s: 0 }), /"Then stop"$/);
+  assert.equal(await call('get_instruction', { wait_s: 0 }), 'none');
 });
 
 test('same MCP chat: omitted accept_voice still resumes on speech, returns a new reply and stops', async () => {
@@ -280,7 +280,7 @@ test('same MCP chat: omitted accept_voice still resumes on speech, returns a new
   const removed = await p1.next('decision_expired', m => m.id === card.id);
   assert.equal(removed.reason, 'voice_input');
   assert.match(await pending, /Add a troubleshooting section/);
-  assert.equal(await call('get_instruction'), 'none');
+  assert.equal(await call('get_instruction', { wait_s: 0 }), 'none');
   const next = call('ask_decision', { ...args, reply: 'Troubleshooting is included.' });
   const replacement = await p1.next('decision_request', m => m.title === args.title && m.acceptsVoice && m.id !== card.id);
   assert.equal(replacement.reply, 'Troubleshooting is included.');
@@ -292,23 +292,27 @@ test('same MCP chat: omitted accept_voice still resumes on speech, returns a new
   await until(() => pushes.filter(push => push.title === args.title).length === 2);
 });
 
-test('home voice standby receives a new job without a card or replacing the last result', async () => {
+test('omitted wait_s starts real home voice standby and receives a new job without a card or replacing the last result', async () => {
   const message = 'Changes saved locally. Nothing committed.';
   await call('notify', { message, level: 'success' });
   await p1.next('notify', m => m.message === message);
   await until(() => pushes.some(push => push.message === message));
   const marker = p1.inbox.length;
-  const waiting = call('get_instruction', { wait_s: 30 });
+  // Reproduce the real IDE sending {} despite the optional wait_s argument.
+  let settled = false;
+  const waiting = call('get_instruction').finally(() => { settled = true; });
   const ready = await p1.next('voice_status', m => !!m.voiceReadyUntil);
-  assert.ok(Date.parse(ready.voiceReadyUntil) > Date.now());
+  assert.ok(Date.parse(ready.voiceReadyUntil) > Date.now() + 500_000);
+  await new Promise(resolve => setTimeout(resolve, 50));
+  assert.equal(settled, false, 'empty queue must keep the MCP call open');
   assert.equal(p1.inbox.slice(marker).some(m => ['notify', 'decision_request'].includes(m.type)), false);
-  assert.match(await call('get_instruction'), /already owns the input queue/);
+  assert.match(await call('get_instruction', { wait_s: 0 }), /already owns the input queue/);
   p1.send({ type: 'instruction', id: 'home-voice', source: 'voice', text: 'Please commit the changes.' });
   await p1.next('ack', m => m.id === 'home-voice');
   const result = await waiting;
   assert.match(result, /Please commit the changes/);
   assert.match(result, /previous task approvals were cleared/);
-  assert.equal(await call('get_instruction'), 'none');
+  assert.equal(await call('get_instruction', { wait_s: 0 }), 'none');
   const timeout = await call('get_instruction', { wait_s: 1 });
   assert.match(timeout, /No action is authorized/);
   assert.match(timeout, /renew quiet standby/);

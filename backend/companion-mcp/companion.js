@@ -312,6 +312,7 @@ export class Companion extends EventEmitter {
         clearTimeout(timer);
         signal?.removeEventListener('abort', onAbort);
         this.instructionWaiter = null;
+        this.log(`voice standby ended (${result.reason ?? 'instruction'})`);
         this.sendVoiceStatus();
         resolve(result);
       };
@@ -319,6 +320,7 @@ export class Companion extends EventEmitter {
       const timer = setTimeout(() => finish({ reason: 'timeout' }), duration);
       const until = new Date(Math.ceil((Date.now() + duration) / 1000) * 1000).toISOString().replace('.000Z', 'Z');
       this.instructionWaiter = { finish, until };
+      this.log(`voice standby started (until ${until})`);
       signal?.addEventListener('abort', onAbort, { once: true });
       this.sendVoiceStatus();
       this.consumeStandbyVoice();

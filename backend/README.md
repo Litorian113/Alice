@@ -33,6 +33,8 @@ current iOS app resumes the same MCP call/IDE conversation; Bob sends the next
 answer and fresh actions the same way. Command approvals are never resolved by
 speech. No fixed README workflow, second agent or browser chat is involved.
 
+With no arguments, `get_instruction` now waits for voice for up to 540 seconds;
+use explicit `wait_s: 0` for an immediate queue check during ongoing work.
 After Stop here or declining further work, `get_instruction(wait_s: 540)` keeps
 Bob quietly available for new spoken requests from the home screen. It preserves
 the latest result and resets task approvals. Voice resumes the same IDE call;
