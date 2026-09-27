@@ -117,9 +117,11 @@ struct AliceBobScene: View {
     var animated = true
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @AppStorage("companionMotion") private var companionMotion = true
+    @AppStorage("alicePalette") private var paletteID = AlicePalette.violet.rawValue
     @State private var started = Date()
 
     private var moves: Bool { animated && !reduceMotion && companionMotion }
+    private var colors: AlicePalette.Colors { (AlicePalette(rawValue: paletteID) ?? .violet).colors }
 
     var body: some View {
         GeometryReader { geometry in
@@ -136,22 +138,22 @@ struct AliceBobScene: View {
                         var cable = Path()
                         cable.move(to: CGPoint(x: 140, y: 190))
                         cable.addCurve(to: CGPoint(x: 214, y: 190), control1: CGPoint(x: 157, y: 229), control2: CGPoint(x: 200, y: 229))
-                        context.stroke(cable, with: .color(Color(hex: "7860E8")), style: StrokeStyle(lineWidth: 4, lineCap: .round))
+                        context.stroke(cable, with: .color(colors.accent), style: StrokeStyle(lineWidth: 4, lineCap: .round))
                         if moves {
                             let t = CGFloat(max(0, timeline.date.timeIntervalSince(started)).truncatingRemainder(dividingBy: 2.4) / 2.4)
                             let u = 1 - t
                             let x = u*u*u*140 + 3*u*u*t*157 + 3*u*t*t*200 + t*t*t*214
                             let y = u*u*u*190 + 3*u*u*t*229 + 3*u*t*t*229 + t*t*t*190
-                            context.fill(Path(ellipseIn: CGRect(x: x - 3, y: y - 3, width: 6, height: 6)), with: .color(Color(hex: "85E3DB")))
+                            context.fill(Path(ellipseIn: CGRect(x: x - 3, y: y - 3, width: 6, height: 6)), with: .color(colors.accessory))
                         }
                         // Alice holds the phone in her left hand, connected to Bob's laptop.
                         let phone = Path(roundedRect: CGRect(x: 204, y: 162, width: 24, height: 38), cornerRadius: 6)
-                        context.fill(phone, with: .color(Color(hex: "C8F4EE")))
+                        context.fill(phone, with: .color(colors.accessory))
                         context.stroke(phone, with: .color(Color(hex: "182544")), lineWidth: 3)
                         let speaker = Path(roundedRect: CGRect(x: 212, y: 166, width: 8, height: 2), cornerRadius: 1)
                         context.fill(speaker, with: .color(Color(hex: "182544")))
                         let home = Path(roundedRect: CGRect(x: 213, y: 194, width: 6, height: 2), cornerRadius: 1)
-                        context.fill(home, with: .color(Color(hex: "7860E8")))
+                        context.fill(home, with: .color(colors.accent))
                     }
                 }
                 if asking {
@@ -160,10 +162,10 @@ struct AliceBobScene: View {
                             .fill(Color.aliceSurface)
                             .overlay {
                                 UnevenRoundedRectangle(topLeadingRadius: 15, bottomLeadingRadius: 3, bottomTrailingRadius: 15, topTrailingRadius: 15)
-                                    .strokeBorder(Color(hex: "7860E8").opacity(0.25), lineWidth: 1.5)
+                                    .strokeBorder(colors.accent.opacity(0.25), lineWidth: 1.5)
                             }
                         Text("?").font(.system(size: 25, weight: .semibold, design: .rounded))
-                            .foregroundStyle(Color(hex: "7860E8"))
+                            .foregroundStyle(colors.accent)
                     }
                     .frame(width: 38, height: 38)
                     .rotationEffect(.degrees(8))

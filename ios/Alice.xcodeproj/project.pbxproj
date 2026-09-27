@@ -14,8 +14,10 @@
 		359F266BCE18F9A1844C975C /* RelayClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21C126ADAD013083B1FAEB19 /* RelayClient.swift */; };
 		36C253606CB5E7FD2CA2CDF1 /* AliceHomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E67F13E8F1812D6CF3A499AA /* AliceHomeView.swift */; };
 		406CA7D68584EC60BB2F3420 /* DecisionCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2ECA7D232466AB63156A0EEA /* DecisionCard.swift */; };
+		41CBD1EAE43015B0E3B00ACE /* AliceCustomizerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FFD54C9683AD4B2BAB61917 /* AliceCustomizerView.swift */; };
 		46186A7CAA1267EAA4FB4AEF /* NotificationSetupSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96FA3CE1CC5BD85622F920FE /* NotificationSetupSheet.swift */; };
 		5E49FE6D62D969636DC53345 /* AliceMascot.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0827955EB677DBE1E55E3D8 /* AliceMascot.swift */; };
+		609CB3936E5E95E6E9DAEEC3 /* AlicePalette.swift in Sources */ = {isa = PBXBuildFile; fileRef = 402746E08E916BB2643D3A71 /* AlicePalette.swift */; };
 		71F7F269A86649CA5863C877 /* AliceApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0FD3013AE4E8F5EC64F42AE /* AliceApp.swift */; };
 		7473BACAEB877856B9F3A91F /* Pairing.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFF49FCE78124665A56EF0AB /* Pairing.swift */; };
 		7FA1B8D8B462EE1FDD3C24AE /* AliceSplashView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC4666E1D14698FB68221EA2 /* AliceSplashView.swift */; };
@@ -47,11 +49,13 @@
 		21C126ADAD013083B1FAEB19 /* RelayClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RelayClient.swift; sourceTree = "<group>"; };
 		224F18360481130D3110FE81 /* BobMascot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BobMascot.swift; sourceTree = "<group>"; };
 		2ECA7D232466AB63156A0EEA /* DecisionCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecisionCard.swift; sourceTree = "<group>"; };
+		2FFD54C9683AD4B2BAB61917 /* AliceCustomizerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AliceCustomizerView.swift; sourceTree = "<group>"; };
 		3267FF792EF2439C2E5226CD /* DecisionCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecisionCardView.swift; sourceTree = "<group>"; };
 		32B8D3CB4EC4707119EC7567 /* MicrophoneRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MicrophoneRecorder.swift; sourceTree = "<group>"; };
 		37A5590D29F5BAFD723A2981 /* UsageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsageView.swift; sourceTree = "<group>"; };
 		3A78F53A53A915C52AD21FAE /* DecisionDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecisionDetailView.swift; sourceTree = "<group>"; };
 		3B2553FB5CDC0991A3349DE0 /* IBMPlexSans-SemiBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "IBMPlexSans-SemiBold.ttf"; sourceTree = "<group>"; };
+		402746E08E916BB2643D3A71 /* AlicePalette.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlicePalette.swift; sourceTree = "<group>"; };
 		4763682A47D40DD13619D41D /* AliceTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AliceTheme.swift; sourceTree = "<group>"; };
 		56803416D2CDA31A4F0106DF /* IBMPlexSans-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "IBMPlexSans-Medium.ttf"; sourceTree = "<group>"; };
 		5F3A6236039A56421591F698 /* AliceSessionStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AliceSessionStore.swift; sourceTree = "<group>"; };
@@ -102,6 +106,7 @@
 		17B463BDB53A166AF78B7CB9 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				2FFD54C9683AD4B2BAB61917 /* AliceCustomizerView.swift */,
 				E67F13E8F1812D6CF3A499AA /* AliceHomeView.swift */,
 				647C658900B7A445BFD18914 /* AliceRootView.swift */,
 				BC4666E1D14698FB68221EA2 /* AliceSplashView.swift */,
@@ -161,6 +166,7 @@
 		A6028C95000FA2F440ACB21A /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				402746E08E916BB2643D3A71 /* AlicePalette.swift */,
 				5F3A6236039A56421591F698 /* AliceSessionStore.swift */,
 				2ECA7D232466AB63156A0EEA /* DecisionCard.swift */,
 			);
@@ -279,9 +285,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				71F7F269A86649CA5863C877 /* AliceApp.swift in Sources */,
+				41CBD1EAE43015B0E3B00ACE /* AliceCustomizerView.swift in Sources */,
 				D178C19505DC5614EFFFDB23 /* AliceFixtures.swift in Sources */,
 				36C253606CB5E7FD2CA2CDF1 /* AliceHomeView.swift in Sources */,
 				5E49FE6D62D969636DC53345 /* AliceMascot.swift in Sources */,
+				609CB3936E5E95E6E9DAEEC3 /* AlicePalette.swift in Sources */,
 				982183C3BA7BD94934BE23BB /* AliceRootView.swift in Sources */,
 				A3AD16E5AA93E1BE1BEC2AC8 /* AliceSessionStore.swift in Sources */,
 				7FA1B8D8B462EE1FDD3C24AE /* AliceSplashView.swift in Sources */,

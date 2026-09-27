@@ -15,17 +15,6 @@ struct UsageView: View {
                 periodPicker
                 tokenChart
                 bobcoins
-                HStack(spacing: 16) {
-                    AliceMascot(faceOnly: true, animated: false).frame(width: 53, height: 48)
-                    VStack(alignment: .leading, spacing: 5) {
-                        Text("An Alice that's so you.").font(.plex(17, weight: .semibold))
-                        Text("Colors, outfits, a little personality.\nCompanion customization is coming later.")
-                            .font(.plex(12)).foregroundStyle(Color.aliceSecondary)
-                    }
-                    Spacer(minLength: 0)
-                }
-                .padding(19)
-                .background(Color.aliceVioletSurface, in: RoundedRectangle(cornerRadius: 22))
                 Color.clear.frame(height: 8)
             }.padding(.horizontal, 24)
         }.scrollIndicators(.hidden)

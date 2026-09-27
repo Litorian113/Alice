@@ -8,6 +8,7 @@ struct ProfileView: View {
     @AppStorage("displayName") private var displayName = "Franz Anhäupl"
     @State private var showsAccount = false
     @State private var showsAbout = false
+    @State private var showsCustomizer = false
 
     private var initials: String {
         String(displayName.split(separator: " ").prefix(2).compactMap(\.first))
@@ -56,6 +57,21 @@ struct ProfileView: View {
                                     ? "Manage your ntfy notifications" : "Set up notifications with ntfy", icon: "bell")
                     }.buttonStyle(.plain).accessibilityIdentifier("profile.notifications")
                     Divider().overlay(Color.aliceBorder)
+                    Button { showsCustomizer = true } label: {
+                        HStack(spacing: 12) {
+                            AliceMascot(faceOnly: true, animated: false)
+                                .frame(width: 36, height: 32)
+                                .accessibilityHidden(true)
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("An Alice that suits you").font(.plex(14, weight: .medium))
+                                Text("Colors and gradients").font(.plex(11)).foregroundStyle(Color.aliceSecondary)
+                            }
+                            Spacer(minLength: 3)
+                            Image(systemName: "chevron.right").font(.system(size: 10)).foregroundStyle(Color.aliceMuted)
+                        }
+                        .padding(.vertical, 16).contentShape(Rectangle())
+                    }.buttonStyle(.plain).accessibilityIdentifier("profile.customizer")
+                    Divider().overlay(Color.aliceBorder)
                     Toggle(isOn: $darkModeEnabled) {
                         settingsRow("Dark mode", subtitle: "A softer glow after hours", icon: "moon", chevron: false)
                     }.tint(.aliceAccent).accessibilityIdentifier("profile.darkMode")
@@ -82,6 +98,11 @@ struct ProfileView: View {
             }.padding(.horizontal, 24)
         }
         .scrollIndicators(.hidden)
+        .sheet(isPresented: $showsCustomizer) {
+            AliceCustomizerView()
+                .presentationDetents([.large])
+                .presentationDragIndicator(.visible)
+        }
         .sheet(isPresented: $showsAccount) {
             AccountSettingsSheet()
                 .presentationDetents([.medium])

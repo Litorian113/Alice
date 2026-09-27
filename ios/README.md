@@ -34,7 +34,7 @@ The bottom navigation provides:
 
 - **Usage** — Today / 3 days / 7 days with stacked input/output bars and Bobcoins; the seven-day overview opens by default.
 - **Alice** — the current decision and the companion. The center button becomes a microphone here; neither the face nor microphone has a visible label.
-- **Profile** — session controls, a local display name, dark mode, haptic feedback and companion motion settings. Dark mode is saved on the phone; light mode is the default.
+- **Profile** — session controls, a local display name, Alice colors, dark mode, haptic feedback and companion motion settings. Dark mode is saved on the phone; light mode is the default.
 
 ## Current status
 
@@ -50,6 +50,8 @@ QR pairing alone does not wake a stopped IDE task. See [the voice dialog walkthr
 See [the iPhone/Bob test guide](../docs/IPHONE_TEST.md), [the shared protocol](../docs/PROTOCOL.md) and [Voice integration](docs/VOICE_INTEGRATION.md). The launch screen and splash always stay light. Bob and Alice stand together, connected from laptop to phone by a cable with a moving signal. Alice waves and winks above her name, with “The mobile partner for IBM Bob” at the bottom. Normal launches show the splash for 2.6 seconds before fading out; incoming pairing/notification links skip it. Reduce Motion and the companion-motion preference disable the greeting animation. There is no grid, glow, ring or extra slogan.
 
 Local secrets go in the ignored repository-root `.env` (`ASSEMBLYAI_API_KEY`); copy [.env.example](../.env.example) on a fresh checkout. The local relay/dev runner loads it. Restart the relay after setting the key, then reconnect Alice.
+
+Profile → **An Alice that suits you** opens a minimal customizer with a live preview, six palettes (Violet, Ocean, Mint, Sunset, Rose, Graphite), Gradient / Solid and Reset to original. Changes save immediately on this phone and apply to every Alice illustration, including splash, navigation, voice and decision feedback. Bob and the app icon keep their original appearance.
 
 Profile displays a simulated IBMid card with a local display name and the masked address `franz.anhaeupl@…`; it does not authenticate an IBM account. Tapping the card opens local account settings.
 
@@ -122,6 +124,7 @@ The icon uses the same Alice face as the app. To regenerate it on macOS, run fro
 xcrun swiftc -parse-as-library \
   -target "$(uname -m)-apple-macosx14.0" \
   Alice/Views/Components/AliceMascot.swift \
+  Alice/Model/AlicePalette.swift \
   Alice/App/AliceTheme.swift \
   Alice/Model/DecisionCard.swift \
   scripts/render-app-icon.swift \
@@ -187,7 +190,7 @@ Risk remains part of the model, although the main UI has no risk badge. High-ris
 
 ## Scope
 
-Next steps are the real-device walkthrough, production relay deployment, native APNs if desired, and real usage data. Companion customization can follow later.
+Next steps are the real-device walkthrough, production relay deployment, native APNs if desired, and real usage data. Alice color customization is available in Profile; outfits can follow later.
 
 Alice is not a remote IDE or a full coding chat. The focus is a small, understandable decision at the moment Bob needs you.
 

@@ -15,6 +15,8 @@ struct AliceMascot: View {
     var playful = false
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @AppStorage("companionMotion") private var companionMotion = true
+    @AppStorage("alicePalette") private var paletteID = AlicePalette.violet.rawValue
+    @AppStorage("aliceUsesGradient") private var usesGradient = true
     @State private var animationStart = Date()
 
     private var shouldAnimate: Bool { animated && !reduceMotion && companionMotion }
@@ -69,8 +71,9 @@ struct AliceMascot: View {
         let ink = Color(hex: "182544")
         let white = Color(hex: "F8FAFF")
         let shade = Color(hex: "D8E2F0")
-        let violet = Color(hex: "7860E8")
-        let mint = Color(hex: "85E3DB")
+        let colors = (AlicePalette(rawValue: paletteID) ?? .violet).colors
+        let violet = colors.accent
+        let mint = colors.accessory
         let line = StrokeStyle(lineWidth: 6, lineCap: .round, lineJoin: .round)
 
         func shape(_ path: Path, _ color: Color) {
@@ -129,7 +132,7 @@ struct AliceMascot: View {
         shell.addQuadCurve(to: CGPoint(x: 180, y: 169), control: CGPoint(x: 211, y: 174))
         shell.addLine(to: CGPoint(x: 62, y: 169))
         shell.addQuadCurve(to: CGPoint(x: 32, y: 145), control: CGPoint(x: 29, y: 173))
-        shape(shell, Color(hex: "6652C8"))
+        shape(shell, colors.shell)
 
         round(39, 80, 161, 102, 32, shade)
         context.fill(Path(roundedRect: CGRect(x: 50, y: 86, width: 141, height: 92), cornerRadius: 27), with: .color(white))
@@ -145,14 +148,14 @@ struct AliceMascot: View {
         fringe.addCurve(to: CGPoint(x: 31, y: 110), control1: CGPoint(x: 140, y: 98), control2: CGPoint(x: 78, y: 113))
         fringe.closeSubpath()
         context.fill(fringe, with: .linearGradient(
-            Gradient(colors: [Color(hex: "536EF0"), Color(hex: "AA74F0")]),
+            Gradient(colors: usesGradient ? [colors.start, colors.end] : [colors.accent, colors.accent]),
             startPoint: CGPoint(x: 38, y: 18), endPoint: CGPoint(x: 207, y: 120)))
         context.stroke(fringe, with: .color(ink), style: line)
 
         var sweep = Path()
         sweep.move(to: CGPoint(x: 56, y: 80))
         sweep.addQuadCurve(to: CGPoint(x: 147, y: 43), control: CGPoint(x: 112, y: 78))
-        context.stroke(sweep, with: .color(Color(hex: "C4C3FF")),
+        context.stroke(sweep, with: .color(colors.highlight),
                        style: StrokeStyle(lineWidth: 5, lineCap: .round))
 
         // A // hair clip nods to code; the headset makes her role as the companion visible.
@@ -187,7 +190,7 @@ struct AliceMascot: View {
         smile.addQuadCurve(to: CGPoint(x: 137, y: 161), control: CGPoint(x: 120, y: reaction == .rejected ? 151 : (smilingEyes || reaction == .confident ? 177 : 170)))
         context.stroke(smile, with: .color(ink), style: line)
         for x: CGFloat in [58, 171] {
-            context.fill(Path(ellipseIn: CGRect(x: x, y: 150, width: 14, height: 7)), with: .color(Color(hex: "D5C8FA")))
+            context.fill(Path(ellipseIn: CGRect(x: x, y: 150, width: 14, height: 7)), with: .color(colors.blush))
         }
 
         if !faceOnly && wave != 0 {

@@ -1,7 +1,7 @@
 import AppKit
 import SwiftUI
 
-// Compile alongside AliceMascot.swift, AliceTheme.swift and DecisionCard.swift.
+// Compile alongside AliceMascot.swift, AlicePalette.swift, AliceTheme.swift and DecisionCard.swift.
 // Uses the exact face from the instruction sheet, with animation disabled.
 @main
 struct RenderAppIcon {
