@@ -15,6 +15,11 @@ struct DecisionCardView: View {
     var body: some View {
         VStack(spacing: 14) {
             requestBubble
+            if card.kind == .choice && card.acceptsVoice {
+                Label("Choose below, or hold the mic to reply.", systemImage: "mic")
+                    .font(.plex(12)).foregroundStyle(Color.aliceSecondary)
+                    .multilineTextAlignment(.center)
+            }
             VStack(spacing: 12) {
               if card.kind == .approval {
                 if let once = card.options.first(where: { $0.approvalChoice == .once }) {
@@ -90,6 +95,12 @@ struct DecisionCardView: View {
             }
             if let command = card.command {
                 CommandSnippet(command: command)
+            }
+            if let reply = card.reply, !reply.isEmpty {
+                Text(reply)
+                    .font(.plex(17)).foregroundStyle(Color.alicePrimary)
+                    .lineSpacing(5).textSelection(.enabled)
+                    .fixedSize(horizontal: false, vertical: true)
             }
             Text(card.context)
                 .font(.plex(14)).foregroundStyle(Color.aliceSecondary)

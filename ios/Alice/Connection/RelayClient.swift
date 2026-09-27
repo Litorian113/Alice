@@ -8,6 +8,7 @@ struct RelayEnvelope: Decodable {
     var bobOnline: Bool?
     var decisions: [DecisionCard]?
     var voiceAvailable: Bool?
+    var reason: String?
 }
 
 @MainActor

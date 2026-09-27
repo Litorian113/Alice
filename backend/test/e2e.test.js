@@ -33,7 +33,9 @@ before(async () => {
     port: 0,
     ntfyUrl: `http://localhost:${ntfyPort}`,
     publicUrl: 'http://placeholder', // replaced below once we know the port
-    roomGraceMs: 500,
+    // A cold Node/MCP start can take seconds while Swift is typechecking.
+    // Keep the restart test independent of host load (production uses 30 s).
+    roomGraceMs: 10_000,
     log: (...a) => relayLog.push(a.join(' ')),
   });
   relayPort = await relay.listen();
@@ -212,7 +214,7 @@ test('ask_decision: open card is re-sent when the phone reconnects', async () =>
   assert.match(await pending, /chose \[b\] B/);
 });
 
-test('ask_decision: timeout returns conservative answer and expires card', async () => {
+test('ask_decision: voice timeout ends the dialog without choosing an action', async () => {
   const t0 = Date.now();
   const res = await call('ask_decision', {
     title: 'Force push to main?',
@@ -221,8 +223,9 @@ test('ask_decision: timeout returns conservative answer and expires card', async
     timeout_s: 1, // clamped to the 5 s minimum
   });
   assert.ok(Date.now() - t0 >= 4900);
-  assert.match(res, /^no response, proceed conservatively\. Do NOT perform the risky action/);
-  assert.match(res, /recommended option was \[b\] Skip/);
+  assert.match(res, /Phone conversation ended \(timeout\)/);
+  assert.match(res, /No action was selected/);
+  assert.doesNotMatch(res, /proceed conservatively/);
   const exp = await p1.next('decision_expired');
   assert.equal(exp.reason, 'timeout');
 });
@@ -261,6 +264,32 @@ test('instructions queue and pop in order', async () => {
   assert.match(first, /1 more queued/);
   assert.match(await call('get_instruction'), /"Then stop"$/);
   assert.equal(await call('get_instruction'), 'none');
+});
+
+test('same MCP chat: omitted accept_voice still resumes on speech, returns a new reply and stops', async () => {
+  const args = { title: 'Your result', context: 'The document is ready.', allow_free_text: true,
+    options: [{ label: 'Review', recommended: true }, { label: 'Stop here' }], timeout_s: 30 };
+  const pending = call('ask_decision', args);
+  const card = await p1.next('decision_request', m => m.title === args.title && m.acceptsVoice === true);
+  assert.equal(card.acceptsVoice, true);
+  assert.equal(card.reply, undefined); // Reproduce Bob omitting both new arguments.
+  const parallel = await call('ask_decision', args);
+  assert.match(parallel, /already open/);
+  p1.send({ type: 'instruction', id: 'voice-roundtrip', source: 'voice', text: 'Add a troubleshooting section.' });
+  await p1.next('ack', m => m.id === 'voice-roundtrip');
+  const removed = await p1.next('decision_expired', m => m.id === card.id);
+  assert.equal(removed.reason, 'voice_input');
+  assert.match(await pending, /Add a troubleshooting section/);
+  assert.equal(await call('get_instruction'), 'none');
+  const next = call('ask_decision', { ...args, reply: 'Troubleshooting is included.' });
+  const replacement = await p1.next('decision_request', m => m.title === args.title && m.acceptsVoice && m.id !== card.id);
+  assert.equal(replacement.reply, 'Troubleshooting is included.');
+  p1.send({ type: 'decision_response', id: replacement.id, optionId: 'b' });
+  assert.match(await next, /Stop here/);
+  await p1.next('ack', m => m.id === replacement.id);
+  // Push delivery is asynchronous. Drain both notifications before the next
+  // test resets its shared fake-ntfy inbox and checks an approval notification.
+  await until(() => pushes.filter(push => push.title === args.title).length === 2);
 });
 
 const APPROVAL = {

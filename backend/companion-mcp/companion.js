@@ -68,6 +68,7 @@ export class Companion extends EventEmitter {
 
   stop() {
     this.stopped = true;
+    for (const { cancel } of [...this.pending.values()]) cancel?.();
     clearTimeout(this.reconnectTimer);
     this.ws?.close();
   }
@@ -160,9 +161,10 @@ export class Companion extends EventEmitter {
           break;
         }
         this.instructionReceipts.set(id, text);
-        this.instructions.push({ id, text, at: new Date().toISOString() });
+        this.instructions.push({ id, text, source: msg.source === 'voice' ? 'voice' : 'text', at: new Date().toISOString() });
         this.send({ type: 'ack', id });
-        this.log(`instruction queued: ${text}`);
+        this.log(`instruction queued (source=${msg.source === 'voice' ? 'voice' : 'text'}): ${text}`);
+        this.consumeVoiceForDialog();
         this.emit('instruction');
         break;
       }
@@ -204,8 +206,9 @@ export class Companion extends EventEmitter {
       const onAbort = () => expire('cancelled');
       const timer = setTimeout(() => expire('timeout'), Math.max(0, Date.parse(card.expiresAt) - Date.now()));
       signal?.addEventListener('abort', onAbort, { once: true });
-      this.pending.set(card.id, { card, resolve: done, apply });
+      this.pending.set(card.id, { card, resolve: done, apply, cancel: onAbort });
       this.send(card);
+      this.consumeVoiceForDialog();
     });
   }
 
@@ -282,6 +285,20 @@ export class Companion extends EventEmitter {
 
   popInstruction() {
     return this.instructions.shift() || null;
+  }
+
+  // Voice resumes one explicitly voice-enabled choice. It can never approve a
+  // command, and a duplicate input ID remains a receipt rather than another turn.
+  consumeVoiceForDialog() {
+    const index = this.instructions.findIndex(input => input.source === 'voice');
+    if (index < 0) return;
+    const entry = [...this.pending.values()].find(({ card, applying }) =>
+      card.kind === 'choice' && card.acceptsVoice === true && !applying && Date.parse(card.expiresAt) > Date.now());
+    if (!entry) return;
+    const [instruction] = this.instructions.splice(index, 1);
+    this.send({ type: 'decision_expired', id: entry.card.id, reason: 'voice_input' });
+    this.log(`voice input ${instruction.id} resumed choice ${entry.card.id}`);
+    entry.resolve({ instruction });
   }
 }
 

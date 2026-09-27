@@ -70,7 +70,7 @@ unchanged within the room: Bob → every connected phone, phone → Bob.
 | `decision_request` | the card, `kind` `choice` or `approval`, see §4 | Show the card, buzz |
 | `sync` | `decisions`: array of all currently open cards | Authoritative snapshot after phone/Bob reconnect; remove stale cards and deduplicate subsequent individual replays |
 | `ack` | `id` | Your `decision_response` or `instruction` with this `id` was accepted. **Dismiss that card** (also on other phones in the same room) |
-| `decision_expired` | `id`, `reason`: `timeout` \| `cancelled` \| `unknown` | Remove the card. `timeout`: Bob continued conservatively. `cancelled`: Bob aborted the call |
+| `decision_expired` | `id`, `reason`: `timeout` \| `cancelled` \| `unknown` \| `voice_input` | Remove the card. `voice_input`: spoken input resumed a voice-enabled choice, never an approval. Timeout ends voice dialogs without selecting a fallback; ordinary choices retain their conservative policy |
 | `error` | `id`, `error` | Your answer was rejected (e.g. `unknown optionId`). The card stays open |
 
 ### Relay → phone
@@ -86,7 +86,7 @@ unchanged within the room: Bob → every connected phone, phone → Bob.
 | Type | Fields | Notes |
 | --- | --- | --- |
 | `decision_response` | `id`, `optionId` (one of the card's option ids), `text` (optional/`null`, ≤ 500 chars) | `text` alone (no `optionId`) is allowed when the card has `allowFreeText: true`. Bob then follows the text instead of an option |
-| `instruction` | `id` (any unique string), `text` (≤ 500 chars) | Free-text instruction. Bob picks it up with `get_instruction` between steps. Answered with `ack` |
+| `instruction` | `id` (any unique string), `text` (≤ 500 chars), optional `source: "voice"` | Accepted into the queue with `ack`. Voice may immediately resume an open voice-enabled choice; otherwise Bob picks it up with `get_instruction` or the next voice-enabled choice. |
 
 ### Delivery rules the app can rely on
 
@@ -107,7 +107,7 @@ There is **one card type** (`decision_request`) with a `kind`:
 | `choice` | `ask_decision` | "What next?": 2–4 next steps, one may be recommended | `a`, `b`, `c`, `d` |
 | `approval` | `request_approval` | "May Bob run this exact command?" | `approve_once`, `approve_for_task`, `reject` (always these three, in this order) |
 
-**Every key is always present**, whatever the kind (`null`, `""`, `false` or `[]` when
+**Every base key is always present**, whatever the kind (`null`, `""`, `false` or `[]` when
 unused), so a strict decoder (Swift `Codable` with non-optional fields) never hits a
 missing key. New optional keys may be added later; ignore keys you don't know.
 
@@ -188,6 +188,8 @@ tools, so the Companion mode's rules are what make Bob ask first and follow the 
 | `options[].detail` | 0–60 chars. `""` when there's no detail |
 | `options[].recommended` | boolean, `true` on at most one option. Approval cards recommend nothing |
 | `allowFreeText` | boolean: may the user answer with **text instead of** an option? A note that comes with an option is always accepted |
+| `reply` | Optional choice-card extension: Bob's answer, ≤ 4000 UTF-16 code units, paragraphs preserved. Oversized replies rejected, not truncated. Show above actions; do not accumulate chat history. |
+| `acceptsVoice` | Optional boolean; new MCP choice cards set true by default, explicit `accept_voice: false` opts out. Older/missing fields decode as false. Only `choice` cards can wait for a voice instruction as an alternative to a button. |
 | `expiresAt` | ISO 8601 UTC **without fractional seconds** (`2026-09-26T14:05:00Z`, works with Swift `.iso8601`). The app should also accept `null` (no expiry) |
 
 Over-long text (title, context, labels, details, explanations) is cut at a word boundary
@@ -224,6 +226,45 @@ no card content leaves the relay.
 
 Replayed cards are not pushed repeatedly to the same topic. Native Alice topics use `bobcompanion://open` and no action buttons. ntfy must be installed/subscribed separately; this is not native APNs for Alice.
 
+## Same-chat phone conversations
+
+`ask_decision` accepts optional `reply` and `accept_voice` MCP arguments. They become
+`reply` and `acceptsVoice` on the existing choice card. Voice is enabled by default
+even when the model omits `accept_voice`; explicit false opts out. No extra MCP tool, second Bob
+session or relay connection is created. The mode supplies a 300-second wait
+(maximum 540 seconds in this workspace), below the IDE's 600-second MCP timeout.
+
+While that tool call is open, `instruction` with `source: "voice"` is queued and
+acknowledged as usual, then the oldest queued voice input resolves one eligible
+choice with an instruction result in the **same IDE chat**. The server withdraws
+that card with `decision_expired(reason: "voice_input")`. There is no decision ack,
+selected option or permission grant for that card. Duplicate input UUID/text
+retries are acknowledged without replaying a conversation turn. Inputs without
+`source: "voice"` keep the existing polling behavior. The original source is kept
+on retries; resending a legacy input ID does not upgrade it into voice.
+
+Speech received during work or a command approval stays queued until Bob calls
+`get_instruction` or a voice-enabled choice. It never resolves `request_approval`.
+If a tap wins the race, a later voice input remains queued for the next step;
+if voice wins, stale taps receive `decision_expired`. Opening a voice wait while
+another request is pending is rejected by the MCP tool. Do not use this shared
+pairing concurrently from multiple IDE tasks.
+
+Companion mode requires English titles, replies, context, option labels/details
+and notifications. User transcripts remain verbatim; no hidden translation is
+applied. Bob writes his actual English response in the IDE and passes it in the next
+`ask_decision.reply`, together with context-appropriate actions and a stop option.
+Alice shows this answer and its actions as one current card. The next card replaces
+it after resolution; no fabricated response or transcript history is generated.
+Bob's decision to call the tool remains agent-driven, governed by Companion mode.
+A stop choice/spoken stop ends the loop with a final `notify`; timeout/cancellation
+instructs Bob to stop with **no fallback action** and no automatic rearming.
+
+This does not wake a completed IDE task. Starting/resuming from the IDE and keeping
+the wait active are required. Queue and dialog state remain in memory; restarting
+MCP loses queued input. Reconnecting a phone to the same running MCP resends the
+whole open card, including reply text and voice capability.
+
 ## 6. Voice tokens and instructions
 
 After an authenticated phone hello:
@@ -245,7 +286,7 @@ The relay, when configured with `ASSEMBLYAI_API_KEY`, calls the regional Assembl
 
 The token redemption window is 60 seconds (55 reported conservatively); provider session cap is 180 seconds. Alice records at most 120 seconds. The relay limits issuance to one concurrent request and one request per five seconds per room, times out upstream after 12 seconds, and sends an `error` with the matching ID on failure. No provider secrets or errors are forwarded/logged. Region/model are environment settings. The relay only permits `decision_response` and `instruction` through from phones; token/revocation requests are handled locally.
 
-Once transcription finishes and the user confirms, Alice sends the existing `instruction` message with its UUID and text. A matching `ack` becomes `VoiceInputReceipt(status: "accepted")`. Instructions over 500 UTF-16 code units are rejected, never silently truncated. No task ID exists in this protocol yet. Tokens and transcript messages are not approval grants.
+Once transcription finishes and the user confirms, Alice sends the existing `instruction` message with its UUID, text and `source: "voice"`. A matching `ack` becomes `VoiceInputReceipt(status: "accepted")`. Instructions over 500 UTF-16 code units are rejected, never silently truncated. No task ID exists in this protocol yet. Tokens and transcript messages are not approval grants.
 
 ## Testing without Bob
 

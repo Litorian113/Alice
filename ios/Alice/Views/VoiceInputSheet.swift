@@ -103,7 +103,7 @@ struct VoiceInputView: View {
         case .finishing: return "One moment…"
         case .review: return "Ready to send?"
         case .sending: return "Sending your input…"
-        case .sent: return "Input received."
+        case .sent: return "Input queued."
         }
     }
 
@@ -114,7 +114,14 @@ struct VoiceInputView: View {
         case .connecting: return "Preparing your microphone and voice connection."
         case .recording: return "Keep holding while you speak. Release to review your words."
         case .finishing: return "Finishing your transcript."
-        case .review: return "Review your words, then send them to your connected session."
+        case .review:
+            if store.currentDecision?.kind == .approval {
+                return "This message will be queued. It does not approve the command; choose Approve or Reject separately."
+            }
+            if store.currentDecision?.acceptsVoice != true {
+                return "Bob isn't waiting for a voice reply right now. Your message will be queued until he checks for input or opens the next voice dialog."
+            }
+            return "Review your words, then send them to continue this conversation with Bob."
         case .sending: return "Waiting for confirmation."
         case .sent: return "Your input is queued for Bob. His updates and decisions will appear here."
         case .failed: return "Please try recording again."

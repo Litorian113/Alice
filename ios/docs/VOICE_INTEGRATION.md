@@ -21,7 +21,10 @@ Alice → voice_session_request over authenticated relay WebSocket
   → AssemblyAI streaming WebSocket + microphone → live transcript
   → Release (or Stop) → finalized transcript → user reviews → Send to Bob
   → instruction with stable input UUID → MCP queue → ack
-  → Bob calls get_instruction between steps
+  → open voice-enabled ask_decision returns the instruction in the SAME Bob chat
+  → Bob writes his response and calls ask_decision(reply, accept_voice=true, options)
+  → next answer/actions replace the current card; Stop here ends the dialog
+  (Without an open voice wait: get_instruction between steps / next voice dialog)
 ```
 
 Token messages are handled by the relay and returned only to the requesting phone, never forwarded to Bob or other phones. Text uses `instruction`/`ack`. This is feedback/input, not a command approval and not a separate voice agent. There is no TTS or spoken reply.
@@ -41,7 +44,7 @@ All interfaces are `@MainActor`; implementations live in `Alice/Voice/`.
 
 `HTTPVoiceBackend` remains an unused alternative for a future HTTP transport. Its constructor takes explicit HTTPS session/input endpoints and an auth closure. The old proposed `/v1/voice/sessions` and `/v1/inputs` routes were **not** implemented; wiring now uses WebSocket messages. Switching transport means supplying different `VoiceServices` in `makeVoiceInput()`, not changing the voice UI.
 
-Session ID comes from Keychain pairing; decision ID is the active card. The relay has no task ID. Its `instruction` contains only `type`, `id` and `text`, so per-task/decision routing is not asserted.
+Session ID comes from Keychain pairing; decision ID is the active card. The relay has no task ID. Its `instruction` contains `type`, `id`, `text` and `source: "voice"`, so per-task/decision routing is not asserted.
 
 ## Delivery guarantees and limits
 
@@ -55,7 +58,7 @@ Session ID comes from Keychain pairing; decision ID is the active card. The rela
 ## Audio and lifecycle
 
 - Hold the navigation microphone for 0.25 seconds to start; release to finalize and review. Tapping opens inline Start/Stop controls as an accessible alternative. Capture begins only after microphone permission and AssemblyAI `Begin`. Releasing during setup cancels it, so delayed permission/token results cannot start a microphone later.
-- The store owns the inline voice model. Incoming decisions remain queued until it closes; matching input acknowledgement shows confirmation for 1.5 seconds, then returns to status/decisions. Bob still needs to call `get_instruction`; only `notify` messages and decision cards return to Alice, not the full IDE transcript.
+- The store owns the inline voice model. Incoming decisions remain queued until it closes; matching input acknowledgement shows confirmation for 1.5 seconds, then returns to status/decisions. New MCP choice cards enable voice by default (explicit false opts out). A voice-enabled `ask_decision` resumes immediately with the input; otherwise Bob needs `get_instruction` or a new voice-enabled choice. Bob returns his answer through `ask_decision.reply` and its actions. This remains the same active IDE chat, but does not wake a completed task or mirror the full transcript.
 - Hardware audio is converted to 16 kHz mono signed 16-bit little-endian PCM; binary frames are 100 ms. Stop flushes the converter and silence-pads the final short frame.
 - Ordered sends and a bounded two-second audio buffer prevent unlimited backlog; overflow reports an error.
 - Turn updates replace earlier versions by `turn_order`, including formatted finals. They do not append duplicates.
@@ -71,3 +74,9 @@ Session ID comes from Keychain pairing; decision ID is the active card. The rela
 The Swift app was typechecked against the iOS SDK. Backend tests stub the provider to verify authenticated token issuance, caller-only delivery, rate limiting and instruction deduplication. Live audio, microphone behavior and actual phone delivery require the iPhone walkthrough; they were not claimed as tested automatically.
 
 Official references: [model selection](https://www.assemblyai.com/docs/streaming/select-the-speech-model), [WebSocket API](https://www.assemblyai.com/docs/streaming/api-spec/streaming-websocket), [temporary tokens](https://www.assemblyai.com/docs/streaming/authenticate-with-a-temporary-token), [token endpoint](https://www.assemblyai.com/docs/streaming/api-spec/generate-streaming-token).
+
+Phone dialog copy is English. Generated Bob replies/actions are instructed to be
+English even for non-English input; the speech transcript is preserved verbatim.
+If the active card cannot accept voice (approval, explicit opt-out, or an older
+MCP card), review explains that sending queues the instruction rather than
+immediately continuing Bob.

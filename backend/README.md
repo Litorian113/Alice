@@ -24,6 +24,20 @@ Paths are relative to `backend/` unless they start with `../`.
 | `../demo/` | `sample-app/` (failing tests) + `setup.sh`, which creates a standalone Bob workspace from it |
 | `test/` | Unit tests for the card contract + end-to-end tests (relay + MCP over stdio + fake phone + fake ntfy) |
 
+## Same-chat voice follow-ups
+
+`ask_decision` can wait for either a tapped option or a spoken follow-up using
+`accept_voice: true` (the default even when omitted; false explicitly opts out). Put Bob's English response in `reply` (up to 4000 characters), include
+2–4 relevant actions with a stop option, and use `timeout_s: 300`. Voice from the
+current iOS app resumes the same MCP call/IDE conversation; Bob sends the next
+answer and fresh actions the same way. Command approvals are never resolved by
+speech. No fixed README workflow, second agent or browser chat is involved.
+
+The active wait must stay open; this cannot wake a finished IDE chat. After timeout
+or cancellation Bob stops instead of auto-selecting an action. See the reusable
+[phone conversation walkthrough](../docs/VOICE_DIALOG.md) and
+[wire contract](../docs/PROTOCOL.md#same-chat-phone-conversations).
+
 ## Quick start (everything local)
 
 For the complete real-iPhone / IBM Bob chat walkthrough, see [IPHONE_TEST.md](../docs/IPHONE_TEST.md). Alice now supports live pairing, both card types, acknowledgement-based answers, ntfy setup and voice.

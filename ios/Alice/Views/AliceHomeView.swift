@@ -62,7 +62,8 @@ struct AliceHomeView: View {
                     .frame(width: 94, height: 112)
                     .rotationEffect(.degrees(store.phase == .needsDecision ? -4 : 0))
             }
-            Text(store.currentDecision?.kind == .approval ? "Can Bob run this?" : store.phase.title)
+            Text(store.currentDecision?.kind == .approval ? "Can Bob run this?" :
+                    (store.currentDecision?.reply != nil ? "Bob's reply" : store.phase.title))
                 .font(.plex(28, weight: .semibold, relativeTo: .title))
                 .tracking(-0.8)
                 .multilineTextAlignment(.center)

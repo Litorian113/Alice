@@ -27,7 +27,7 @@ final class RelayVoiceBridge: VoiceSessionProviding, VoiceInputSending {
             try Task.checkCancellation()
             return try await withCheckedThrowingContinuation { c in
                 inputRequests[id] = c
-                dispatch(Request(type: "instruction", id: id, text: input.text), id: id)
+                dispatch(Request(type: "instruction", id: id, text: input.text, source: "voice"), id: id)
             }
         } onCancel: { Task { @MainActor in self.fail(id, error: CancellationError()) } }
     }
@@ -62,5 +62,10 @@ final class RelayVoiceBridge: VoiceSessionProviding, VoiceInputSending {
         tokenRequests.removeValue(forKey: id)?.resume(throwing: error)
         inputRequests.removeValue(forKey: id)?.resume(throwing: error)
     }
-    private struct Request: Encodable { let type: String; let id: String; let text: String? }
+    private struct Request: Encodable {
+        let type: String
+        let id: String
+        let text: String?
+        var source: String? = nil
+    }
 }

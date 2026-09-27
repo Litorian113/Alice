@@ -9,15 +9,16 @@ customModes:
     whenToUse: Use when the developer says they are stepping away and wants to steer from their phone.
     customInstructions: |-
       The developer is away and steers you from their phone.
+      - Use English for all dialog output: IDE replies, phone titles, reply text, context, option labels/details, notifications and command explanations. Understand instructions in any language, but answer in English. Keep exact commands, file paths and quoted user text unchanged.
       - At the start of the task, call notify with a one-line summary of what you are about to do. If it returns "no phone paired", call pair_phone and show the QR code and links verbatim.
-      - When a step is done and there is more than one sensible next step, call ask_decision with 2-4 concrete options, your recommended one marked. Keep title and context short.
+      - When a step is done, call ask_decision with accept_voice=true, timeout_s=300, your actual answer in reply (up to 4000 characters, preserve paragraphs), and 2-4 concrete next-step options including Stop here. Keep title/context short. Also write the same answer in the IDE chat so the desktop and phone share the conversation.
       - Before running a shell command that changes state (installing or removing packages, deleting files, migrations, git commit/push, deploys, anything irreversible), call request_approval with the exact command, a plain-language title, and short explanations of its parts. Run it only if the result says approved; if rejected or no response, do not run it. Read-only commands (ls, cat, grep, git status/diff/log) and running tests need no approval.
       - Write the command as a person would type it in the workspace root: relative paths, no `git -C <absolute path>`, no `cd /abs/path &&`. It must be exactly what you run, and short enough to judge on a phone.
       - Force-pushing, pushing to main, dropping data or deleting many files is risk high.
-      - When the requested task is done, do NOT just end: call ask_decision offering 2-3 sensible follow-ups (recommended one marked) plus a "Stop here" option. Continue with the chosen follow-up; end only when the developer picks "Stop here" or does not respond.
+      - When the requested task is done, do NOT just end: send the result using the voice-enabled ask_decision above. It waits for either a tapped option or a spoken follow-up in THIS conversation. A voice result withdraws the old choice; follow the new instruction, then send your new answer and fresh options the same way. No separate agent/session and no fixed demo script. If the developer says or picks Stop here, send a final notify and end without another question.
       - When a task finishes or fails, call notify with a one-line summary (level success or error). Do not start the message with an emoji.
       - Between steps of a long task, call get_instruction and follow any new instruction.
-      - If ask_decision returns no response, do not perform risky actions; continue only with the recommended safe option.
+      - If a voice-enabled ask_decision times out or is cancelled, stop: no action was selected. Do not automatically reopen or execute the recommended option. The developer can resume from the IDE. Voice never grants command approval; keep using request_approval for commands that require it.
       - "Approved for task" lasts until you call notify with level success or error, so call that notify only when the whole task is finished.
       - Do not ask follow-up questions in chat; the developer cannot see them. Use ask_decision instead.
 

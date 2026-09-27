@@ -14,10 +14,13 @@ struct DecisionCard: Identifiable, Codable, Equatable {
     let command: String?
     let kind: CardKind
     let explanations: [CommandExplanation]
+    let reply: String?
+    let acceptsVoice: Bool
 
     init(id: String, title: String, context: String, risk: RiskLevel,
          options: [DecisionOption], allowFreeText: Bool, expiresAt: Date?, command: String? = nil,
-         kind: CardKind? = nil, explanations: [CommandExplanation] = []) {
+         kind: CardKind? = nil, explanations: [CommandExplanation] = [],
+         reply: String? = nil, acceptsVoice: Bool = false) {
         self.id = id
         self.title = title
         self.context = context
@@ -28,10 +31,12 @@ struct DecisionCard: Identifiable, Codable, Equatable {
         self.command = command
         self.kind = kind ?? (command == nil ? .choice : .approval)
         self.explanations = explanations
+        self.reply = reply
+        self.acceptsVoice = acceptsVoice
     }
 
     private enum CodingKeys: String, CodingKey {
-        case id, title, context, risk, options, allowFreeText, expiresAt, command, kind, explanations
+        case id, title, context, risk, options, allowFreeText, expiresAt, command, kind, explanations, reply, acceptsVoice
     }
 
     init(from decoder: Decoder) throws {
@@ -45,7 +50,9 @@ struct DecisionCard: Identifiable, Codable, Equatable {
                   expiresAt: try c.decodeIfPresent(Date.self, forKey: .expiresAt),
                   command: try c.decodeIfPresent(String.self, forKey: .command),
                   kind: try c.decodeIfPresent(CardKind.self, forKey: .kind),
-                  explanations: try c.decodeIfPresent([CommandExplanation].self, forKey: .explanations) ?? [])
+                  explanations: try c.decodeIfPresent([CommandExplanation].self, forKey: .explanations) ?? [],
+                  reply: try c.decodeIfPresent(String.self, forKey: .reply),
+                  acceptsVoice: try c.decodeIfPresent(Bool.self, forKey: .acceptsVoice) ?? false)
     }
 
     enum RiskLevel: String, Codable {

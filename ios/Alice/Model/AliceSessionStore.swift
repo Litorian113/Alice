@@ -321,6 +321,10 @@ final class AliceSessionStore: ObservableObject {
         case "decision_expired":
             guard let id = message.id else { return }
             removeCard(id)
+            if message.reason == "voice_input" {
+                latestStatus = "Your voice input is with Bob. Waiting for his reply…"
+                latestStatusLevel = .info
+            }
         case "error":
             if message.id == lastResponse?.id, message.id != nil {
                 isSending = false; lastResponse = nil; lastChoice = nil
@@ -352,7 +356,9 @@ final class AliceSessionStore: ObservableObject {
         if currentDecision?.id == id {
             if lastResponse?.id == id { lastResponse = nil; lastChoice = nil }
             sendingTimeout?.cancel(); isSending = false
-            latestStatus = "That request is no longer open. Waiting for Bob's next step."
+            latestStatus = currentDecision?.acceptsVoice == true
+                ? "This phone conversation has ended. Resume it in Bob on your computer."
+                : "That request is no longer open. Waiting for Bob's next step."
             latestStatusLevel = .info
             showNextCard()
         }

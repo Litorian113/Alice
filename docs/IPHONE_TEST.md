@@ -2,6 +2,8 @@
 
 Alice now pairs with the relay, receives real choice/approval cards and sends decisions back. The app closes a card only after Bob acknowledges it or it expires. No approval fixtures are loaded at startup.
 
+For spoken follow-ups that resume the **same active IDE chat**, including the README demo, see [VOICE_DIALOG.md](VOICE_DIALOG.md). It requires the current iOS build and a restarted MCP server.
+
 ## 1. Start the local relay
 
 From the repo root:

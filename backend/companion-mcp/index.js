@@ -67,7 +67,7 @@ const server = new McpServer(
   { name: 'bob-companion', version: '0.1.0' },
   {
     instructions:
-      'The developer may be away and steering you from their phone. Use ask_decision for next-step choices, request_approval before running state-changing commands, notify for one-line status, get_instruction between steps.',
+      'Write all phone-facing titles, replies, context, option labels/details and notifications in English. The developer may be away and steering you from their phone. Use ask_decision for next-step choices, request_approval before running state-changing commands, notify for one-line status, get_instruction between steps. For same-chat voice follow-ups call ask_decision with accept_voice=true, reply containing your answer, and relevant options including Stop here. Voice resumes that call without approving commands.',
   },
 );
 
@@ -104,8 +104,8 @@ server.registerTool(
     title: 'Ask the developer (phone)',
     description:
       'Send a short decision card to the developer\'s phone and wait for their tap. Use when a step is done and there is more than one sensible next step. To ask permission to run one specific command, use request_approval instead. ' +
-      `Keep it short: title <= ${LIMITS.title} chars, context <= ${LIMITS.context} chars (max 2 sentences), 2-4 options with labels <= ${LIMITS.label} chars and optional detail <= ${LIMITS.detail} chars. Mark exactly one option recommended. Longer text is cut off. ` +
-      'Blocks until the developer answers or the timeout passes. Follow the answer. If it returns "no response", do not perform risky actions.',
+      `Write every phone-facing field in English. Keep it short: title <= ${LIMITS.title} chars, context <= ${LIMITS.context} chars (max 2 sentences), 2-4 options with labels <= ${LIMITS.label} chars and optional detail <= ${LIMITS.detail} chars. Mark exactly one option recommended. Longer text is cut off. ` +
+      'Blocks until the developer answers or the timeout passes. Voice replies are enabled by default (accept_voice=false explicitly opts out): a spoken instruction can replace the options and resume this SAME chat. Put your actual answer in reply, also write it in the IDE chat, and include a Stop here option. After handling voice, call ask_decision again with your new reply and fresh actions. On timeout/cancellation stop the conversation; never choose an action for the user.',
     inputSchema: {
       title: z.string().describe(`What just happened / what needs deciding. <= ${LIMITS.title} chars.`),
       context: z.string().optional().describe(`Situation in 1-2 short sentences. <= ${LIMITS.context} chars.`),
@@ -121,6 +121,8 @@ server.registerTool(
       risk: z.enum(RISKS).optional().describe('low / medium / high. Use high for destructive or irreversible actions.'),
       command: z.string().optional().describe('Optional shell command the options relate to, shown verbatim on the card.'),
       allow_free_text: z.boolean().optional().describe('Let the developer type a note or alternative instruction (default true).'),
+      accept_voice: z.boolean().optional().describe('Wait for either a button or a voice instruction in this same chat. Default true, including when omitted. Set false only to opt out; never for command approval.'),
+      reply: z.string().max(LIMITS.reply).optional().describe('Your actual English answer/result for the phone, preserving paragraphs. Up to 4000 characters. Replaced by the next card, no chat history.'),
       timeout_s: z
         .number()
         .optional()
@@ -143,8 +145,18 @@ server.registerTool(
       throw err;
     }
 
+    if (companion.pending.size > 0 && (card.acceptsVoice || [...companion.pending.values()].some(entry => entry.card.acceptsVoice))) {
+      return text('A request is already open. Finish it before starting another phone wait.', true);
+    }
+
     const result = await sendAndWait(card, extra);
+    if (result.instruction) {
+      return text(`Voice input from the developer (${result.instruction.id}): ${JSON.stringify(result.instruction.text)}\nThe previous choice card was withdrawn, not approved. Continue this SAME conversation with the new instruction. Follow normal tool permissions. Write your answer in English in chat and send it to the phone in ask_decision.reply with accept_voice=true and relevant English actions including Stop here. Keep all phone dialog text in English even if the spoken instruction was in another language. If the developer explicitly asked to stop, send a final notify and end instead.`);
+    }
     if (result.expired) {
+      if (card.acceptsVoice) {
+        return text(`Phone conversation ended (${result.expired}). No action was selected. Stop waiting; do not perform a suggested action or automatically reopen the dialog. The developer can resume from the IDE.`);
+      }
       const rec = card.options.find((o) => o.recommended);
       return text(
         [

@@ -11,6 +11,7 @@ export const LIMITS = {
   minOptions: 2,
   maxOptions: 4,
   notify: 200,
+  reply: 4000,
   freeText: 500,
   command: 500,
   explanations: 6,
@@ -58,6 +59,9 @@ export function firstSentences(text, n) {
 // Choice card from raw ask_decision input.
 // Throws a CardError with a Bob-readable message if the input can't be salvaged.
 export function normalizeCard(input, { id, now = Date.now(), timeoutS = 120 } = {}) {
+  if (input.reply != null && (typeof input.reply !== 'string' || input.reply.length > LIMITS.reply)) {
+    throw new CardError(`reply must be text of at most ${LIMITS.reply} characters; send a concise complete answer`);
+  }
   let options = (Array.isArray(input.options) ? input.options : [])
     .map((o) => ({
       label: trimText(o?.label, LIMITS.label),
@@ -92,14 +96,15 @@ export function normalizeCard(input, { id, now = Date.now(), timeoutS = 120 } = 
     options = options.filter((_, i) => keep.has(i));
   }
 
-  return baseCard(input, {
+  return { ...baseCard(input, {
     id,
     kind: 'choice',
     command: input.command == null || !String(input.command).trim() ? null : checkCommand(input.command),
     options: options.map((o, i) => ({ id: OPTION_IDS[i], ...o })),
     allowFreeText: input.allow_free_text !== false,
     expiresAt: expiry(now, timeoutS),
-  });
+  }), acceptsVoice: input.accept_voice !== false,
+    ...(input.reply?.trim() ? { reply: input.reply.trim() } : {}) };
 }
 
 // Approval options: ids are fixed so the app can style them (approve / reject).

@@ -13,7 +13,7 @@ const base = {
   ],
 };
 
-test('handoff example card passes through unchanged', () => {
+test('handoff example retains content and adds default voice capability', () => {
   const card = normalizeCard(base, { id: 'd_42', now: Date.parse('2026-09-26T14:03:00Z'), timeoutS: 120 });
   assert.deepEqual(card, {
     type: 'decision_request',
@@ -30,6 +30,7 @@ test('handoff example card passes through unchanged', () => {
       { id: 'c', label: 'Pause', detail: "Wait until I'm back", recommended: false },
     ],
     allowFreeText: true,
+    acceptsVoice: true,
     expiresAt: '2026-09-26T14:05:00Z',
   });
 });
@@ -102,11 +103,11 @@ test('risk defaults to medium, free text defaults on, empty detail is ""', () =>
 const CARD_KEYS = ['allowFreeText', 'command', 'context', 'expiresAt', 'explanations', 'id', 'kind', 'options', 'risk', 'title', 'type'];
 const OPTION_KEYS = ['detail', 'id', 'label', 'recommended'];
 
-test('choice and approval cards have the same, complete key set', () => {
+test('choice and approval cards have complete base keys plus optional voice extension', () => {
   const choice = normalizeCard({ title: 't', options: [{ label: 'x' }, { label: 'y' }] }, { id: 'd' });
   const approval = normalizeApproval({ title: 't', command: 'ls' }, { id: 'd' });
   for (const card of [choice, approval]) {
-    assert.deepEqual(Object.keys(card).sort(), CARD_KEYS);
+    assert.deepEqual(Object.keys(card).filter(k => k !== 'acceptsVoice').sort(), CARD_KEYS);
     for (const o of card.options) assert.deepEqual(Object.keys(o).sort(), OPTION_KEYS);
     assert.match(card.expiresAt, /^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\dZ$/, 'no fractional seconds (Swift .iso8601)');
   }
@@ -163,4 +164,12 @@ test('expiresAt is rounded up, never shortening the timeout', () => {
   const card = normalizeCard(base, { id: 'd', now, timeoutS: 5 });
   assert.equal(card.expiresAt, '2026-09-26T14:03:06Z');
   assert.ok(Date.parse(card.expiresAt) >= now + 5000);
+});
+
+test('ordinary choices accept voice by default; explicit opt-out and approvals stay separate', () => {
+  const input = { title: 'What next?', options: [{ label: 'Review' }, { label: 'Stop here' }] };
+  assert.equal(normalizeCard(input).acceptsVoice, true);
+  assert.equal(normalizeCard({ ...input, allow_free_text: true }).acceptsVoice, true);
+  assert.equal(normalizeCard({ ...input, accept_voice: false }).acceptsVoice, false);
+  assert.equal(normalizeApproval({ title: 'Run', command: 'npm test' }).acceptsVoice, undefined);
 });
