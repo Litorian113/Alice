@@ -99,7 +99,7 @@ CLI (Bob Shell) for automated end-to-end tests, alongside other coding tools. Ev
 documented extension points (custom mode + MCP server); Bob itself is not modified.
 
 **IBM Bob task session summaries and screenshots:** [docs/bob-sessions/](docs/bob-sessions/). Bobalytics
-shows 15 Bob tasks, with **46 % of them in our own Companion mode**, and Bob-written Swift, Markdown and YAML
+shows our own Companion mode at **46 %** (Franz) and **67 %** (Christopher) of each member's Bob usage, and Bob-written Swift, Markdown and YAML
 committed to this repository. One of the screenshots is Bob asking on the phone *"What should we build
 next? Pick the next upgrade for our app."*: Alice steering Bob while Bob improves Alice.
 
