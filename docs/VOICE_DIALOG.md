@@ -28,6 +28,8 @@ not code that determines the application's behavior:
 > garden. First ask me a useful question about the target audience through Alice.
 > I will then continue from my phone. Keep this same IDE conversation.
 > Use English for the README and every dialog message, title, option and reply.
+> Every selection button and its description must be English too, even if I
+> speak German. Do not reuse German labels from previous cards.
 > Use `ask_decision` with `timeout_s: 300`, your actual answer in `reply`, and 2–4
 > relevant actions including “Stop here”. Voice replies are enabled by default;
 > you may explicitly set `accept_voice: true`. Write your answer here in chat too.

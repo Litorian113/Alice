@@ -1,98 +1,121 @@
-# 🌱 Ein kleines Community-Gartenprojekt starten
+# 🌱 Starting a Small Community Garden
 
-Willkommen! Diese Anleitung hilft dir dabei, gemeinsam mit deinen Nachbarn einen kleinen Garten zu starten – ganz ohne Vorkenntnisse.
-
----
-
-## Was ist ein Community-Garten?
-
-Ein Community-Garten ist ein Stück Land, das sich mehrere Menschen teilen. Jeder bringt sich ein bisschen ein – Zeit, Werkzeug oder Saatgut – und alle profitieren davon: frisches Gemüse, neue Bekanntschaften und ein grüneres Viertel.
+Welcome! This guide helps you and your neighbours start a small shared garden together — no experience needed.
 
 ---
 
-## Schritt 1: Die Idee teilen
+## What is a Community Garden?
 
-Erzähl deinen Nachbarn davon. Ein Aushang im Treppenhaus, eine Nachricht in der Nachbarschaftsgruppe oder einfach ein Gespräch auf der Straße – so findest du heraus, wer mitmachen möchte.
-
-**Tipp:** Schon 3–5 Mitstreiter reichen für den Anfang.
+A community garden is a piece of land that a group of people share. Everyone chips in a little — time, tools, or seeds — and everyone benefits: fresh vegetables, new friendships, and a greener neighbourhood.
 
 ---
 
-## Schritt 2: Eine Fläche finden
+## Step 1: Share the Idea
 
-Schau dich um:
+Tell your neighbours about it. A note on the noticeboard, a message in your neighbourhood group chat, or just a chat on the street — that's all it takes to find out who wants to join.
 
-- Gibt es eine ungenutzte Grünfläche in der Nähe?
-- Hat jemand einen Garten oder Hof, den er teilen möchte?
-- Kann die Gemeinde oder der Vermieter eine Fläche zur Verfügung stellen?
-
-Sprich die zuständige Person direkt an und erkläre dein Vorhaben. Oft ist mehr möglich, als man denkt.
+**Tip:** Even 3–5 people are enough to get started.
 
 ---
 
-## Schritt 3: Gemeinsam planen
+## Step 2: Find a Space
 
-Trefft euch einmal – auch ein kurzes Treffen im Freien reicht – und klärt:
+Look around:
 
-- **Was wollen wir anpflanzen?** (Gemüse, Kräuter, Blumen)
-- **Wer kümmert sich wann?** (Gießen, Unkraut jäten)
-- **Was brauchen wir?** (Erde, Töpfe, Saatgut, Werkzeug)
+- Is there an unused green area nearby?
+- Does someone have a garden or courtyard they'd be happy to share?
+- Could the local council or a landlord offer a plot?
 
-Schreibt die Absprachen kurz auf – eine einfache Liste genügt.
-
----
-
-## Schritt 4: Loslegen
-
-Startet klein. Ein paar Hochbeete oder Kübel auf einem Balkon oder Hof sind ein perfekter Anfang. Folgende Pflanzen sind für Einsteiger besonders geeignet:
-
-| Pflanze | Schwierigkeit | Platzbedarf |
-|--------|--------------|-------------|
-| Radieschen | ⭐ einfach | gering |
-| Kräuter (Basilikum, Schnittlauch) | ⭐ einfach | gering |
-| Tomaten | ⭐⭐ mittel | mittel |
-| Zucchini | ⭐⭐ mittel | groß |
+Approach the right person directly and explain your idea. You might be surprised how often the answer is yes.
 
 ---
 
-## Schritt 5: Dranbleiben & feiern
+## Step 3: Plan Together
 
-Haltet euch gegenseitig auf dem Laufenden. Feiert kleine Erfolge – die erste Tomate, die erste Ernte, das erste gemeinsame Kochen. Das hält die Motivation hoch.
+Meet up once — even a short outdoor chat works — and decide:
 
----
+- **What do we want to grow?** (vegetables, herbs, flowers)
+- **Who takes care of what and when?** (watering, weeding)
+- **What do we need?** (soil, pots, seeds, tools)
 
-## 🍂 Saisonale Tipps: Herbst & Winter
-
-Auch wenn es kälter wird, muss der Garten nicht einschlafen.
-
-### Herbst (September – November)
-- **Ernte abschließen:** Tomaten, Zucchini und Kräuter rechtzeitig ernten, bevor der erste Frost kommt.
-- **Beet vorbereiten:** Abgestorbene Pflanzen kompostieren, Beete mit Laub oder Stroh abdecken – das schützt den Boden.
-- **Zwiebeln & Knoblauch setzen:** Ideal im Oktober für eine frühe Ernte im nächsten Frühjahr.
-- **Werkzeug reinigen & einlagern:** Geräte säubern und trocken lagern, damit sie lange halten.
-
-### Winter (Dezember – Februar)
-- **Planen & träumen:** Nutze die ruhige Zeit für die Planung der nächsten Saison. Welche Pflanzen kommen neu dazu?
-- **Saatgut bestellen:** Viele Onlineshops haben im Winter die größte Auswahl – früh bestellen lohnt sich.
-- **Wintergemüse anbauen:** Feldsalat, Grünkohl und Spinat überstehen leichten Frost und liefern frische Ernte.
-- **Insektenhotel & Schutzräume:** Baue oder hänge ein Insektenhotel auf – nützliche Tiere überwintern darin und helfen im Frühjahr beim Bestäuben.
-
-**Tipp:** Ein kurzes Wintertreffen mit allen Mitgartnern hält die Gemeinschaft warm – vielleicht bei Tee und selbst gemachter Marmelade aus der letzten Ernte. 🍓
+Write down your agreements in a simple list — no need to make it complicated.
 
 ---
 
-## Hilfreiche Links
+## Step 4: Get Started
 
-- [Anstiftung e.V. – Gemeinschaftsgärten in Deutschland](https://anstiftung.de/urbane-gaerten)
-- [Mundraub – Öffentliche Erntepunkte finden](https://mundraub.org)
-- [Freilandlexikon – Pflanzenwissen einfach erklärt](https://www.freilandlexikon.de)
+Start small. A few raised beds or containers on a balcony or courtyard are a perfect beginning. These plants are great for first-timers:
+
+| Plant | Difficulty | Space needed |
+|-------|-----------|--------------|
+| Radishes | ⭐ easy | small |
+| Herbs (basil, chives) | ⭐ easy | small |
+| Tomatoes | ⭐⭐ medium | medium |
+| Courgettes | ⭐⭐ medium | large |
 
 ---
 
-## Mitmachen & Kontakt
+## Step 5: Keep Going & Celebrate
 
-Du hast Fragen oder möchtest dein eigenes Projekt vorstellen? Öffne einfach ein Issue oder schreib uns – wir freuen uns!
+Keep each other in the loop. Celebrate small wins — the first tomato, the first harvest, the first meal you cook together. That's what keeps the motivation alive.
 
 ---
 
-*Erstellt mit ❤️ für alle, die loslegen wollen.*
+## 🛒 Materials List & Cost Estimate (10 Participants)
+
+Here's what a small group of 10 typically needs to get started, with rough costs:
+
+### Tools & Equipment
+
+| Item | Qty | Approx. cost |
+|------|-----|-------------|
+| Spades / trowels | 3–4 | £20–40 |
+| Watering cans | 2–3 | £15–25 |
+| Garden gloves (pairs) | 10 | £20–30 |
+| Raised bed kits or large planters | 2–4 | £40–100 |
+| Hose or drip irrigation | 1 | £15–30 |
+
+### Soil & Growing Supplies
+
+| Item | Qty | Approx. cost |
+|------|-----|-------------|
+| Potting / raised-bed soil (bags) | 10–15 | £30–60 |
+| Compost | 2 bags | £10–20 |
+| Seeds or starter plants | assorted | £15–30 |
+| Fertiliser (organic) | 1 bag | £8–15 |
+
+### Optional Extras
+
+| Item | Approx. cost |
+|------|-------------|
+| Labels & markers | £3–5 |
+| Netting / pest protection | £10–20 |
+| Signage or welcome board | £5–20 |
+
+### Total Estimate
+
+| Scenario | Cost |
+|---------|------|
+| Bare minimum (basic tools + soil + seeds) | **~£80–120** |
+| Comfortable starter setup | **~£150–250** |
+| Per person (10 participants, shared cost) | **~£10–25** |
+
+**Tip:** Ask participants to bring tools they already own, check local freecycle groups, or approach a garden centre for a small community discount. Many councils also offer grants for community green projects.
+
+---
+
+## Useful Links
+
+- [Anstiftung e.V. – Community Gardens in Germany](https://anstiftung.de/urbane-gaerten)
+- [Mundraub – Find public harvest spots](https://mundraub.org)
+- [RHS – Allotment & Community Garden Advice](https://www.rhs.org.uk/advice/allotments)
+
+---
+
+## Join In & Get in Touch
+
+Questions or want to share your own project? Open an issue or drop us a message — we'd love to hear from you!
+
+---
+
+*Made with ❤️ for everyone who just wants to get started.*

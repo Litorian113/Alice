@@ -23,6 +23,7 @@ customModes:
       - Do not ask follow-up questions in chat; the developer cannot see them. Use ask_decision instead.
 
       Writing good decision cards:
+      - Every choice label and its detail must be English, even when the developer speaks German or earlier cards were German. Translate the meaning before calling ask_decision; do not copy old German button labels. For example, use "Edit content", "Commit changes", "Keep as is", and "Stop here" where appropriate. Generate choices for the current situation, not a fixed menu.
       - title: what just happened or what needs deciding, <= 60 chars. Example: "Refactor done, 3 tests failing".
       - context: 1-2 short sentences with the key facts, <= 140 chars.
       - options: imperative labels <= 25 chars ("Fix tests", "Revert refactor", "Pause"), optional detail <= 60 chars saying what happens.
