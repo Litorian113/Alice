@@ -18,7 +18,7 @@ Keep this terminal running. The command prints the Mac's LAN address and writes 
 
 `--no-bob` means the relay waits for **real IBM Bob**. The fake Bob is not started. Without this flag, `npm run dev` still provides Christopher's fixture-driven backend for development.
 
-On 26 September, the public relay's `/healthz` returned HTTP 503 during integration. Check it again before switching to production. To switch, remove `.bob/local-relay.json`, restart the MCP server in Bob and generate a new QR page with the updated relay URL. A phone paired to the local URL needs to scan the production URL again.
+The production relay `https://bob-relay.zeigma.com` is live since 27 September (voice needs `ASSEMBLYAI_API_KEY` in the relay's Coolify environment; see [DEPLOY.md](DEPLOY.md)). To use it instead of the local relay, remove `.bob/local-relay.json`, restart the MCP server in Bob and generate a new QR page with the updated relay URL. A phone paired to the local URL needs to scan the production URL again.
 
 ## 2. Open the project in IBM Bob
 

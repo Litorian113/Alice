@@ -6,7 +6,8 @@ Steer IBM Bob from your phone (the [Alice iOS app](../ios) or the relay's web pa
 ```
 IBM Bob ──stdio──▶ companion-mcp ──outbound WS──▶ relay ◀──WS── Alice (phone)
                    (spawned by Bob)                 │
-                                                    └──push──▶ ntfy / Expo ──▶ phone
+                                                    ├──push──▶ ntfy ──▶ phone
+                                                    └──tokens─▶ AssemblyAI (voice)
 ```
 
 Paths are relative to `backend/` unless they start with `../`.
@@ -17,6 +18,8 @@ Paths are relative to `backend/` unless they start with `../`.
 | `relay/` | Single-file WebSocket relay: rooms, secret check, forwarding, ntfy/Expo push, notification answer buttons. Also serves a dev phone page at `/` |
 | [`../docs/PROTOCOL.md`](../docs/PROTOCOL.md) | **Contract for the app team**: pairing, messages, decision card rules, push |
 | `../.bob/` | `mcp.json` (registers the server) and `custom_modes.yaml` (the **📱 Companion** mode with the steering rules) |
+| `acp/` | `npm run chat`: browser chat running a separate Bob Shell session over ACP; forwards Bob's native permission prompts to Alice ([docs](../docs/ACP_CHAT.md)) |
+| `tools/show-pairing.js` | `npm run pair:show`: large local QR page for pairing |
 | `tools/fake-bob.js` | Plays Bob against a relay so the app can be built without Bob |
 | `tools/dev.js` | `npm run dev`: relay + fake Bob in one process, advertising the LAN address so a real iPhone can pair (`--loop N`, `--host`, `--no-bob`) |
 | `tools/check-relay.js` | Smoke-tests a deployed relay (HTTP, wss pairing, forwarding, idle hold) |
@@ -50,7 +53,7 @@ For the complete real-iPhone / IBM Bob chat walkthrough, see [IPHONE_TEST.md](..
 ```sh
 cd backend
 npm install
-npm test                      # 37 tests, ~20 s
+npm test                      # 61 tests, ~30 s
 npm run dev                   # local relay + fake Bob, pairing links use this machine's LAN IP (for iPhone dev)
 npm run dev -- --no-bob --configure-bob  # local relay for real Bob; writes ignored local URL override
 npm run pair:show              # render a large local QR page at ../.bob/pairing.html
@@ -124,7 +127,7 @@ notification formatting; no iOS rebuild is needed.
 
 ### Deploying the relay
 
-Production relay: **`wss://bob-relay.zeigma.com`** on Coolify (Dockerfile build pack, base directory `/backend/relay`).
+Production relay: **`wss://bob-relay.zeigma.com`** on Coolify (Dockerfile build pack, base directory `/backend/relay`), live since 27 September 2026. Voice needs `ASSEMBLYAI_API_KEY` in the Coolify environment.
 See **[docs/DEPLOY.md](../docs/DEPLOY.md)** for the Coolify + Cloudflare settings. Verify a deployment with:
 
 ```sh
