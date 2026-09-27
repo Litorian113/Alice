@@ -16,24 +16,34 @@ struct ProfileView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 24) {
-                AliceHeader()
-                VStack(alignment: .leading, spacing: 6) {
-                    Eyebrow(text: "Your side of the team")
-                    Text("Your profile").font(.plex(34, weight: .semibold, relativeTo: .largeTitle)).tracking(-1)
-                    Text("A home for the human in the loop.")
-                        .font(.plex(15)).foregroundStyle(Color.aliceSecondary)
-                }
-                HStack(spacing: 15) {
-                    Text(initials).font(.plex(22, weight: .medium))
-                        .foregroundStyle(Color.aliceRecommended)
-                        .frame(width: 62, height: 62)
-                        .background(Color.aliceVioletSurface, in: RoundedRectangle(cornerRadius: 22))
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(displayName).font(.plex(19, weight: .semibold))
-                        Text("Builder & Bob's teammate").font(.plex(12)).foregroundStyle(Color.aliceSecondary)
+                Text("Your profile")
+                    .font(.plex(34, weight: .semibold, relativeTo: .largeTitle)).tracking(-1)
+                    .padding(.top, 24)
+                Button { showsAccount = true } label: {
+                    HStack(spacing: 15) {
+                        Text(initials).font(.plex(22, weight: .semibold))
+                            .foregroundStyle(.white)
+                            .frame(width: 62, height: 62)
+                            .background(
+                                LinearGradient(colors: [.aliceAccent, .aliceRecommended],
+                                               startPoint: .topLeading, endPoint: .bottomTrailing),
+                                in: Circle()
+                            )
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("IBMid").font(.plex(11, weight: .medium)).foregroundStyle(Color.aliceSecondary)
+                            Text(displayName).font(.plex(19, weight: .semibold))
+                            // Prototype identity from Franz's reference; never store the full email here.
+                            Text("franz.anhaeupl@…")
+                                .font(.plex(13)).foregroundStyle(Color.aliceSecondary)
+                                .lineLimit(1)
+                        }
+                        Spacer(minLength: 0)
+                        Image(systemName: "chevron.right")
+                            .font(.system(size: 14, weight: .medium))
+                            .foregroundStyle(Color.aliceSecondary)
                     }
-                    Spacer(minLength: 0)
-                }.padding(20).aliceSurface()
+                    .padding(20).aliceSurface()
+                }.buttonStyle(.plain).accessibilityIdentifier("profile.identity")
                 connection
                 VStack(alignment: .leading, spacing: 0) {
                     Eyebrow(text: "Make yourself at home").padding(.bottom, 13)
@@ -120,7 +130,7 @@ struct ProfileView: View {
                 if store.pairing != nil { store.disconnect() }
                 else { store.connectSession() }
             } label: {
-                Label(store.pairing != nil ? "Forget this session" : "Connect session",
+                Label(store.pairing != nil ? "Disconnect this session" : "Connect session",
                       systemImage: store.isConnected ? "link.badge.plus" : "link")
                     .font(.plex(13, weight: .medium))
                     .foregroundStyle(store.isConnected ? Color.aliceError : .aliceAccent)

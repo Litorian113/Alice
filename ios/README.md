@@ -40,13 +40,15 @@ The bottom navigation provides:
 
 Alice connects to the monorepo's MCP/relay backend. It starts unpaired, scans Bob's QR, stores credentials in Keychain and receives live choice/approval cards. Responses wait for Bob's acknowledgement; reconnect and expiry are handled. **The app does not execute commands itself.** Bob receives the decision and follows Companion mode's tool rules. Usage remains local: the Bobcoin snapshot (40 limit, 14 used, 26 remaining) comes from Franz's screenshot; the token graph for 25–27 September 2026 uses invented prototype data. Tokens are not calculated from Bobcoins, and there is no live Bobalytics connection.
 
-Voice uses native microphone capture, AssemblyAI streaming and transcript review. The authenticated relay issues temporary tokens and forwards reviewed text to Bob. Without a server-side API key it stays unavailable. Notifications use the free ntfy iOS app, configured under Profile. Native Alice APNs and IBM account sign-in are not implemented.
+Hold the microphone on the Alice page to speak: the button grows with haptic feedback, Alice listens and a live transcript appears inline. Release to review, then tap “Send to Bob”. A tap also opens accessible Start/Stop controls. After acknowledgement, Alice returns to updates and decision cards. Voice uses native microphone capture, AssemblyAI streaming and transcript review. The authenticated relay issues temporary tokens and forwards reviewed text to Bob. Without a server-side API key it stays unavailable. Notifications use the free ntfy iOS app, configured under Profile. Native Alice APNs and IBM account sign-in are not implemented.
 
 See [the iPhone/Bob test guide](../docs/IPHONE_TEST.md), [the shared protocol](../docs/PROTOCOL.md) and [Voice integration](docs/VOICE_INTEGRATION.md). The launch screen and splash always stay light. A centered Alice waves and winks above her name, with “The mobile partner for IBM Bob” at the bottom. Normal launches show the splash for 2.6 seconds before fading out; incoming pairing/notification links skip it. Reduce Motion and the companion-motion preference disable the greeting animation. There is no grid, glow, ring or extra slogan.
 
 Local secrets go in the ignored repository-root `.env` (`ASSEMBLYAI_API_KEY`); copy [.env.example](../.env.example) on a fresh checkout. The local relay/dev runner loads it. Restart the relay after setting the key, then reconnect Alice.
 
-Returning to Alice never fabricates a request. Pending cards come from Bob. Forgetting a session clears its Keychain pairing; backgrounding preserves it and reconnects on return.
+Profile displays a simulated IBMid card with a local display name and the masked address `franz.anhaeupl@…`; it does not authenticate an IBM account. Tapping the card opens local account settings.
+
+Returning to Alice never fabricates a request. Pending cards come from Bob. “Disconnect this session” clears its Keychain pairing; backgrounding preserves it and reconnects on return.
 
 ## Run the app
 

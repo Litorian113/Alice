@@ -41,7 +41,8 @@ final class AliceSessionStore: ObservableObject {
     @Published private(set) var latestStatus = "Bob's next question will appear here."
     @Published private(set) var latestStatusLevel: StatusNotification.NotificationLevel = .info
     @Published var errorMessage: String?
-    @Published var showsVoiceInput = false
+    @Published private(set) var voiceInput: VoiceInputModel?
+    private var voiceObservation: AnyCancellable?
     @Published var showsPairing = false
     @Published var showsNotifications = false
     @Published var pairingCandidate: Pairing?
@@ -135,7 +136,7 @@ final class AliceSessionStore: ObservableObject {
         isConnected = false
         phase = .disconnected
         connectionText = "Not connected"
-        showsVoiceInput = false
+        closeVoiceInput()
         Task {
             // Send the revocation before closing the socket. On a lost network the
             // user can also unsubscribe in ntfy; backgrounding deliberately keeps push.
@@ -156,7 +157,11 @@ final class AliceSessionStore: ObservableObject {
         } else { startConnection() }
     }
 
-    func selectTab(_ tab: AliceTab) { selectedTab = tab }
+    func selectTab(_ tab: AliceTab) {
+        guard voiceInput?.phase != .sending else { return }
+        if tab != .alice { finishVoiceInput() }
+        selectedTab = tab
+    }
     func dismissDecisionFeedback(id: String) {
         guard let feedback = decisionFeedback, feedback.id == id, feedback.canDismiss else { return }
         clearDecisionFeedback()
@@ -218,11 +223,35 @@ final class AliceSessionStore: ObservableObject {
         let services = isConnected && voiceAvailable ? VoiceServices(sessions: voiceBridge, inputs: voiceBridge) : nil
         return VoiceInputModel(services: services, context: context)
     }
-    func openVoiceInput() { guard isConnected else { return }; showsVoiceInput = true }
+    func openVoiceInput() {
+        guard isConnected, voiceInput == nil else { return }
+        let model = makeVoiceInput()
+        voiceInput = model
+        voiceObservation = model.objectWillChange.sink { [weak self] in self?.objectWillChange.send() }
+    }
+
+    func closeVoiceInput() {
+        voiceInput?.cancel()
+        voiceObservation = nil
+        voiceInput = nil
+    }
+
+    func finishVoiceInput() {
+        closeVoiceInput()
+        showNextCard()
+    }
+
+    func beginVoiceHold() {
+        openVoiceInput()
+        voiceInput?.start()
+    }
+
+    func endVoiceHold() { voiceInput?.stop() }
 
     private func connectionChanged(_ state: RelayClient.State) {
         switch state {
         case .connecting:
+            closeVoiceInput()
             clearDecisionFeedback()
             phase = .waiting
             isConnected = false
@@ -235,7 +264,7 @@ final class AliceSessionStore: ObservableObject {
             phase = pairing == nil ? .disconnected : .waiting
             isConnected = false
             connectionText = pairing == nil ? "Not connected" : "Bob offline · reconnecting"
-            showsVoiceInput = false
+            closeVoiceInput()
             voiceBridge.reset()
             isSending = false
         case .invalidPairing:
@@ -256,7 +285,7 @@ final class AliceSessionStore: ObservableObject {
             if !isConnected {
                 clearDecisionFeedback()
                 phase = .waiting
-                showsVoiceInput = false; voiceBridge.reset()
+                closeVoiceInput(); voiceBridge.reset()
             }
         case "sync":
             let open = message.decisions ?? []
@@ -308,10 +337,9 @@ final class AliceSessionStore: ObservableObject {
     }
 
     private func showNextCard() {
-        // Keep incoming cards queued while the acknowledged answer is celebrated.
-        guard decisionFeedback == nil else { return }
+        // Keep cards queued during voice input and decision feedback.
+        guard decisionFeedback == nil, voiceInput == nil else { return }
         let next = cards.first
-        if currentDecision?.id != next?.id { showsVoiceInput = false }
         currentDecision = next
         if next != nil { phase = .needsDecision }
         else if phase == .needsDecision { phase = .waiting }
@@ -330,6 +358,7 @@ final class AliceSessionStore: ObservableObject {
         }
     }
     private func resetRequests() {
+        closeVoiceInput()
         latestStatus = "Bob's next question will appear here."
         latestStatusLevel = .info
         clearDecisionFeedback()

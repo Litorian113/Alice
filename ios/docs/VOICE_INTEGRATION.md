@@ -19,7 +19,7 @@ Restart the relay after changes. `paired.voiceAvailable` tells Alice whether tok
 Alice → voice_session_request over authenticated relay WebSocket
   ← voice_session with temporary token, expiry, provider URL and model
   → AssemblyAI streaming WebSocket + microphone → live transcript
-  → Stop → finalized transcript → user reviews → Send to Bob
+  → Release (or Stop) → finalized transcript → user reviews → Send to Bob
   → instruction with stable input UUID → MCP queue → ack
   → Bob calls get_instruction between steps
 ```
@@ -37,7 +37,7 @@ All interfaces are `@MainActor`; implementations live in `Alice/Voice/`.
 | `VoiceSessionProviding` | `RelayVoiceBridge` | Request streaming credentials through the paired relay |
 | `VoiceInputSending` | `RelayVoiceBridge` | Send reviewed text and await matching acknowledgement |
 | `VoiceServices` | Factories assembled by `AliceSessionStore` | Keeps provider/transport choices out of the view |
-| `VoiceInputModel` | Sheet state machine | Record, finalize, review, send, cancel, retry |
+| `VoiceInputModel` | Inline voice state machine | Record, finalize, review, send, cancel, retry |
 
 `HTTPVoiceBackend` remains an unused alternative for a future HTTP transport. Its constructor takes explicit HTTPS session/input endpoints and an auth closure. The old proposed `/v1/voice/sessions` and `/v1/inputs` routes were **not** implemented; wiring now uses WebSocket messages. Switching transport means supplying different `VoiceServices` in `makeVoiceInput()`, not changing the voice UI.
 
@@ -49,12 +49,13 @@ Session ID comes from Keychain pairing; decision ID is the active card. The rela
 - Retry preserves the exact UUID and text. The MCP process deduplicates matching retries, including after consumption, and rejects conflicting reuse.
 - Receipts/queue are not persisted across MCP restarts. Queue limit: 100 waiting inputs; receipt limit: 2,000 per process. Durable delivery remains future work.
 - Maximum input is 500 UTF-16 code units (backend JavaScript string limit). Overlong speech must be recorded again more briefly; neither side silently truncates it.
-- Closing the sheet discards the draft. A failed send retains it for retry while the sheet remains open.
+- Closing inline voice or switching tabs discards the draft. A failed send retains it for retry while voice remains open. Tab switching and closing are disabled during delivery.
 - Network/relay errors and a 20-second acknowledgement timeout never produce a success message.
 
 ## Audio and lifecycle
 
-- Capture begins after explicit Start, microphone permission and AssemblyAI `Begin`.
+- Hold the navigation microphone for 0.25 seconds to start; release to finalize and review. Tapping opens inline Start/Stop controls as an accessible alternative. Capture begins only after microphone permission and AssemblyAI `Begin`. Releasing during setup cancels it, so delayed permission/token results cannot start a microphone later.
+- The store owns the inline voice model. Incoming decisions remain queued until it closes; matching input acknowledgement shows confirmation for 1.5 seconds, then returns to status/decisions. Bob still needs to call `get_instruction`; only `notify` messages and decision cards return to Alice, not the full IDE transcript.
 - Hardware audio is converted to 16 kHz mono signed 16-bit little-endian PCM; binary frames are 100 ms. Stop flushes the converter and silence-pads the final short frame.
 - Ordered sends and a bounded two-second audio buffer prevent unlimited backlog; overflow reports an error.
 - Turn updates replace earlier versions by `turn_order`, including formatted finals. They do not append duplicates.

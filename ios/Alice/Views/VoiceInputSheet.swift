@@ -1,63 +1,79 @@
 import AVFoundation
 import SwiftUI
 
-struct VoiceInputSheet: View {
-    @Environment(\.dismiss) private var dismiss
+struct VoiceInputView: View {
+    @EnvironmentObject private var store: AliceSessionStore
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @AppStorage("companionMotion") private var companionMotion = true
     @Environment(\.openURL) private var openURL
     @Environment(\.scenePhase) private var scenePhase
-    @StateObject private var model: VoiceInputModel
-
-    init(model: VoiceInputModel) {
-        _model = StateObject(wrappedValue: model)
-    }
+    @ObservedObject var model: VoiceInputModel
 
     var body: some View {
         VStack(spacing: 20) {
             HStack {
                 Spacer()
-                Button { model.cancel(); dismiss() } label: {
+                Button { store.finishVoiceInput() } label: {
                     Image(systemName: "xmark").font(.system(size: 14, weight: .medium))
                         .padding(12).background(Color.aliceSurfaceRaised, in: Circle())
                 }
                 .disabled(model.phase == .sending)
                 .accessibilityLabel("Close microphone")
             }
-            ScrollView {
-                VStack(spacing: 22) {
-                    AliceMascot(faceOnly: true).frame(width: 112, height: 91)
-                    Text(title).font(.plex(29, weight: .semibold))
-                    Image(systemName: model.phase == .sent ? "checkmark" : "mic.fill")
-                        .font(.system(size: 31))
-                        .foregroundStyle(Color.aliceRecommended)
-                        .frame(width: 90, height: 90)
-                        .background(Color.aliceVioletSurface, in: Circle())
-                        .accessibilityHidden(true)
-                    Text(detail)
-                        .font(.plex(14)).foregroundStyle(Color.aliceSecondary)
-                        .multilineTextAlignment(.center)
-                    if !model.transcript.isEmpty {
-                        Text(model.transcript)
-                            .font(.plex(18)).textSelection(.enabled)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .padding(20).aliceSurface()
+            ScrollViewReader { proxy in
+                ScrollView {
+                    VStack(spacing: 24) {
+                        AliceMascot(happy: model.phase == .sent)
+                            .frame(width: 105, height: 125)
+                            .rotationEffect(.degrees(model.phase == .recording ? -6 : 0))
+                            .animation(reduceMotion || !companionMotion ? nil : .easeInOut(duration: 0.3), value: model.phase)
+                        VStack(spacing: 8) {
+                            Text(title).font(.plex(29, weight: .semibold))
+                            Text(detail)
+                                .font(.plex(14)).foregroundStyle(Color.aliceSecondary)
+                                .multilineTextAlignment(.center)
+                        }
+                        if model.phase == .connecting || model.phase == .finishing || model.phase == .sending {
+                            ProgressView().accessibilityLabel(title)
+                        }
+                        if !model.transcript.isEmpty {
+                            VStack(alignment: .leading, spacing: 10) {
+                                Text("YOU").font(.plex(10, weight: .semibold)).foregroundStyle(Color.aliceAccent)
+                                Text(model.transcript)
+                                    .font(.plex(20)).lineSpacing(5).textSelection(.enabled)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                Text("\(model.transcript.utf16.count) / 500")
+                                    .font(.plex(11)).foregroundStyle(model.transcript.utf16.count > 500 ? Color.aliceError : .aliceSecondary)
+                            }
+                            .padding(22)
+                            .background(Color.aliceAccent.opacity(0.07), in: RoundedRectangle(cornerRadius: 24))
+                            .padding(.leading, 20)
+                        }
+                        if let message = model.message {
+                            Text(message).font(.plex(14))
+                                .foregroundStyle(Color.aliceError)
+                                .multilineTextAlignment(.center)
+                        }
+                        Color.clear.frame(height: 1).id("transcriptEnd")
                     }
-                    if let message = model.message {
-                        Text(message).font(.plex(14))
-                            .foregroundStyle(Color.aliceError)
-                            .multilineTextAlignment(.center)
-                    }
-                    if model.phase == .connecting || model.phase == .finishing || model.phase == .sending {
-                        ProgressView().accessibilityLabel(title)
-                    }
+                    .frame(maxWidth: .infinity).padding(.vertical, 12)
                 }
-                .frame(maxWidth: .infinity).padding(.vertical, 16)
+                .scrollIndicators(.hidden)
+                .onChange(of: model.transcript) { _, _ in
+                    proxy.scrollTo("transcriptEnd", anchor: .bottom)
+                }
             }
             actions
         }
         .padding(24)
         .background(Color.aliceBackground)
         .foregroundStyle(Color.alicePrimary)
-        .interactiveDismissDisabled(model.phase == .sending)
+        .task(id: model.phase) {
+            if model.phase == .sent {
+                do { try await Task.sleep(for: .seconds(1.5)) } catch { return }
+                store.finishVoiceInput()
+            }
+        }
         .onDisappear { model.cancel() }
         .onChange(of: scenePhase) { _, phase in
             // The permission prompt itself makes the app inactive while connecting.
@@ -93,15 +109,15 @@ struct VoiceInputSheet: View {
 
     private var detail: String {
         switch model.phase {
-        case .unavailable: return "Voice input isn't connected yet."
-        case .idle: return "Speak your feedback or instructions for Bob. Audio is transcribed by AssemblyAI. You review the text before sending."
+        case .unavailable: return "Voice isn't available for this session yet."
+        case .idle: return "Hold the microphone below and speak to Bob. AssemblyAI transcribes your voice; you review before sending."
         case .connecting: return "Preparing your microphone and voice connection."
-        case .recording: return "Tell Bob what's on your mind. Tap Stop when you're done."
+        case .recording: return "Keep holding while you speak. Release to review your words."
         case .finishing: return "Finishing your transcript."
         case .review: return "Review your words, then send them to your connected session."
         case .sending: return "Waiting for confirmation."
-        case .sent: return "Your connected session accepted your input."
-        case .failed: return "Nothing was sent to Bob."
+        case .sent: return "Your input is queued for Bob. His updates and decisions will appear here."
+        case .failed: return "Please try recording again."
         }
     }
 
@@ -120,11 +136,12 @@ struct VoiceInputSheet: View {
             PrimaryButton(title: "Stop recording", icon: "stop.fill") { model.stop() }
         case .review:
             PrimaryButton(title: "Send to Bob", icon: "arrow.up") { model.send() }
+                .disabled(model.transcript.utf16.count > 500)
             Button("Record again") { model.start() }
                 .font(.plex(15, weight: .medium)).frame(minHeight: 44)
-        case .unavailable, .sent:
-            PrimaryButton(title: "Back to Alice") { dismiss() }
-        case .connecting, .finishing, .sending:
+        case .unavailable:
+            PrimaryButton(title: "Back to Alice") { store.finishVoiceInput() }
+        case .connecting, .finishing, .sending, .sent:
             EmptyView()
         }
     }

@@ -97,6 +97,12 @@ final class VoiceInputModel: ObservableObject {
     }
 
     func stop() {
+        // Releasing during permission/token setup must never start a recording later.
+        if phase == .connecting {
+            cancel()
+            phase = .idle
+            return
+        }
         guard phase == .recording else { return }
         phase = .finishing
         recordingLimit?.cancel()

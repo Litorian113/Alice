@@ -9,13 +9,9 @@ struct UsageView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 24) {
-                AliceHeader()
-                VStack(alignment: .leading, spacing: 6) {
-                    Eyebrow(text: "A little work. A little progress.")
-                    Text("Your usage").font(.plex(34, weight: .semibold, relativeTo: .largeTitle)).tracking(-1)
-                    Text("Big ideas, one token at a time.")
-                        .font(.plex(15)).foregroundStyle(Color.aliceSecondary)
-                }
+                Text("Your usage")
+                    .font(.plex(34, weight: .semibold, relativeTo: .largeTitle)).tracking(-1)
+                    .padding(.top, 24)
                 periodPicker
                 tokenChart
                 bobcoins

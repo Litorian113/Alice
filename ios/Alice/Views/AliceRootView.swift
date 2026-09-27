@@ -8,7 +8,9 @@ struct AliceRootView: View {
             Color.aliceBackground.ignoresSafeArea()
             Group {
                 switch store.selectedTab {
-                case .alice: AliceHomeView()
+                case .alice:
+                    if let voice = store.voiceInput { VoiceInputView(model: voice) }
+                    else { AliceHomeView() }
                 case .usage: UsageView()
                 case .profile: ProfileView()
                 }
@@ -18,12 +20,6 @@ struct AliceRootView: View {
         .font(.plex(15))
         .foregroundStyle(Color.alicePrimary)
         .safeAreaInset(edge: .bottom, spacing: 0) { AliceNavigation() }
-        .sheet(isPresented: $store.showsVoiceInput) {
-            VoiceInputSheet(model: store.makeVoiceInput())
-                .presentationDetents([.large])
-                .presentationDragIndicator(.visible)
-                .presentationCornerRadius(32)
-        }
         .tint(.aliceAccent)
         .sheet(isPresented: $store.showsPairing) {
             PairingSheet().presentationDragIndicator(.visible).presentationCornerRadius(32)
@@ -37,6 +33,8 @@ struct AliceRootView: View {
 struct AliceNavigation: View {
     @EnvironmentObject var store: AliceSessionStore
     @AppStorage("hapticsEnabled") private var hapticsEnabled = true
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @GestureState private var holdingMicrophone = false
     private var onAlice: Bool { store.selectedTab == .alice }
 
     var body: some View {
@@ -48,30 +46,21 @@ struct AliceNavigation: View {
             HStack(alignment: .top, spacing: 0) {
                 tab(.usage, icon: "chart.bar.xaxis")
                 VStack(spacing: 8) {
-                    Button {
-                        if hapticsEnabled { UIImpactFeedbackGenerator(style: .soft).impactOccurred() }
-                        if onAlice {
-                            if store.isConnected { store.openVoiceInput() }
-                            else { store.connectSession() }
-                        } else { store.selectTab(.alice) }
-                    } label: {
-                        ZStack {
-                            Circle().fill(LinearGradient(colors: [.aliceAccent, Color(hex: "7160E8")], startPoint: .topLeading, endPoint: .bottomTrailing))
-                            if onAlice {
-                                Image(systemName: store.isConnected ? "mic.fill" : "plus")
-                                    .font(.system(size: 27, weight: .medium))
-                                    .foregroundStyle(.white)
-                            } else {
-                                AliceMascot(faceOnly: true, animated: false)
-                                    .frame(width: 49, height: 43)
-                            }
-                        }
-                        .frame(width: 68, height: 68)
-                        .overlay(Circle().stroke(.white.opacity(0.3), lineWidth: 1))
-                        .shadow(color: Color.aliceAccent.opacity(0.26), radius: 12, y: 6)
+                    centerControl
+                    .onChange(of: holdingMicrophone) { _, holding in
+                        if holding {
+                            if hapticsEnabled { UIImpactFeedbackGenerator(style: .medium).impactOccurred() }
+                            store.beginVoiceHold()
+                        } else { store.endVoiceHold() }
                     }
-                    .buttonStyle(.plain)
+                    .onChange(of: store.voiceInput?.phase) { _, phase in
+                        if phase == .recording, hapticsEnabled {
+                            UIImpactFeedbackGenerator(style: .soft).impactOccurred()
+                        }
+                    }
+                    .accessibilityAddTraits(.isButton)
                     .accessibilityLabel(onAlice ? (store.isConnected ? "Talk to Alice" : "Connect to Bob") : "Alice")
+                    .accessibilityHint(onAlice && store.isConnected ? "Hold to speak, release to review. Double tap for recording controls." : "")
                     .accessibilityIdentifier("nav.alice")
                 }
                 .frame(width: 120)
@@ -80,6 +69,54 @@ struct AliceNavigation: View {
             .padding(.horizontal, 24)
         }
         .frame(height: 101)
+    }
+
+    @ViewBuilder private var centerControl: some View {
+        if onAlice && store.isConnected {
+            centerArtwork
+                .gesture(
+                    LongPressGesture(minimumDuration: 0.25, maximumDistance: 80)
+                        .sequenced(before: DragGesture(minimumDistance: 0))
+                        .updating($holdingMicrophone) { value, state, _ in
+                            if case .second(true, _) = value { state = true }
+                        }
+                        .exclusively(before: TapGesture().onEnded { activateCenter() })
+                )
+                .accessibilityAction { activateCenter() }
+        } else {
+            // Navigation and pairing use a real button; microphone gestures must
+            // never compete with a tap when returning from Profile or Usage.
+            Button(action: activateCenter) { centerArtwork }
+                .buttonStyle(.plain)
+        }
+    }
+
+    private var centerArtwork: some View {
+        ZStack {
+            Circle().fill(LinearGradient(colors: [.aliceAccent, Color(hex: "7160E8")], startPoint: .topLeading, endPoint: .bottomTrailing))
+            if onAlice {
+                Image(systemName: store.isConnected ? (store.voiceInput?.phase == .recording ? "waveform" : "mic.fill") : "plus")
+                    .font(.system(size: 27, weight: .medium))
+                    .foregroundStyle(.white)
+            } else {
+                AliceMascot(faceOnly: true, animated: false)
+                    .frame(width: 49, height: 43)
+            }
+        }
+        .frame(width: 68, height: 68)
+        .overlay(Circle().stroke(.white.opacity(0.3), lineWidth: 1))
+        .shadow(color: Color.aliceAccent.opacity(0.26), radius: 12, y: 6)
+        .scaleEffect(holdingMicrophone ? 1.22 : 1)
+        .animation(reduceMotion ? nil : .spring(response: 0.28, dampingFraction: 0.65), value: holdingMicrophone)
+        .contentShape(Circle())
+    }
+
+    private func activateCenter() {
+        if hapticsEnabled { UIImpactFeedbackGenerator(style: .soft).impactOccurred() }
+        if onAlice {
+            if store.isConnected { store.openVoiceInput() }
+            else { store.connectSession() }
+        } else { store.selectTab(.alice) }
     }
 
     private func tab(_ tab: AliceTab, icon: String) -> some View {
