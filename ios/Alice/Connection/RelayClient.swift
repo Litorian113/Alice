@@ -9,6 +9,7 @@ struct RelayEnvelope: Decodable {
     var decisions: [DecisionCard]?
     var voiceAvailable: Bool?
     var reason: String?
+    var voiceReadyUntil: Date?
 }
 
 @MainActor

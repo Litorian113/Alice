@@ -67,7 +67,7 @@ const server = new McpServer(
   { name: 'bob-companion', version: '0.1.0' },
   {
     instructions:
-      'Write all phone-facing titles, replies, context, option labels/details and notifications in English. The developer may be away and steering you from their phone. Use ask_decision for next-step choices, request_approval before running state-changing commands, notify for one-line status, get_instruction between steps. For same-chat voice follow-ups call ask_decision with accept_voice=true, reply containing your answer, and relevant options including Stop here. Voice resumes that call without approving commands.',
+      'Write all phone-facing titles, replies, context, option labels/details and notifications in English. The developer may be away and steering you from their phone. Use ask_decision for next-step choices, request_approval before running state-changing commands, notify for one-line status, get_instruction between steps. For same-chat voice follow-ups call ask_decision with accept_voice=true, reply containing your answer, and relevant options including Stop here. Voice resumes that call without approving commands. After Stop here, declining a follow-up, or completing a task, send a final notify then call get_instruction(wait_s=540) to stay available for new voice requests without another card. Stop here ends the current work, not the phone session. Exit only on explicit stop-listening/disconnect or IDE cancellation.',
   },
 );
 
@@ -151,11 +151,11 @@ server.registerTool(
 
     const result = await sendAndWait(card, extra);
     if (result.instruction) {
-      return text(`Voice input from the developer (${result.instruction.id}): ${JSON.stringify(result.instruction.text)}\nThe previous choice card was withdrawn, not approved. Continue this SAME conversation with the new instruction. Follow normal tool permissions. Write your answer in English in chat and send it to the phone in ask_decision.reply with accept_voice=true and relevant English actions including Stop here. Keep all phone dialog text in English even if the spoken instruction was in another language. If the developer explicitly asked to stop, send a final notify and end instead.`);
+      return text(`Voice input from the developer (${result.instruction.id}): ${JSON.stringify(result.instruction.text)}\nThe previous choice card was withdrawn, not approved. Continue this SAME conversation with the new instruction. Follow normal tool permissions. Write your answer in English in chat and send it to the phone in ask_decision.reply with accept_voice=true and relevant English actions including Stop here. Keep all phone dialog text in English even if the spoken instruction was in another language. If the developer asked to finish the current task, send a final notify and enter standby with get_instruction(wait_s=540). End the phone session only if explicitly asked to stop listening or disconnect.`);
     }
     if (result.expired) {
       if (card.acceptsVoice) {
-        return text(`Phone conversation ended (${result.expired}). No action was selected. Stop waiting; do not perform a suggested action or automatically reopen the dialog. The developer can resume from the IDE.`);
+        return text(`Phone choice ended (${result.expired}). No action was selected. Do not perform a suggested action or reopen the card. ${result.expired === 'timeout' ? 'Enter quiet standby with get_instruction(wait_s=540), without changing the last phone result.' : 'Stop waiting. Do not rearm after cancellation; the developer can resume from the IDE.'}`);
       }
       const rec = card.options.find((o) => o.recommended);
       return text(
@@ -179,7 +179,7 @@ server.registerTool(
       [
         `The developer chose [${option.id}] ${option.label}${option.detail ? ` (${option.detail})` : ''}.`,
         note ? `Their note: "${note}".` : '',
-        'Proceed with this choice.',
+        'Proceed with this choice. If it finishes the current work (including Stop here or leaving changes uncommitted), send a final English notify and call get_instruction(wait_s=540) without another card. Explicit stop-listening/disconnect means end the session instead.',
       ]
         .filter(Boolean)
         .join(' '),
@@ -272,10 +272,20 @@ server.registerTool(
   {
     title: 'Get instruction from phone',
     description:
-      'Pop the next free-text instruction the developer sent from their phone. Call between steps of a long task and follow any instruction returned. Returns "none" if nothing is queued.',
-    inputSchema: {},
+      'With no wait_s (or 0), pop the next queued instruction; returns "none" if empty. Set wait_s=540 after finishing work, Stop here, or declining a follow-up: quietly wait for a NEW voice request in this same IDE chat, without a choice card and without replacing the last phone result. On timeout, renew standby; on cancellation/disconnect, end. Never perform actions just because time passed. All responses and actions must be English.',
+    inputSchema: {
+      wait_s: z.number().int().min(0).max(540).optional().describe('0: immediate queue check (default). 1–540: idle voice wait. Use 540 to keep the paired phone available after a task ends.'),
+    },
   },
-  async () => {
+  async ({ wait_s = 0 }, extra) => {
+    if (wait_s > 0) {
+      const result = await waitForPhoneVoice(Math.min(wait_s, MAX_TIMEOUT_S), extra);
+      if (result.instruction) return text(`New voice request from the paired phone: ${JSON.stringify(result.instruction.text)}\nContinue in this SAME IDE conversation. This starts new work: previous task approvals were cleared. Use normal command approvals, answer in English in chat and on the phone, and return to get_instruction(wait_s=540) when the work ends. If asked to stop listening or disconnect, end instead.`);
+      if (result.reason === 'timeout') return text('No new voice request yet. No action is authorized. Keep the last phone result unchanged and renew quiet standby with get_instruction(wait_s=540). Do not reopen a choice card or perform work without a new instruction.');
+      if (result.reason === 'busy') return text('Another phone request is already active. Do not open concurrent waits or consume its input.', true);
+      return text(`Voice standby ended (${result.reason}). Stop; do not rearm automatically. The developer can resume in the IDE.`);
+    }
+    if (companion.instructionWaiter) return text('Voice standby already owns the input queue. Wait for it to return.', true);
     const next = companion.popInstruction();
     if (!next) return text('none');
     const more = companion.instructions.length;
@@ -285,6 +295,18 @@ server.registerTool(
     );
   },
 );
+
+async function waitForPhoneVoice(seconds, extra) {
+  const token = extra?._meta?.progressToken;
+  let progress = 0;
+  const timer = token !== undefined ? setInterval(() => {
+    extra.sendNotification({ method: 'notifications/progress', params: {
+      progressToken: token, progress: ++progress, message: 'Standing by for a new voice request from Alice',
+    } }).catch(() => {});
+  }, 15_000) : null;
+  try { return await companion.waitForVoice({ timeoutMs: seconds * 1000, signal: extra?.signal }); }
+  finally { if (timer) clearInterval(timer); }
+}
 
 function timeoutFor(args) {
   return Math.min(MAX_TIMEOUT_S, Math.max(5, Math.round(args.timeout_s ?? DEFAULT_TIMEOUT_S)));

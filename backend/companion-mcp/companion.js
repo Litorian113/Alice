@@ -33,6 +33,7 @@ export class Companion extends EventEmitter {
     this.pending = new Map();
     /** @type {{id: string, text: string, at: string}[]} */
     this.instructions = [];
+    this.instructionWaiter = null;
     this.instructionReceipts = new Map();
     this.decisionReceipts = new Map();
     this.runId = crypto.randomBytes(6).toString('hex');
@@ -68,6 +69,7 @@ export class Companion extends EventEmitter {
 
   stop() {
     this.stopped = true;
+    this.instructionWaiter?.finish({ reason: 'cancelled' });
     for (const { cancel } of [...this.pending.values()]) cancel?.();
     clearTimeout(this.reconnectTimer);
     this.ws?.close();
@@ -95,6 +97,7 @@ export class Companion extends EventEmitter {
       if (this.ws !== ws) return;
       const wasConnected = this.connected;
       this.connected = false;
+      this.instructionWaiter?.finish({ reason: 'disconnected' });
       this.phones = 0;
       if (wasConnected) this.log(`relay disconnected (${code} ${reason})`);
       this.emit('status');
@@ -133,6 +136,7 @@ export class Companion extends EventEmitter {
         // A phone (re)joined or we reconnected: make sure it sees every open card.
         this.send({ type: 'sync', decisions: [...this.pending.values()].map(({ card }) => card) });
         for (const { card } of this.pending.values()) this.send(card);
+        this.sendVoiceStatus();
         this.emit('status');
         break;
       }
@@ -165,6 +169,7 @@ export class Companion extends EventEmitter {
         this.send({ type: 'ack', id });
         this.log(`instruction queued (source=${msg.source === 'voice' ? 'voice' : 'text'}): ${text}`);
         this.consumeVoiceForDialog();
+        this.consumeStandbyVoice();
         this.emit('instruction');
         break;
       }
@@ -188,6 +193,7 @@ export class Companion extends EventEmitter {
   // Sends the card and resolves with {optionId, text, via} or {expired: reason}.
   // Never rejects; never hangs past card.expiresAt.
   askDecision(card, { signal, apply } = {}) {
+    if (this.instructionWaiter) return Promise.resolve({ expired: 'busy' });
     if (signal?.aborted) return Promise.resolve({ expired: 'cancelled' });
     return new Promise((resolve) => {
       let settled = false;
@@ -285,6 +291,47 @@ export class Companion extends EventEmitter {
 
   popInstruction() {
     return this.instructions.shift() || null;
+  }
+
+  sendVoiceStatus() {
+    this.send({ type: 'voice_status', voiceReadyUntil: this.instructionWaiter?.until ?? null });
+  }
+
+  waitForVoice({ timeoutMs = 540_000, signal } = {}) {
+    if (signal?.aborted || this.stopped) return Promise.resolve({ reason: 'cancelled' });
+    if (!this.connected || !this.everPaired) return Promise.resolve({ reason: 'disconnected' });
+    if (this.pending.size || this.instructionWaiter) return Promise.resolve({ reason: 'busy' });
+    // Standby is a task boundary: a later spoken task cannot inherit approvals.
+    this.endTask();
+    return new Promise(resolve => {
+      let settled = false;
+      const duration = Math.max(1, Math.min(540_000, timeoutMs));
+      const finish = result => {
+        if (settled) return;
+        settled = true;
+        clearTimeout(timer);
+        signal?.removeEventListener('abort', onAbort);
+        this.instructionWaiter = null;
+        this.sendVoiceStatus();
+        resolve(result);
+      };
+      const onAbort = () => finish({ reason: 'cancelled' });
+      const timer = setTimeout(() => finish({ reason: 'timeout' }), duration);
+      const until = new Date(Math.ceil((Date.now() + duration) / 1000) * 1000).toISOString().replace('.000Z', 'Z');
+      this.instructionWaiter = { finish, until };
+      signal?.addEventListener('abort', onAbort, { once: true });
+      this.sendVoiceStatus();
+      this.consumeStandbyVoice();
+    });
+  }
+
+  consumeStandbyVoice() {
+    if (!this.instructionWaiter || this.pending.size) return;
+    const index = this.instructions.findIndex(input => input.source === 'voice');
+    if (index < 0) return;
+    const [instruction] = this.instructions.splice(index, 1);
+    this.log(`voice input ${instruction.id} resumed standby`);
+    this.instructionWaiter.finish({ instruction });
   }
 
   // Voice resumes one explicitly voice-enabled choice. It can never approve a

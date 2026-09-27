@@ -31,6 +31,10 @@ final class AliceSessionStore: ObservableObject {
     @Published private(set) var selectedTab: AliceTab = .alice
     @Published private(set) var phase: AlicePhase = .disconnected
     @Published private(set) var isConnected = false
+    @Published private(set) var voiceReadyUntil: Date?
+    var isVoiceStandbyReady: Bool {
+        isConnected && (voiceReadyUntil.map { $0 > Date() } ?? false)
+    }
     @Published private(set) var currentDecision: DecisionCard?
     @Published private(set) var lastResponse: DecisionResponse?
     @Published private(set) var lastChoice: DecisionOption?
@@ -251,6 +255,7 @@ final class AliceSessionStore: ObservableObject {
     private func connectionChanged(_ state: RelayClient.State) {
         switch state {
         case .connecting:
+            voiceReadyUntil = nil
             closeVoiceInput()
             clearDecisionFeedback()
             phase = .waiting
@@ -260,6 +265,7 @@ final class AliceSessionStore: ObservableObject {
         case .connected:
             connectionText = "Waiting for Bob"
         case .offline:
+            voiceReadyUntil = nil
             clearDecisionFeedback()
             phase = pairing == nil ? .disconnected : .waiting
             isConnected = false
@@ -283,10 +289,13 @@ final class AliceSessionStore: ObservableObject {
             connectionText = isConnected ? "Connected to Bob" : "Waiting for Bob"
             if isConnected && currentDecision == nil && decisionFeedback == nil { phase = .waiting }
             if !isConnected {
+                voiceReadyUntil = nil
                 clearDecisionFeedback()
                 phase = .waiting
                 closeVoiceInput(); voiceBridge.reset()
             }
+        case "voice_status":
+            voiceReadyUntil = isConnected ? message.voiceReadyUntil : nil
         case "sync":
             let open = message.decisions ?? []
             cards = open.filter { $0.expiresAt.map { $0 > Date() } ?? true }
@@ -349,6 +358,7 @@ final class AliceSessionStore: ObservableObject {
         else if phase == .needsDecision { phase = .waiting }
     }
     private func expireCards() {
+        if let until = voiceReadyUntil, until <= Date() { voiceReadyUntil = nil }
         for card in cards where card.expiresAt.map({ $0 <= Date() }) ?? false { removeCard(card.id) }
     }
     private func removeCard(_ id: String) {
@@ -364,6 +374,7 @@ final class AliceSessionStore: ObservableObject {
         }
     }
     private func resetRequests() {
+        voiceReadyUntil = nil
         closeVoiceInput()
         latestStatus = "Bob's next question will appear here."
         latestStatusLevel = .info

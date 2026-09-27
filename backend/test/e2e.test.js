@@ -223,7 +223,7 @@ test('ask_decision: voice timeout ends the dialog without choosing an action', a
     timeout_s: 1, // clamped to the 5 s minimum
   });
   assert.ok(Date.now() - t0 >= 4900);
-  assert.match(res, /Phone conversation ended \(timeout\)/);
+  assert.match(res, /Phone choice ended \(timeout\)/);
   assert.match(res, /No action was selected/);
   assert.doesNotMatch(res, /proceed conservatively/);
   const exp = await p1.next('decision_expired');
@@ -290,6 +290,35 @@ test('same MCP chat: omitted accept_voice still resumes on speech, returns a new
   // Push delivery is asynchronous. Drain both notifications before the next
   // test resets its shared fake-ntfy inbox and checks an approval notification.
   await until(() => pushes.filter(push => push.title === args.title).length === 2);
+});
+
+test('home voice standby receives a new job without a card or replacing the last result', async () => {
+  const message = 'Changes saved locally. Nothing committed.';
+  await call('notify', { message, level: 'success' });
+  await p1.next('notify', m => m.message === message);
+  await until(() => pushes.some(push => push.message === message));
+  const marker = p1.inbox.length;
+  const waiting = call('get_instruction', { wait_s: 30 });
+  const ready = await p1.next('voice_status', m => !!m.voiceReadyUntil);
+  assert.ok(Date.parse(ready.voiceReadyUntil) > Date.now());
+  assert.equal(p1.inbox.slice(marker).some(m => ['notify', 'decision_request'].includes(m.type)), false);
+  assert.match(await call('get_instruction'), /already owns the input queue/);
+  p1.send({ type: 'instruction', id: 'home-voice', source: 'voice', text: 'Please commit the changes.' });
+  await p1.next('ack', m => m.id === 'home-voice');
+  const result = await waiting;
+  assert.match(result, /Please commit the changes/);
+  assert.match(result, /previous task approvals were cleared/);
+  assert.equal(await call('get_instruction'), 'none');
+  const timeout = await call('get_instruction', { wait_s: 1 });
+  assert.match(timeout, /No action is authorized/);
+  assert.match(timeout, /renew quiet standby/);
+  const controller = new AbortController();
+  const cancelled = call('get_instruction', { wait_s: 30 }, { signal: controller.signal });
+  // Avoid stale status packets from the preceding one-second wait.
+  await until(() => p1.inbox.some(m => m.type === 'voice_status' && Date.parse(m.voiceReadyUntil) > Date.now() + 5000 && m !== ready));
+  controller.abort();
+  await assert.rejects(cancelled);
+  await until(() => p1.inbox.at(-1)?.type === 'voice_status' && p1.inbox.at(-1).voiceReadyUntil === null);
 });
 
 const APPROVAL = {

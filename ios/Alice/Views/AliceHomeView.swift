@@ -20,6 +20,11 @@ struct AliceHomeView: View {
                                 DecisionCardView(card: card)
                             } else if store.phase == .waiting {
                                 statusFeedback
+                                if store.isVoiceStandbyReady {
+                                    Label("Ready for your next voice request.", systemImage: "mic")
+                                        .font(.plex(12)).foregroundStyle(Color.aliceSecondary)
+                                        .multilineTextAlignment(.center)
+                                }
                             }
                         } else {
                             disconnected

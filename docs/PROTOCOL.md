@@ -68,6 +68,7 @@ unchanged within the room: Bob → every connected phone, phone → Bob.
 | --- | --- | --- |
 | `notify` | `id`, `message` (≤ 200 chars), `level`: `info` \| `success` \| `error` | Show in the activity feed / as a toast |
 | `decision_request` | the card, `kind` `choice` or `approval`, see §4 | Show the card, buzz |
+| `voice_status` | `voiceReadyUntil`: ISO 8601 UTC timestamp or `null` | Quiet home-screen voice listener is active until that time. Preserve the last result; no card or push. Clear readiness on disconnect or expiry. |
 | `sync` | `decisions`: array of all currently open cards | Authoritative snapshot after phone/Bob reconnect; remove stale cards and deduplicate subsequent individual replays |
 | `ack` | `id` | Your `decision_response` or `instruction` with this `id` was accepted. **Dismiss that card** (also on other phones in the same room) |
 | `decision_expired` | `id`, `reason`: `timeout` \| `cancelled` \| `unknown` \| `voice_input` | Remove the card. `voice_input`: spoken input resumed a voice-enabled choice, never an approval. Timeout ends voice dialogs without selecting a fallback; ordinary choices retain their conservative policy |
@@ -257,13 +258,48 @@ applied. Bob writes his actual English response in the IDE and passes it in the 
 Alice shows this answer and its actions as one current card. The next card replaces
 it after resolution; no fabricated response or transcript history is generated.
 Bob's decision to call the tool remains agent-driven, governed by Companion mode.
-A stop choice/spoken stop ends the loop with a final `notify`; timeout/cancellation
-instructs Bob to stop with **no fallback action** and no automatic rearming.
+A stop choice/spoken task stop ends the current work with a final `notify`, then
+Bob calls `get_instruction(wait_s: 540)` for quiet standby. Card timeout selects
+**no fallback action** and enters standby rather than reopening choices. Explicit
+stop-listening/disconnect and IDE cancellation end the listener.
 
 This does not wake a completed IDE task. Starting/resuming from the IDE and keeping
-the wait active are required. Queue and dialog state remain in memory; restarting
+the wait active are required. Ordinary Stop here leaves the IDE task in a pending
+MCP call so later voice can start new work. Queue and dialog state remain in memory; restarting
 MCP loses queued input. Reconnecting a phone to the same running MCP resends the
 whole open card, including reply text and voice capability.
+
+### Quiet standby after a task
+
+`get_instruction` keeps its existing immediate queue-pop behavior with no arguments
+or `wait_s: 0`. A positive integer `wait_s` (1–540 seconds, also capped by
+`MAX_DECISION_TIMEOUT_S`) instead waits for a `source: "voice"` instruction without
+a card. This requires a connected relay and an already paired phone session; the
+phone may be temporarily backgrounded. Only one wait may own the queue, and it
+cannot coexist with a pending decision. Normal queue polling refuses to steal
+input while standby owns it. Approval requests during standby cannot be approved.
+
+Starting standby clears command approvals from the finished task. It sends
+`voice_status` with a deadline, but no `notify`, no new card and no push, so Alice
+keeps the last work result under “You're in the loop”. Phone reconnect receives
+the current listener status after the decision snapshot. On voice consumption,
+timeout, cancellation, server stop or relay disconnect it sends a null deadline
+(where the transport is available) and cleans up the wait. iOS also clears stale
+readiness on local disconnect/expiry.
+
+A voice input (including one queued just before standby) resumes the same MCP
+call exactly once. Bob evaluates it as fresh work, with fresh required approvals.
+A simple answer can use an English `notify` (existing 200-character limit), then
+return to standby; tasks needing choices continue through `ask_decision`.
+No arbitrary natural-language command is run by the server itself.
+
+On an ordinary standby timeout, Bob is instructed to renew `get_instruction`
+without posting another result or performing work. These renewals require an
+active IDE agent turn and may cause a model turn at most once per wait interval;
+they are not a background wake-up API. The MCP timeout remains finite and below
+the IDE's 600-second timeout, with progress every 15 seconds when supported.
+IDE cancellation, explicit end-session/stop-listening, or loss of the relay ends
+standby without automatic renewal. The user can resume from the IDE later.
 
 ## 6. Voice tokens and instructions
 

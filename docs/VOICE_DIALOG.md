@@ -35,7 +35,12 @@ not code that determines the application's behavior:
 > you may explicitly set `accept_voice: true`. Write your answer here in chat too.
 > When a voice instruction arrives, make the requested change in the same context,
 > then send the new result and actions to Alice. Keep command approvals separate.
-> Stop on “Stop here” or timeout; never select an action automatically.
+> “Stop here” or declining another action ends only the current work. Send a
+> final English notify, then call get_instruction with wait_s: 540 without
+> another choice card. When new voice arrives, start the requested work in this
+> same chat. Renew standby on ordinary timeout, without notifications or actions.
+> End listening only when I explicitly say “Stop listening” / “Disconnect”, or
+> cancel in the IDE. Never select an action automatically.
 
 On the phone:
 
@@ -47,7 +52,12 @@ On the phone:
 4. The open choice is withdrawn and the MCP call returns the voice instruction
    to the same Bob chat. Alice waits for the actual response.
 5. Bob edits the file and sends his response plus fresh actions. Ask another
-   change by voice or choose a relevant action. Choose Stop here to finish.
+   change by voice or choose a relevant action. Choose Stop here to finish the work.
+6. Alice returns to “You're in the loop” with the last result. Once Bob starts
+   standby it shows “Ready for your next voice request.” Hold the mic and say
+   “Please commit the changes.” Bob receives it in this same chat and checks the
+   changes before asking for the required command approval.
+7. “Stop listening” or cancelling Bob in the IDE ends the phone listener.
 
 The topic, files, response text and actions all come from the conversation. Only
 the transport, waiting behavior and card rendering are implemented by Alice.
@@ -67,9 +77,15 @@ the transport, waiting behavior and card rendering are implemented by Alice.
   send a complete concise answer, not a large file dump. Files remain in the repo.
 - Retry IDs prevent double execution of the same queued input within the running
   MCP process. Reconnect restores open reply cards. Restart loses in-memory input.
-- A timeout or cancelled tool call ends the wait without choosing an action.
-  To resume a finished IDE turn, send “Resume our Alice conversation, using English for all replies and actions.” at the PC.
-  There is no automatic wake-up API for completed IDE chats in this integration.
+- Stop here and declining follow-up work move into quiet standby using
+  `get_instruction(wait_s: 540)`. The latest result stays visible. Ordinary
+  standby timeout renews the wait without selecting actions or repeating messages.
+- Standby requires the IDE conversation to remain active. IDE cancellation, relay
+  disconnect, or explicit “Stop listening” ends it. QR pairing alone cannot wake
+  a completed IDE task. To resume from the PC: “Keep Alice ready for new voice
+  requests using get_instruction with wait_s: 540. Answer in English.”
+- Starting standby clears previous task approvals. A later “commit” request is
+  new work and still needs its own required approval.
 - Bob must call the tools as instructed. This is an agent-driven MCP conversation,
   not a forced mirror of every IDE message or every native permission prompt.
 
@@ -77,7 +93,7 @@ the transport, waiting behavior and card rendering are implemented by Alice.
 
 Automated checks cover the actual MCP stdio process and local WebSocket relay:
 reply delivery, voice returning to the waiting call, replacement reply/actions and
-a stop selection. Additional tests cover duplicates, stale taps, queued speech
+a stop selection, then a new voice request from quiet standby. Additional tests cover duplicates, stale taps, queued speech
 during approval, timeout/cancel and reconnect snapshots. iOS is typechecked.
 
 These tests do not prove that a real Bob model follows every instruction or that

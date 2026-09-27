@@ -88,3 +88,56 @@ test('reply preserves paragraphs, rejects oversized text, and survives reconnect
   c.stop();
   return wait;
 });
+
+test('standby keeps the last result, clears task approvals and resumes once on new voice', async () => {
+  const { companion: c, sent } = setup();
+  c.connected = true; c.everPaired = true;
+  c.approveForTask('git commit -m example');
+  const wait = c.waitForVoice({ timeoutMs: 1000 });
+  assert.equal(c.taskApprovals.size, 0);
+  assert.ok(sent.at(-1).voiceReadyUntil);
+  assert.equal(sent.some(m => m.type === 'notify' || m.type === 'decision_request'), false);
+  c.handle({ type: 'paired', phones: 1 });
+  assert.ok(sent.at(-1).voiceReadyUntil, 'reconnecting phone sees the active listener');
+  const input = { type: 'instruction', id: 'next-job', source: 'voice', text: 'Please commit the changes.' };
+  c.handle(input);
+  assert.equal((await wait).instruction.text, input.text);
+  assert.equal(c.instructionWaiter, null);
+  assert.equal(sent.at(-1).voiceReadyUntil, null);
+  c.handle(input);
+  assert.equal(c.instructions.length, 0, 'retry cannot start work twice');
+});
+
+test('standby guards offline/unpaired/concurrent waits and never steals an approval response', async () => {
+  const { companion: c } = setup();
+  assert.equal((await c.waitForVoice()).reason, 'disconnected');
+  c.connected = true;
+  assert.equal((await c.waitForVoice()).reason, 'disconnected');
+  c.everPaired = true;
+  const approval = normalizeApproval({ title: 'Commit', command: 'git commit -m example' }, { id: 'approval' });
+  const pending = c.askDecision(approval);
+  assert.equal((await c.waitForVoice()).reason, 'busy');
+  c.resolveDecision({ id: approval.id, optionId: 'reject' });
+  assert.equal((await pending).option.id, 'reject');
+  const controller = new AbortController();
+  const wait = c.waitForVoice({ signal: controller.signal });
+  assert.equal((await c.waitForVoice()).reason, 'busy');
+  assert.equal((await c.askDecision(dialog())).expired, 'busy');
+  controller.abort();
+  assert.equal((await wait).reason, 'cancelled');
+});
+
+test('standby has bounded timeout and cancellation, ignores legacy input and accepts queued voice', async () => {
+  const { companion: c, sent } = setup();
+  c.connected = true; c.everPaired = true;
+  c.handle({ type: 'instruction', id: 'legacy', text: 'Queued text' });
+  assert.equal((await c.waitForVoice({ timeoutMs: 20 })).reason, 'timeout');
+  assert.equal(sent.at(-1).voiceReadyUntil, null);
+  c.handle({ type: 'instruction', id: 'queued-voice', source: 'voice', text: 'New work' });
+  assert.equal((await c.waitForVoice()).instruction.id, 'queued-voice');
+  assert.equal(c.popInstruction().id, 'legacy');
+  const wait = c.waitForVoice();
+  c.stop();
+  assert.equal((await wait).reason, 'cancelled');
+  assert.equal(c.instructionWaiter, null);
+});

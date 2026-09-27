@@ -33,8 +33,11 @@ current iOS app resumes the same MCP call/IDE conversation; Bob sends the next
 answer and fresh actions the same way. Command approvals are never resolved by
 speech. No fixed README workflow, second agent or browser chat is involved.
 
-The active wait must stay open; this cannot wake a finished IDE chat. After timeout
-or cancellation Bob stops instead of auto-selecting an action. See the reusable
+After Stop here or declining further work, `get_instruction(wait_s: 540)` keeps
+Bob quietly available for new spoken requests from the home screen. It preserves
+the latest result and resets task approvals. Voice resumes the same IDE call;
+ordinary idle timeout renews it. IDE cancellation/disconnect ends it. The active
+wait must stay open: QR pairing cannot wake a finished IDE chat. See the reusable
 [phone conversation walkthrough](../docs/VOICE_DIALOG.md) and
 [wire contract](../docs/PROTOCOL.md#same-chat-phone-conversations).
 

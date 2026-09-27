@@ -118,7 +118,7 @@ struct VoiceInputView: View {
             if store.currentDecision?.kind == .approval {
                 return "This message will be queued. It does not approve the command; choose Approve or Reject separately."
             }
-            if store.currentDecision?.acceptsVoice != true {
+            if store.currentDecision?.acceptsVoice != true && !store.isVoiceStandbyReady {
                 return "Bob isn't waiting for a voice reply right now. Your message will be queued until he checks for input or opens the next voice dialog."
             }
             return "Review your words, then send them to continue this conversation with Bob."

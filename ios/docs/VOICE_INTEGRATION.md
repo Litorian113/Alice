@@ -23,7 +23,8 @@ Alice → voice_session_request over authenticated relay WebSocket
   → instruction with stable input UUID → MCP queue → ack
   → open voice-enabled ask_decision returns the instruction in the SAME Bob chat
   → Bob writes his response and calls ask_decision(reply, accept_voice=true, options)
-  → next answer/actions replace the current card; Stop here ends the dialog
+  → next answer/actions replace the current card; Stop here ends the current work
+  → get_instruction(wait_s: 540) keeps the home screen ready for new voice
   (Without an open voice wait: get_instruction between steps / next voice dialog)
 ```
 
@@ -80,3 +81,14 @@ English even for non-English input; the speech transcript is preserved verbatim.
 If the active card cannot accept voice (approval, explicit opt-out, or an older
 MCP card), review explains that sending queues the instruction rather than
 immediately continuing Bob.
+
+## Home-screen voice standby
+
+After ending the current work, Bob uses `get_instruction(wait_s: 540)`. The new
+`voice_status.voiceReadyUntil` message lets Alice show readiness while preserving
+`latestStatus`. Review recognizes either an active voice choice or a current
+standby listener; command-approval messaging takes precedence. Disconnect and
+local deadline expiry clear the readiness flag. No recording starts automatically.
+A new confirmed spoken input resumes the same waiting IDE call as fresh work;
+previous task approvals do not carry over. This requires Bob to keep that MCP wait
+active. It does not wake a terminated task from QR pairing alone.
